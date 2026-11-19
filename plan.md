@@ -169,6 +169,7 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 | 2026-11-20 | Phase 00 · HL-00-07 | Kiểm tra nguồn OpenCidian/CVDICT/CC-CEDICT và giấy phép công bố; viết kế hoạch ảnh tự tạo/tự chụp, ground truth, dev/test, CER/latency; chưa seed/đo | Tiếp tục HL-00-08 acceptance criteria và rà DoD |
 | 2026-11-20 | Phase 00 · HL-00-08 | Viết `docs/testing/acceptance-criteria.md` với core/final gates, test matrix và rà đầu ra HL-00-01–08; Phase 00 đạt DoD thiết kế | Sau commit, fast-forward `main` cục bộ rồi mở Phase 01 |
 | 2026-11-20 | Phase 01 · HL-01-01 | Đã fast-forward `phase/00` vào `main`, mở `phase/01`; thêm cấu trúc `apps/flutter_app`/`backend`, `.gitignore`, `.env.example`, README đầu vào; kiểm Git hygiene | Tiếp tục HL-01-02 Flutter Web/Android; Flutter CLI kiểm phiên bản báo lỗi SSL khi tự fetch tags, SDK local vẫn hiện 3.47.9 |
+| 2026-11-20 | Phase 01 · HL-01-02 | `flutter create --platforms=android,web`; Flutter 3.47.9/Dart 3.13.7. `flutter analyze` và `flutter test` pass; `flutter build web` pass; Chrome headless chạy HTTP 200; `flutter build apk --debug` pass, cài/mở APK trên Android 15 emulator, `pidof` thấy tiến trình. Emulator/cấu hình nằm ngoài repo. | Tiếp tục HL-01-03 Riverpod/router/theme; app hiện còn Flutter counter mặc định. `flutter doctor` cảnh báo Windows desktop không liên quan target; sdkmanager cũ không tải manifest, Android CLI thay thế đã cài emulator/system image. |
 
 - [ ] Flutter Web và Flutter Android APK đều chạy với backend Python; Firebase Auth/Firestore/Rules an toàn và đồng bộ.
 - [ ] Nhập tay, từ điển có nguồn, lưu từ, Flashcard/Quiz/lịch ôn/dashboard.
@@ -176,4 +177,4 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 - [ ] AI API thật qua key backend, nội dung gắn nhãn, validation/quota/fallback/rubric.
 - [ ] Test Web/Android, README, report, slide, video, release/changelog, không chứa secret.
 
-**Bước tiếp theo:** trên `phase/01`, làm `HL-01-02` khởi tạo Flutter Web/Android sau commit `HL-01-01`. Chọn service/key cụ thể ở Phase 09–10 khi sẵn sàng.
+**Bước tiếp theo:** trên `phase/01`, làm `HL-01-03` Riverpod/router/theme và screen core skeleton sau commit `HL-01-02`. Chọn service/key cụ thể ở Phase 09–10 khi sẵn sàng.
