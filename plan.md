@@ -44,7 +44,7 @@ Phase 09 và 10 là hai phase cuối của **phát triển tính năng**; Phase 
 
 - [x] Viết `docs/requirements/product-requirements.md`: persona, use case, core trước tích hợp, MVP cuối, ngoài phạm vi, tiêu chí chấp nhận. Bằng chứng: `HL-00-01`.
 - [x] Vẽ flow/wireframe Web/mobile cho Auth, Home, nhập chữ, Dictionary, Saved Words, Flashcard, Quiz, Progress, Profile; bổ sung flow ảnh → OCR → sửa và AI explain ở cuối. Bằng chứng: `HL-00-02`, `HL-00-03`.
-- [ ] Thiết kế một Flutter codebase cho Web/Android ↔ Firebase và ↔ backend Python/FastAPI; backend `OcrProvider`/`AiExplainProvider`, xác minh Firebase ID token ở endpoint cá nhân.
+- [x] Thiết kế một Flutter codebase cho Web/Android ↔ Firebase và ↔ backend Python/FastAPI; backend `OcrProvider`/`AiExplainProvider`, xác minh Firebase ID token ở endpoint cá nhân. Bằng chứng: `HL-00-04`.
 - [ ] Chốt Firestore collections, UID/timestamps, API/error contract, giới hạn ảnh/quota AI, phân biệt text OCR gốc và text sửa.
 - [ ] Chọn nguồn/quyền dùng từ điển; định nghĩa dataset OCR, ground truth, dev/test, CER; ghi ADR cho lựa chọn chưa chốt.
 - **DoD:** PRD, sơ đồ, `docs/api/openapi-contract.md`, `docs/testing/acceptance-criteria.md` có cổng core và MVP cuối; không còn chức năng lõi mơ hồ.
@@ -163,6 +163,7 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 | 2026-11-20 | Phase 00 · HL-00-01 | Người dùng xác nhận bắt đầu; tạo branch `phase/00`; viết PRD về persona, use case, core/MVP cuối, phạm vi và tiêu chí chấp nhận; rà nội dung với plan và backlog | Tiếp tục HL-00-02 sau khi commit issue này; Phase 00 chưa đạt DoD |
 | 2026-11-20 | Phase 00 · HL-00-02 | Viết `docs/requirements/user-flows.md` với F01–F06, trạng thái lỗi/phục hồi, khác biệt Web/Android và truy vết UC; kiểm tra flow theo PRD | Tiếp tục HL-00-03 wireframe; checklist flow/wireframe chưa đóng |
 | 2026-11-20 | Phase 00 · HL-00-03 | Viết sitemap và `docs/requirements/wireframes.md` với WF-01–WF-10 cho Web/Android, trạng thái core và tích hợp cuối; truy vết UC/flow | Tiếp tục HL-00-04 kiến trúc; Phase 00 chưa đạt DoD |
+| 2026-11-20 | Phase 00 · HL-00-04 | Viết `docs/architecture/system-architecture.md`: thành phần Flutter/Firebase/Python, luồng core/OCR/AI, ranh bảo mật và adapter | Tiếp tục HL-00-05 schema; Phase 00 chưa đạt DoD |
 
 - [ ] Flutter Web và Flutter Android APK đều chạy với backend Python; Firebase Auth/Firestore/Rules an toàn và đồng bộ.
 - [ ] Nhập tay, từ điển có nguồn, lưu từ, Flashcard/Quiz/lịch ôn/dashboard.
@@ -170,4 +171,4 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 - [ ] AI API thật qua key backend, nội dung gắn nhãn, validation/quota/fallback/rubric.
 - [ ] Test Web/Android, README, report, slide, video, release/changelog, không chứa secret.
 
-**Bước tiếp theo:** trên `phase/00`, làm `HL-00-04` kiến trúc sau commit `HL-00-03`. Chọn service/key cụ thể ở Phase 09–10 khi sẵn sàng.
+**Bước tiếp theo:** trên `phase/00`, làm `HL-00-05` Firestore schema sau commit `HL-00-04`. Chọn service/key cụ thể ở Phase 09–10 khi sẵn sàng.
