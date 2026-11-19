@@ -1,6 +1,6 @@
 # HanLearn AI — kế hoạch thực thi
 
-> Phiên bản 0.7, cập nhật 2026-11-20 theo CR-001 đến CR-006; chờ người dùng duyệt. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Chưa triển khai Phase 00.
+> Phiên bản 0.8, cập nhật 2026-11-20 theo CR-001 đến CR-006; người dùng đã xác nhận bắt đầu. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Phase 00 đang thực hiện trên branch `phase/00`.
 
 ## 1. Mục tiêu và thay đổi thứ tự
 
@@ -23,7 +23,7 @@ Sản phẩm cuối: đăng nhập → chụp/tải ảnh chữ Hán giản th�
 
 | Phase | Phạm vi | Phụ thuộc | Cổng bàn giao | Trạng thái |
 |---|---|---|---|---|
-| 00 | Yêu cầu, kiến trúc, contract | — | PRD, flow, schema, API, acceptance criteria | NOT STARTED |
+| 00 | Yêu cầu, kiến trúc, contract | — | PRD, flow, schema, API, acceptance criteria | IN PROGRESS |
 | 01 | Khởi tạo Flutter Web + Android, backend Python/FastAPI, CI | 00 | Cả Web/Android chạy, Python `/health`, README | NOT STARTED |
 | 02 | Firebase Auth, Firestore, Rules | 01 | Đăng nhập, dữ liệu riêng, đồng bộ | NOT STARTED |
 | 03 | Từ điển, nhập tay, lưu từ | 02 | Nhập/dán → tra → lưu/bỏ lưu | NOT STARTED |
@@ -42,7 +42,7 @@ Phase 09 và 10 là hai phase cuối của **phát triển tính năng**; Phase 
 
 ### Phase 00 — Yêu cầu và kiến trúc
 
-- [ ] Viết `docs/requirements/product-requirements.md`: persona, use case, core trước tích hợp, MVP cuối, ngoài phạm vi, tiêu chí chấp nhận.
+- [x] Viết `docs/requirements/product-requirements.md`: persona, use case, core trước tích hợp, MVP cuối, ngoài phạm vi, tiêu chí chấp nhận. Bằng chứng: `HL-00-01`.
 - [ ] Vẽ flow/wireframe Web/mobile cho Auth, Home, nhập chữ, Dictionary, Saved Words, Flashcard, Quiz, Progress, Profile; bổ sung flow ảnh → OCR → sửa và AI explain ở cuối.
 - [ ] Thiết kế một Flutter codebase cho Web/Android ↔ Firebase và ↔ backend Python/FastAPI; backend `OcrProvider`/`AiExplainProvider`, xác minh Firebase ID token ở endpoint cá nhân.
 - [ ] Chốt Firestore collections, UID/timestamps, API/error contract, giới hạn ảnh/quota AI, phân biệt text OCR gốc và text sửa.
@@ -145,8 +145,8 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 | ID | Ngày | Cập nhật | Tác động/quyết định | Trạng thái |
 |---|---|---|---|---|
 | CR-000 | 2026-11-19 | Lập kế hoạch từ tài liệu nguồn | Tạo plan/rule; thứ tự ban đầu đã được CR-001 thay thế | SUPERSEDED |
-| CR-001 | 2026-11-19 | Người dùng yêu cầu OCR và AI cuối; OCR có thể là service riêng, AI dùng API key | Core 00–08 → OCR 09 → AI 10 → nghiệm thu 11; giữ MVP cuối | PENDING REVIEW |
-| CR-002 | 2026-11-19 | Người dùng nhấn mạnh hai nền tảng Web và Android đều bằng Flutter; backend bằng Python | Ghi kiến trúc bắt buộc và cổng DoD/kiểm thử cho đủ hai client cùng backend Python | PENDING REVIEW |
+| CR-001 | 2026-11-19 | Người dùng yêu cầu OCR và AI cuối; OCR có thể là service riêng, AI dùng API key | Core 00–08 → OCR 09 → AI 10 → nghiệm thu 11; giữ MVP cuối | APPROVED 2026-11-20 |
+| CR-002 | 2026-11-19 | Người dùng nhấn mạnh hai nền tảng Web và Android đều bằng Flutter; backend bằng Python | Ghi kiến trúc bắt buộc và cổng DoD/kiểm thử cho đủ hai client cùng backend Python | APPROVED 2026-11-20 |
 | CR-003 | 2026-11-19 | Người dùng yêu cầu tự động add và tạo commit sau mỗi task nhỏ, không push | Thêm cổng commit cục bộ sau task, chỉ stage file liên quan; khởi tạo Git cục bộ để áp dụng ngay | APPLIED |
 | CR-004 | 2026-11-19 | Người dùng muốn quản lý dự án bằng GitHub Issues/Kanban và yêu cầu `kanban_management.md` | Tạo backlog 73 issue theo Phase 00–11, có dependency/DoD/ước lượng; đồng bộ khi plan thay đổi | APPLIED |
 | CR-005 | 2026-11-20 | Người dùng yêu cầu mỗi phase là một branch, mỗi commit trong branch tương ứng một issue | Branch `phase/xx`; một issue nhỏ một commit có mã `HL-xx-yy`; tích hợp `main` bằng fast-forward cục bộ sau DoD, không push | APPLIED |
@@ -160,6 +160,7 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 | 2026-11-19 | Chuẩn bị Kanban | Tạo `kanban_management.md` với 73 issue, cập nhật plan/rule theo CR-004; chưa tạo issue online | Người dùng đưa backlog vào GitHub Projects khi sẵn sàng |
 | 2026-11-20 | Chuẩn bị workflow Git | Cập nhật plan/rule/Kanban theo CR-005; chưa mở Phase 00 | Sau khi duyệt, tạo `phase/00` và bắt đầu HL-00-01 |
 | 2026-11-20 | Phân công thao tác Git | Ghi rõ trợ lý chịu trách nhiệm tạo branch/commit theo CR-006; chưa mở Phase 00 | Sau khi duyệt, trợ lý tự tạo `phase/00` và bắt đầu HL-00-01 |
+| 2026-11-20 | Phase 00 · HL-00-01 | Người dùng xác nhận bắt đầu; tạo branch `phase/00`; viết PRD về persona, use case, core/MVP cuối, phạm vi và tiêu chí chấp nhận; rà nội dung với plan và backlog | Tiếp tục HL-00-02 sau khi commit issue này; Phase 00 chưa đạt DoD |
 
 - [ ] Flutter Web và Flutter Android APK đều chạy với backend Python; Firebase Auth/Firestore/Rules an toàn và đồng bộ.
 - [ ] Nhập tay, từ điển có nguồn, lưu từ, Flashcard/Quiz/lịch ôn/dashboard.
@@ -167,4 +168,4 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 - [ ] AI API thật qua key backend, nội dung gắn nhãn, validation/quota/fallback/rubric.
 - [ ] Test Web/Android, README, report, slide, video, release/changelog, không chứa secret.
 
-**Sau khi xác nhận:** tạo branch `phase/00`, bắt đầu HL-00-01; thiết kế core và contract OCR/AI trước khi code. Chọn service/key cụ thể ở Phase 09–10 khi sẵn sàng.
+**Bước tiếp theo:** trên `phase/00`, làm `HL-00-02` user flow sau khi hoàn thành commit `HL-00-01`. Chọn service/key cụ thể ở Phase 09–10 khi sẵn sàng.
