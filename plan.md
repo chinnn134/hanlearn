@@ -1,6 +1,6 @@
 # HanLearn AI — kế hoạch thực thi
 
-> Phiên bản 0.8, cập nhật 2026-11-20 theo CR-001 đến CR-006; người dùng đã xác nhận bắt đầu. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Phase 00 đang thực hiện trên branch `phase/00`.
+> Phiên bản 0.9, cập nhật 2026-11-20 theo CR-001 đến CR-006; người dùng đã xác nhận bắt đầu. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Phase 00 đạt DoD trên branch `phase/00`; chờ tích hợp cục bộ vào `main`.
 
 ## 1. Mục tiêu và thay đổi thứ tự
 
@@ -23,7 +23,7 @@ Sản phẩm cuối: đăng nhập → chụp/tải ảnh chữ Hán giản th�
 
 | Phase | Phạm vi | Phụ thuộc | Cổng bàn giao | Trạng thái |
 |---|---|---|---|---|
-| 00 | Yêu cầu, kiến trúc, contract | — | PRD, flow, schema, API, acceptance criteria | IN PROGRESS |
+| 00 | Yêu cầu, kiến trúc, contract | — | PRD, flow, schema, API, acceptance criteria | DONE |
 | 01 | Khởi tạo Flutter Web + Android, backend Python/FastAPI, CI | 00 | Cả Web/Android chạy, Python `/health`, README | NOT STARTED |
 | 02 | Firebase Auth, Firestore, Rules | 01 | Đăng nhập, dữ liệu riêng, đồng bộ | NOT STARTED |
 | 03 | Từ điển, nhập tay, lưu từ | 02 | Nhập/dán → tra → lưu/bỏ lưu | NOT STARTED |
@@ -47,7 +47,7 @@ Phase 09 và 10 là hai phase cuối của **phát triển tính năng**; Phase 
 - [x] Thiết kế một Flutter codebase cho Web/Android ↔ Firebase và ↔ backend Python/FastAPI; backend `OcrProvider`/`AiExplainProvider`, xác minh Firebase ID token ở endpoint cá nhân. Bằng chứng: `HL-00-04`.
 - [x] Chốt Firestore collections, UID/timestamps, API/error contract, giới hạn ảnh/quota AI, phân biệt text OCR gốc và text sửa. Bằng chứng: `HL-00-05`, `HL-00-06`; các tham số phụ thuộc provider có cổng quyết định Phase 09/10.
 - [x] Chọn nguồn/quyền dùng từ điển; định nghĩa dataset OCR, ground truth, dev/test, CER; ghi cổng quyết định cho phần chưa chốt. Bằng chứng: `HL-00-07`, `docs/requirements/data-sources.md`, `docs/testing/ocr-evaluation-plan.md`.
-- **DoD:** PRD, sơ đồ, `docs/api/openapi-contract.md`, `docs/testing/acceptance-criteria.md` có cổng core và MVP cuối; không còn chức năng lõi mơ hồ.
+- **DoD: ĐẠT (thiết kế).** PRD, flow/wireframe, sơ đồ, schema, `docs/api/openapi-contract.md`, `docs/testing/acceptance-criteria.md` có cổng core và MVP cuối; các lựa chọn triển khai còn mở có issue/phase chốt rõ. Bằng chứng: `HL-00-01` đến `HL-00-08` và mục 6 của acceptance criteria. Chưa có ứng dụng/test runtime ở Phase 00.
 
 ### Phase 01 — Khởi tạo
 
@@ -167,6 +167,7 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 | 2026-11-20 | Phase 00 · HL-00-05 | Viết `docs/architecture/firestore-data-model.md`: collections, fields/type, owner UID, timestamp, quyền truy cập, query/index và quyết định còn mở | Tiếp tục HL-00-06 API/error contract; Phase 00 chưa đạt DoD |
 | 2026-11-20 | Phase 00 · HL-00-06 | Viết `docs/api/openapi-contract.md`: route, request/response, token, giới hạn ảnh/AI, error envelope và cổng OCR/AI chưa cấu hình | Tiếp tục HL-00-07 nguồn dữ liệu/đánh giá OCR; Phase 00 chưa đạt DoD |
 | 2026-11-20 | Phase 00 · HL-00-07 | Kiểm tra nguồn OpenCidian/CVDICT/CC-CEDICT và giấy phép công bố; viết kế hoạch ảnh tự tạo/tự chụp, ground truth, dev/test, CER/latency; chưa seed/đo | Tiếp tục HL-00-08 acceptance criteria và rà DoD |
+| 2026-11-20 | Phase 00 · HL-00-08 | Viết `docs/testing/acceptance-criteria.md` với core/final gates, test matrix và rà đầu ra HL-00-01–08; Phase 00 đạt DoD thiết kế | Sau commit, fast-forward `main` cục bộ rồi mở Phase 01 |
 
 - [ ] Flutter Web và Flutter Android APK đều chạy với backend Python; Firebase Auth/Firestore/Rules an toàn và đồng bộ.
 - [ ] Nhập tay, từ điển có nguồn, lưu từ, Flashcard/Quiz/lịch ôn/dashboard.
@@ -174,4 +175,4 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 - [ ] AI API thật qua key backend, nội dung gắn nhãn, validation/quota/fallback/rubric.
 - [ ] Test Web/Android, README, report, slide, video, release/changelog, không chứa secret.
 
-**Bước tiếp theo:** trên `phase/00`, làm `HL-00-08` acceptance criteria và rà DoD sau commit `HL-00-07`. Chọn service/key cụ thể ở Phase 09–10 khi sẵn sàng.
+**Bước tiếp theo:** sau commit `HL-00-08`, fast-forward `main` cục bộ từ `phase/00`, tạo branch `phase/01` và bắt đầu `HL-01-01`. Chọn service/key cụ thể ở Phase 09–10 khi sẵn sàng.
