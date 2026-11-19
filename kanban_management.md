@@ -13,7 +13,7 @@
 - Ước lượng là **ngày công tham khảo cho solo developer**, có thể sửa theo thực tế. Nếu một hàng vượt 2 ngày, tách issue con trước khi bắt đầu, giữ liên kết với mã gốc.
 - Trợ lý tự tạo branch cục bộ `phase/xx` khi mở phase và tự tạo commit sau mỗi issue hoàn thành; người dùng không cần thao tác Git hộ. Mỗi hàng `HL-xx-yy` tương ứng **đúng một commit mới** trên branch cùng phase; subject chứa `[HL-xx-yy]`. Gộp code, test và tài liệu của issue vào commit đó. Chỉ sau khi cả phase đạt DoD mới fast-forward `main` cục bộ; không push.
 
-**Tiến độ cục bộ:** `HL-00-01` DONE (`2217e0c`), `HL-00-02` DONE (`042fc27`), `HL-00-03` DONE (`2bb4a88`), `HL-00-04` DONE (`2c59e16`), `HL-00-05` DONE (`ab1bf97`); `HL-00-06` API contract đã viết và kiểm tra, sẵn sàng commit trên `phase/00`; các issue còn lại ở Backlog. Chưa tạo GitHub Issues online.
+**Tiến độ cục bộ:** `HL-00-01` DONE (`2217e0c`), `HL-00-02` DONE (`042fc27`), `HL-00-03` DONE (`2bb4a88`), `HL-00-04` DONE (`2c59e16`), `HL-00-05` DONE (`ab1bf97`), `HL-00-06` DONE (`06d1f33`); `HL-00-07` nguồn/đánh giá đã viết và kiểm tra, sẵn sàng commit trên `phase/00`; các issue còn lại ở Backlog. Chưa tạo GitHub Issues online.
 
 Quy trình Git mẫu: từ `main` đã có phase trước, tạo `git switch -c phase/00`; hoàn thành HL-00-01 rồi commit `docs(requirements): write PRD [HL-00-01]`. Sau khi tất cả issue Phase 00 và DoD đạt, chuyển về `main`, chạy `git merge --ff-only phase/00`, rồi mới tạo `phase/01`. Lặp lại đến Phase 11. Nếu fast-forward không thực hiện được, kiểm tra và xử lý lịch sử branch trước; không ép merge hoặc push.
 

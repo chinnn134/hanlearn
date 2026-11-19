@@ -46,7 +46,7 @@ Phase 09 và 10 là hai phase cuối của **phát triển tính năng**; Phase 
 - [x] Vẽ flow/wireframe Web/mobile cho Auth, Home, nhập chữ, Dictionary, Saved Words, Flashcard, Quiz, Progress, Profile; bổ sung flow ảnh → OCR → sửa và AI explain ở cuối. Bằng chứng: `HL-00-02`, `HL-00-03`.
 - [x] Thiết kế một Flutter codebase cho Web/Android ↔ Firebase và ↔ backend Python/FastAPI; backend `OcrProvider`/`AiExplainProvider`, xác minh Firebase ID token ở endpoint cá nhân. Bằng chứng: `HL-00-04`.
 - [x] Chốt Firestore collections, UID/timestamps, API/error contract, giới hạn ảnh/quota AI, phân biệt text OCR gốc và text sửa. Bằng chứng: `HL-00-05`, `HL-00-06`; các tham số phụ thuộc provider có cổng quyết định Phase 09/10.
-- [ ] Chọn nguồn/quyền dùng từ điển; định nghĩa dataset OCR, ground truth, dev/test, CER; ghi ADR cho lựa chọn chưa chốt.
+- [x] Chọn nguồn/quyền dùng từ điển; định nghĩa dataset OCR, ground truth, dev/test, CER; ghi cổng quyết định cho phần chưa chốt. Bằng chứng: `HL-00-07`, `docs/requirements/data-sources.md`, `docs/testing/ocr-evaluation-plan.md`.
 - **DoD:** PRD, sơ đồ, `docs/api/openapi-contract.md`, `docs/testing/acceptance-criteria.md` có cổng core và MVP cuối; không còn chức năng lõi mơ hồ.
 
 ### Phase 01 — Khởi tạo
@@ -166,6 +166,7 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 | 2026-11-20 | Phase 00 · HL-00-04 | Viết `docs/architecture/system-architecture.md`: thành phần Flutter/Firebase/Python, luồng core/OCR/AI, ranh bảo mật và adapter | Tiếp tục HL-00-05 schema; Phase 00 chưa đạt DoD |
 | 2026-11-20 | Phase 00 · HL-00-05 | Viết `docs/architecture/firestore-data-model.md`: collections, fields/type, owner UID, timestamp, quyền truy cập, query/index và quyết định còn mở | Tiếp tục HL-00-06 API/error contract; Phase 00 chưa đạt DoD |
 | 2026-11-20 | Phase 00 · HL-00-06 | Viết `docs/api/openapi-contract.md`: route, request/response, token, giới hạn ảnh/AI, error envelope và cổng OCR/AI chưa cấu hình | Tiếp tục HL-00-07 nguồn dữ liệu/đánh giá OCR; Phase 00 chưa đạt DoD |
+| 2026-11-20 | Phase 00 · HL-00-07 | Kiểm tra nguồn OpenCidian/CVDICT/CC-CEDICT và giấy phép công bố; viết kế hoạch ảnh tự tạo/tự chụp, ground truth, dev/test, CER/latency; chưa seed/đo | Tiếp tục HL-00-08 acceptance criteria và rà DoD |
 
 - [ ] Flutter Web và Flutter Android APK đều chạy với backend Python; Firebase Auth/Firestore/Rules an toàn và đồng bộ.
 - [ ] Nhập tay, từ điển có nguồn, lưu từ, Flashcard/Quiz/lịch ôn/dashboard.
@@ -173,4 +174,4 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 - [ ] AI API thật qua key backend, nội dung gắn nhãn, validation/quota/fallback/rubric.
 - [ ] Test Web/Android, README, report, slide, video, release/changelog, không chứa secret.
 
-**Bước tiếp theo:** trên `phase/00`, làm `HL-00-07` nguồn dữ liệu và kế hoạch đánh giá OCR sau commit `HL-00-06`. Chọn service/key cụ thể ở Phase 09–10 khi sẵn sàng.
+**Bước tiếp theo:** trên `phase/00`, làm `HL-00-08` acceptance criteria và rà DoD sau commit `HL-00-07`. Chọn service/key cụ thể ở Phase 09–10 khi sẵn sàng.
