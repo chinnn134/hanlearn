@@ -164,6 +164,7 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 | 2026-11-20 | Phase 00 · HL-00-02 | Viết `docs/requirements/user-flows.md` với F01–F06, trạng thái lỗi/phục hồi, khác biệt Web/Android và truy vết UC; kiểm tra flow theo PRD | Tiếp tục HL-00-03 wireframe; checklist flow/wireframe chưa đóng |
 | 2026-11-20 | Phase 00 · HL-00-03 | Viết sitemap và `docs/requirements/wireframes.md` với WF-01–WF-10 cho Web/Android, trạng thái core và tích hợp cuối; truy vết UC/flow | Tiếp tục HL-00-04 kiến trúc; Phase 00 chưa đạt DoD |
 | 2026-11-20 | Phase 00 · HL-00-04 | Viết `docs/architecture/system-architecture.md`: thành phần Flutter/Firebase/Python, luồng core/OCR/AI, ranh bảo mật và adapter | Tiếp tục HL-00-05 schema; Phase 00 chưa đạt DoD |
+| 2026-11-20 | Phase 00 · HL-00-05 | Viết `docs/architecture/firestore-data-model.md`: collections, fields/type, owner UID, timestamp, quyền truy cập, query/index và quyết định còn mở | Tiếp tục HL-00-06 API/error contract; Phase 00 chưa đạt DoD |
 
 - [ ] Flutter Web và Flutter Android APK đều chạy với backend Python; Firebase Auth/Firestore/Rules an toàn và đồng bộ.
 - [ ] Nhập tay, từ điển có nguồn, lưu từ, Flashcard/Quiz/lịch ôn/dashboard.
@@ -171,4 +172,4 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 - [ ] AI API thật qua key backend, nội dung gắn nhãn, validation/quota/fallback/rubric.
 - [ ] Test Web/Android, README, report, slide, video, release/changelog, không chứa secret.
 
-**Bước tiếp theo:** trên `phase/00`, làm `HL-00-05` Firestore schema sau commit `HL-00-04`. Chọn service/key cụ thể ở Phase 09–10 khi sẵn sàng.
+**Bước tiếp theo:** trên `phase/00`, làm `HL-00-06` API/error contract sau commit `HL-00-05`. Chọn service/key cụ thể ở Phase 09–10 khi sẵn sàng.
