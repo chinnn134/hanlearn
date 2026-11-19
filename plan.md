@@ -1,6 +1,6 @@
 # HanLearn AI — kế hoạch thực thi
 
-> Phiên bản 0.4, cập nhật 2026-11-19 theo CR-001/CR-002/CR-003; chờ người dùng duyệt. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Chưa triển khai Phase 00.
+> Phiên bản 0.5, cập nhật 2026-11-19 theo CR-001/CR-002/CR-003/CR-004; chờ người dùng duyệt. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Chưa triển khai Phase 00.
 
 ## 1. Mục tiêu và thay đổi thứ tự
 
@@ -14,10 +14,10 @@ Sản phẩm cuối: đăng nhập → chụp/tải ảnh chữ Hán giản th�
 
 ## 2. Workflow mỗi lượt
 
-1. Đọc `rule.md`, file này, tài liệu nguồn và hiện trạng repo; xác định phase/DoD/dependency và một issue nhỏ có thể kiểm chứng.
+1. Đọc `rule.md`, file này, `kanban_management.md`, tài liệu nguồn và hiện trạng repo; xác định phase/DoD/dependency và một issue nhỏ có thể kiểm chứng.
 2. Trước khi code: nêu mục tiêu, file dự kiến, cách làm, kiểm thử và rủi ro. Chỉ làm phase đang mở; phần chuẩn bị tích hợp phải ghi rõ là contract/UI, chưa phải service thật.
 3. Sau mỗi task nhỏ: chạy kiểm tra phù hợp, cập nhật checklist/nhật ký, kiểm tra diff, `git add` đúng file của task và tạo commit cục bộ có thông điệp rõ. Báo file đổi, lệnh/kết quả thật, commit và blocker. Không `git push` nếu người dùng chưa yêu cầu rõ. Mock/stub/contract test không chứng minh OCR/AI thật.
-4. Yêu cầu mới được xử lý theo mục 5. Chỉ chuyển phase khi DoD có bằng chứng. Với tính năng người dùng, bằng chứng phải bao gồm Flutter Web **và** Flutter Android; với API, phải có backend Python chạy và được kiểm tra. Trạng thái: `NOT STARTED`, `IN PROGRESS`, `BLOCKED`, `DONE`; một phase triển khai chính tại một thời điểm.
+4. Yêu cầu mới được xử lý theo mục 5; cập nhật các issue Kanban chịu tác động trong cùng lượt. Chỉ chuyển phase khi DoD có bằng chứng. Với tính năng người dùng, bằng chứng phải bao gồm Flutter Web **và** Flutter Android; với API, phải có backend Python chạy và được kiểm tra. Trạng thái: `NOT STARTED`, `IN PROGRESS`, `BLOCKED`, `DONE`; một phase triển khai chính tại một thời điểm.
 
 ## 3. Roadmap mới
 
@@ -51,7 +51,7 @@ Phase 09 và 10 là hai phase cuối của **phát triển tính năng**; Phase 
 
 ### Phase 01 — Khởi tạo
 
-- [ ] Dùng Git repo cục bộ đã khởi tạo cho tài liệu kế hoạch; tạo GitHub repo/Projects khi có quyền, milestone theo roadmap mới, issue 0,5–2 ngày. Commit từng task nhỏ; không push nếu chưa được yêu cầu.
+- [ ] Dùng Git repo cục bộ đã khởi tạo; tạo GitHub repo/Projects khi có quyền, milestone theo roadmap mới và issue từ `kanban_management.md` (0,5–2 ngày/issue). Commit từng task nhỏ; không push nếu chưa được yêu cầu.
 - [ ] Tạo một codebase Flutter/Dart `apps/flutter_app` với target Web và Android, Riverpod, router, theme, localization cơ bản, feature-first và trạng thái loading/empty/error.
 - [ ] Tạo backend Python/FastAPI `backend/app`, `/health`, `/api/v1`, Pydantic, CORS allowlist, config local/staging, dependency khóa phiên bản.
 - [ ] Viết `.gitignore`, `.env.example`, README setup/run/test, lint/format và CI nền.
@@ -148,12 +148,14 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 | CR-001 | 2026-11-19 | Người dùng yêu cầu OCR và AI cuối; OCR có thể là service riêng, AI dùng API key | Core 00–08 → OCR 09 → AI 10 → nghiệm thu 11; giữ MVP cuối | PENDING REVIEW |
 | CR-002 | 2026-11-19 | Người dùng nhấn mạnh hai nền tảng Web và Android đều bằng Flutter; backend bằng Python | Ghi kiến trúc bắt buộc và cổng DoD/kiểm thử cho đủ hai client cùng backend Python | PENDING REVIEW |
 | CR-003 | 2026-11-19 | Người dùng yêu cầu tự động add và tạo commit sau mỗi task nhỏ, không push | Thêm cổng commit cục bộ sau task, chỉ stage file liên quan; khởi tạo Git cục bộ để áp dụng ngay | APPLIED |
+| CR-004 | 2026-11-19 | Người dùng muốn quản lý dự án bằng GitHub Issues/Kanban và yêu cầu `kanban_management.md` | Tạo backlog 73 issue theo Phase 00–11, có dependency/DoD/ước lượng; đồng bộ khi plan thay đổi | APPLIED |
 
 ## 6. Nhật ký tiến độ và nghiệm thu
 
 | Ngày | Phase | Bằng chứng/kết quả | Còn lại |
 |---|---|---|---|
 | 2026-11-19 | Chuẩn bị | Sửa `plan.md`, `rule.md` theo CR-001/CR-002/CR-003; khởi tạo Git và commit tài liệu kế hoạch, chưa triển khai code | Người dùng duyệt, sau đó mở Phase 00 |
+| 2026-11-19 | Chuẩn bị Kanban | Tạo `kanban_management.md` với 73 issue, cập nhật plan/rule theo CR-004; chưa tạo issue online | Người dùng đưa backlog vào GitHub Projects khi sẵn sàng |
 
 - [ ] Flutter Web và Flutter Android APK đều chạy với backend Python; Firebase Auth/Firestore/Rules an toàn và đồng bộ.
 - [ ] Nhập tay, từ điển có nguồn, lưu từ, Flashcard/Quiz/lịch ôn/dashboard.

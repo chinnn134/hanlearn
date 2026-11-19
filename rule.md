@@ -1,6 +1,6 @@
 # Quy tắc thực thi HanLearn AI
 
-> Phiên bản 0.4, theo CR-001/CR-002/CR-003 ngày 2026-11-19; chờ người dùng duyệt. Đọc cùng `plan.md` và `HanLearn_AI_SOLO_PHASE_PLAN.md` trước mỗi lượt.
+> Phiên bản 0.5, theo CR-001/CR-002/CR-003/CR-004 ngày 2026-11-19; chờ người dùng duyệt. Đọc cùng `plan.md`, `kanban_management.md` và `HanLearn_AI_SOLO_PHASE_PLAN.md` trước mỗi lượt.
 
 ## 1. Nguồn yêu cầu và cập nhật
 
@@ -26,6 +26,7 @@
 5. API đổi phải cập nhật contract/schema/client/test. Bug fix có kiểm tra hồi quy phù hợp. Xử lý loading/empty/error, offline, timeout/retry và quyền truy cập; giữ lớp UI/provider/repository/service.
 6. OCR có ground truth, dev/test cố định, normalize định trước, raw predictions và metadata model/service/máy; báo CER/latency/cỡ mẫu thật dù không đạt mục tiêu. AI có rubric thủ công, không lấy model tự chấm làm kết luận.
 7. **Sau mỗi task nhỏ hoàn thành:** tự kiểm tra thay đổi, chỉ `git add` các file thuộc task đó và tạo **một commit cục bộ** với thông điệp mô tả rõ (`feat`, `fix`, `test`, `docs`, v.v.). Không đưa file nhạy cảm, build output hoặc thay đổi của task khác vào commit. Nếu task chưa đạt tiêu chí hoặc không thể commit, ghi rõ lý do/blocker trong `plan.md` và xử lý trước khi nhận task hoàn thành. **Tuyệt đối không `git push`**; chỉ push khi người dùng yêu cầu rõ trong một lượt sau.
+8. Quản lý task theo các issue trong `kanban_management.md` và GitHub Projects khi đã tạo; giữ mã `HL-xx-yy` ổn định. Khi yêu cầu mới đổi plan, cập nhật issue/tiêu chí/phụ thuộc/phase tương ứng trong backlog và trên Kanban trong cùng lượt. Không chuyển issue sang Done chỉ vì có commit; cần đạt tiêu chí và bằng chứng kiểm tra.
 
 ## 4. Cổng hiện tại
 
