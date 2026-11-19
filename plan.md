@@ -161,6 +161,7 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 | 2026-11-20 | Chuẩn bị workflow Git | Cập nhật plan/rule/Kanban theo CR-005; chưa mở Phase 00 | Sau khi duyệt, tạo `phase/00` và bắt đầu HL-00-01 |
 | 2026-11-20 | Phân công thao tác Git | Ghi rõ trợ lý chịu trách nhiệm tạo branch/commit theo CR-006; chưa mở Phase 00 | Sau khi duyệt, trợ lý tự tạo `phase/00` và bắt đầu HL-00-01 |
 | 2026-11-20 | Phase 00 · HL-00-01 | Người dùng xác nhận bắt đầu; tạo branch `phase/00`; viết PRD về persona, use case, core/MVP cuối, phạm vi và tiêu chí chấp nhận; rà nội dung với plan và backlog | Tiếp tục HL-00-02 sau khi commit issue này; Phase 00 chưa đạt DoD |
+| 2026-11-20 | Phase 00 · HL-00-02 | Viết `docs/requirements/user-flows.md` với F01–F06, trạng thái lỗi/phục hồi, khác biệt Web/Android và truy vết UC; kiểm tra flow theo PRD | Tiếp tục HL-00-03 wireframe; checklist flow/wireframe chưa đóng |
 
 - [ ] Flutter Web và Flutter Android APK đều chạy với backend Python; Firebase Auth/Firestore/Rules an toàn và đồng bộ.
 - [ ] Nhập tay, từ điển có nguồn, lưu từ, Flashcard/Quiz/lịch ôn/dashboard.
@@ -168,4 +169,4 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 - [ ] AI API thật qua key backend, nội dung gắn nhãn, validation/quota/fallback/rubric.
 - [ ] Test Web/Android, README, report, slide, video, release/changelog, không chứa secret.
 
-**Bước tiếp theo:** trên `phase/00`, làm `HL-00-02` user flow sau khi hoàn thành commit `HL-00-01`. Chọn service/key cụ thể ở Phase 09–10 khi sẵn sàng.
+**Bước tiếp theo:** trên `phase/00`, làm `HL-00-03` wireframe sau commit `HL-00-02`. Chọn service/key cụ thể ở Phase 09–10 khi sẵn sàng.
