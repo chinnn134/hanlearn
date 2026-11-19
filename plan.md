@@ -1,6 +1,6 @@
 # HanLearn AI — kế hoạch thực thi
 
-> Phiên bản 0.9, cập nhật 2026-11-20 theo CR-001 đến CR-006; người dùng đã xác nhận bắt đầu. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Phase 00 đạt DoD trên branch `phase/00`; chờ tích hợp cục bộ vào `main`.
+> Phiên bản 1.0, cập nhật 2026-11-20 theo CR-001 đến CR-006; người dùng đã xác nhận bắt đầu. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Phase 00 đã fast-forward vào `main` cục bộ; Phase 01 đang thực hiện trên `phase/01`.
 
 ## 1. Mục tiêu và thay đổi thứ tự
 
@@ -24,7 +24,7 @@ Sản phẩm cuối: đăng nhập → chụp/tải ảnh chữ Hán giản th�
 | Phase | Phạm vi | Phụ thuộc | Cổng bàn giao | Trạng thái |
 |---|---|---|---|---|
 | 00 | Yêu cầu, kiến trúc, contract | — | PRD, flow, schema, API, acceptance criteria | DONE |
-| 01 | Khởi tạo Flutter Web + Android, backend Python/FastAPI, CI | 00 | Cả Web/Android chạy, Python `/health`, README | NOT STARTED |
+| 01 | Khởi tạo Flutter Web + Android, backend Python/FastAPI, CI | 00 | Cả Web/Android chạy, Python `/health`, README | IN PROGRESS |
 | 02 | Firebase Auth, Firestore, Rules | 01 | Đăng nhập, dữ liệu riêng, đồng bộ | NOT STARTED |
 | 03 | Từ điển, nhập tay, lưu từ | 02 | Nhập/dán → tra → lưu/bỏ lưu | NOT STARTED |
 | 04 | Flashcard, Quiz, lịch ôn | 03 | Học → quiz → lịch ôn | NOT STARTED |
@@ -51,7 +51,7 @@ Phase 09 và 10 là hai phase cuối của **phát triển tính năng**; Phase 
 
 ### Phase 01 — Khởi tạo
 
-- [ ] Dùng Git repo cục bộ đã khởi tạo; tạo GitHub repo/Projects khi có quyền, milestone theo roadmap mới và issue từ `kanban_management.md` (0,5–2 ngày/issue). Mỗi phase một branch `phase/xx`, mỗi issue một commit có mã `[HL-xx-yy]`; không push nếu chưa được yêu cầu.
+- [x] Chuẩn bị Git repo cục bộ đã có remote GitHub, cấu trúc thư mục, `.gitignore`, `.env.example` và README đầu vào (`HL-01-01`). Backlog 73 issue có trong `kanban_management.md`; người dùng sẽ đưa issue lên Kanban GitHub khi sẵn sàng. Mỗi phase một branch `phase/xx`, mỗi issue một commit `[HL-xx-yy]`; không push.
 - [ ] Tạo một codebase Flutter/Dart `apps/flutter_app` với target Web và Android, Riverpod, router, theme, localization cơ bản, feature-first và trạng thái loading/empty/error.
 - [ ] Tạo backend Python/FastAPI `backend/app`, `/health`, `/api/v1`, Pydantic, CORS allowlist, config local/staging, dependency khóa phiên bản.
 - [ ] Viết `.gitignore`, `.env.example`, README setup/run/test, lint/format và CI nền.
@@ -168,6 +168,7 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 | 2026-11-20 | Phase 00 · HL-00-06 | Viết `docs/api/openapi-contract.md`: route, request/response, token, giới hạn ảnh/AI, error envelope và cổng OCR/AI chưa cấu hình | Tiếp tục HL-00-07 nguồn dữ liệu/đánh giá OCR; Phase 00 chưa đạt DoD |
 | 2026-11-20 | Phase 00 · HL-00-07 | Kiểm tra nguồn OpenCidian/CVDICT/CC-CEDICT và giấy phép công bố; viết kế hoạch ảnh tự tạo/tự chụp, ground truth, dev/test, CER/latency; chưa seed/đo | Tiếp tục HL-00-08 acceptance criteria và rà DoD |
 | 2026-11-20 | Phase 00 · HL-00-08 | Viết `docs/testing/acceptance-criteria.md` với core/final gates, test matrix và rà đầu ra HL-00-01–08; Phase 00 đạt DoD thiết kế | Sau commit, fast-forward `main` cục bộ rồi mở Phase 01 |
+| 2026-11-20 | Phase 01 · HL-01-01 | Đã fast-forward `phase/00` vào `main`, mở `phase/01`; thêm cấu trúc `apps/flutter_app`/`backend`, `.gitignore`, `.env.example`, README đầu vào; kiểm Git hygiene | Tiếp tục HL-01-02 Flutter Web/Android; Flutter CLI kiểm phiên bản báo lỗi SSL khi tự fetch tags, SDK local vẫn hiện 3.47.9 |
 
 - [ ] Flutter Web và Flutter Android APK đều chạy với backend Python; Firebase Auth/Firestore/Rules an toàn và đồng bộ.
 - [ ] Nhập tay, từ điển có nguồn, lưu từ, Flashcard/Quiz/lịch ôn/dashboard.
@@ -175,4 +176,4 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 - [ ] AI API thật qua key backend, nội dung gắn nhãn, validation/quota/fallback/rubric.
 - [ ] Test Web/Android, README, report, slide, video, release/changelog, không chứa secret.
 
-**Bước tiếp theo:** sau commit `HL-00-08`, fast-forward `main` cục bộ từ `phase/00`, tạo branch `phase/01` và bắt đầu `HL-01-01`. Chọn service/key cụ thể ở Phase 09–10 khi sẵn sàng.
+**Bước tiếp theo:** trên `phase/01`, làm `HL-01-02` khởi tạo Flutter Web/Android sau commit `HL-01-01`. Chọn service/key cụ thể ở Phase 09–10 khi sẵn sàng.
