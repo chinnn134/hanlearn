@@ -1,6 +1,6 @@
 # HanLearn AI — danh sách GitHub Issues cho Kanban
 
-> Phiên bản 1.0 · Nguồn: `plan.md` v0.5 · Trạng thái: backlog để tạo issue, chưa phải công việc đã hoàn thành.
+> Phiên bản 1.1 · Nguồn: `plan.md` v0.6 · Trạng thái: backlog để tạo issue, chưa phải công việc đã hoàn thành.
 > Thứ tự: **core Phase 00–08 → OCR thật Phase 09 → AI API thật Phase 10 → nghiệm thu Phase 11**.
 > Kiến trúc cố định: **Flutter Web + Flutter Android từ một codebase, backend Python/FastAPI**. Không `git push` nếu người dùng chưa yêu cầu.
 
@@ -11,6 +11,9 @@
 - Mỗi hàng dưới đây là **một GitHub Issue**. Dùng cột **Tiêu đề** làm title; body gồm **Mục tiêu/Phạm vi** (theo title và phase), **Tiêu chí xong** (cột tương ứng), **Phụ thuộc** (mã issue), **Kiểm thử/bằng chứng**. Gán milestone `Phase-xx` và các label ghi ở đầu mỗi phase. Mã `HL-xx-yy` là mã backlog ổn định; sau khi tạo issue có thể ghi số `#...` vào bảng mà không đổi mã.
 - Các hàng hiện để `Backlog`. Chuyển sang `Todo` khi dependency đã xong; `In Review` khi code/tài liệu/test đã có và commit cục bộ đã tạo; `Done` khi tiêu chí xong được kiểm chứng trên nền tảng áp dụng. Mock/contract không được tính là OCR hoặc AI thật.
 - Ước lượng là **ngày công tham khảo cho solo developer**, có thể sửa theo thực tế. Nếu một hàng vượt 2 ngày, tách issue con trước khi bắt đầu, giữ liên kết với mã gốc.
+- Mỗi phase có branch cục bộ `phase/xx`. Mỗi hàng `HL-xx-yy` tương ứng **đúng một commit mới** trên branch cùng phase; subject chứa `[HL-xx-yy]`. Gộp code, test và tài liệu của issue vào commit đó. Chỉ sau khi cả phase đạt DoD mới fast-forward `main` cục bộ; không push.
+
+Quy trình Git mẫu: từ `main` đã có phase trước, tạo `git switch -c phase/00`; hoàn thành HL-00-01 rồi commit `docs(requirements): write PRD [HL-00-01]`. Sau khi tất cả issue Phase 00 và DoD đạt, chuyển về `main`, chạy `git merge --ff-only phase/00`, rồi mới tạo `phase/01`. Lặp lại đến Phase 11. Nếu fast-forward không thực hiện được, kiểm tra và xử lý lịch sử branch trước; không ép merge hoặc push.
 
 ### Mẫu body khi tạo một issue
 
@@ -27,7 +30,7 @@
 ## Tiêu chí chấp nhận
 - [ ] [Tiêu chí xong trong bảng]
 - [ ] Kiểm tra thực tế và ghi bằng chứng/lệnh test
-- [ ] Cập nhật plan.md/docs liên quan, git add đúng file và commit cục bộ; không push
+- [ ] Trên branch `phase/xx`, cập nhật plan.md/docs liên quan, git add đúng file và tạo một commit duy nhất có mã `[HL-xx-yy]`; không push
 
 ## Ghi chú
 [Quyết định, blocker, NOT VERIFIED nếu có]
@@ -192,4 +195,4 @@ Milestone `Phase-11`; label chung `phase-11`, `release`. **DoD:** MVP đầy đ�
 
 ## Quy tắc đồng bộ backlog
 
-Khi `plan.md` đổi, cập nhật issue tương ứng tại đây và trên GitHub Projects trong cùng lượt: thêm/sửa tiêu chí, dependency, phase và nhãn; ghi mã thay đổi yêu cầu (CR-xxx) vào issue chịu tác động. Không chuyển issue sang Done chỉ vì đã tạo commit; cần bằng chứng kiểm tra. Sau mỗi issue nhỏ hoàn thành, chỉ stage file liên quan và tạo commit cục bộ theo `rule.md`, **không push**.
+Khi `plan.md` đổi, cập nhật issue tương ứng tại đây và trên GitHub Projects trong cùng lượt: thêm/sửa tiêu chí, dependency, phase và nhãn; ghi mã thay đổi yêu cầu (CR-xxx) vào issue chịu tác động. Không chuyển issue sang Done chỉ vì đã tạo commit; cần bằng chứng kiểm tra. Issue là đơn vị commit: nếu việc quá lớn, chia issue trước; mỗi issue hoàn thành tạo đúng một commit trên branch phase tương ứng, chỉ stage file liên quan. Sau DoD phase, fast-forward `main` cục bộ. **Không push**.
