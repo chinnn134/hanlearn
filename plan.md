@@ -1,6 +1,6 @@
 # HanLearn AI — kế hoạch thực thi
 
-> Phiên bản 1.7, cập nhật 2026-11-21 theo CR-001 đến CR-007; người dùng đã xác nhận bắt đầu. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Phase 00–02 đã fast-forward vào `main` cục bộ; Phase 03 đang triển khai trên `phase/03`.
+> Phiên bản 1.8, cập nhật 2026-11-21 theo CR-001 đến CR-007; người dùng đã xác nhận bắt đầu. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Phase 00–02 đã fast-forward vào `main` cục bộ; Phase 03 đang triển khai trên `phase/03`.
 
 ## 1. Mục tiêu và thay đổi thứ tự
 
@@ -79,7 +79,7 @@ Phase 09 và 10 là hai phase cuối của **phát triển tính năng**; Phase 
 - [x] Backend Python xác minh Firebase ID token và API search Hanzi/Pinyin trên SQLite, limit/cursor/ranking/empty/validation (`HL-03-03`).
 - [x] API detail theo `vocabId`, trả schema đầy đủ và license/attribution/source refs; 404/validation/auth được test (`HL-03-04`).
 - [x] Flutter Dictionary nhập/dán Hanzi/Pinyin, gọi API bằng Firebase token, kết quả/detail/nguồn, loading/empty/error/retry responsive; Web/Android build (`HL-03-05`).
-- [ ] Saved Words lưu/bỏ lưu không trùng, Rules UID và offline/error (`HL-03-06`).
+- [x] Saved Words lưu/bỏ lưu không trùng bằng document `vocabId`, danh sách responsive và trạng thái loading/empty/error; Rules khóa UID/field/type/timestamp và cấm update (`HL-03-06`).
 - **DoD:** nhập tay → tra thông tin có nguồn → lưu/bỏ lưu → thấy trên Web/Android; test search/repository qua. Không phụ thuộc OCR/AI.
 
 ### Phase 04 — Flashcard và Quiz
@@ -209,5 +209,6 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 | 2026-11-21 | Phase 03 · HL-03-03 | Thêm Firebase Admin Python 7.8.0 và lockfile tái lập; mọi `/api/v1/dictionary/search` yêu cầu ID token được Firebase xác minh. Search SQLite read-only hỗ trợ Hanzi/Pinyin dấu, số, không dấu/có-không khoảng trắng; exact/prefix ranking, limit 1–50, cursor gắn query, empty/invalid states. Ruff và 12/12 pytest qua, gồm unauthorized, pagination không trùng và bad cursor. | Tiếp tục `HL-03-04` detail/attribution; production token và Flutter client được kiểm ở các issue UI/E2E. |
 | 2026-11-21 | Phase 03 · HL-03-04 | Detail API đọc SQLite read-only theo `vocabId`, trả giản/phồn thể, Pinyin dấu/số, nghĩa/senses Việt, Hán Việt, HSK theo version, examples, field-level source refs, CC BY-SA 4.0 và attribution nhúng từ corpus metadata. Không có ID trả 404; auth vẫn bắt buộc. Ruff và 13/13 pytest qua. | Tiếp tục `HL-03-05` Flutter client/UI nhập–tra; API production smoke với token thật ở E2E. |
 | 2026-11-21 | Phase 03 · HL-03-05 | Thêm HTTP 1.6.0, `API_BASE_URL`, Firebase ID token header và model/repository Dictionary. Màn responsive cho nhập/dán, search, detail, attribution, examples trống, loading/empty/error/retry. `flutter analyze`, 6 tests, Web build và Android debug APK build qua; Android dùng `10.0.2.2`, Web dùng `127.0.0.1`. Kotlin cache cũ cần clean/stop daemon trước build Android. | Tiếp tục `HL-03-06` Saved Words + Rules. Test thực với backend/Firebase production ở `HL-03-07`; không coi widget fake là E2E. |
+| 2026-11-21 | Phase 03 · HL-03-06 | Thêm repository Firestore `users/{uid}/saved_words/{vocabId}`, transaction tạo idempotent với server timestamp, lưu/bỏ lưu từ màn detail và danh sách Saved Words responsive. Rules chỉ cho owner get/list/create/delete đúng ba field, `masteryLevel = 0`, `savedAt == request.time`, cấm update/guest/UID khác. `flutter analyze`, 7/7 Flutter tests và 5/5 Rules emulator tests qua. | Tiếp tục `HL-03-08` khóa corpus, rồi `HL-03-07` kiểm thử thật Web/Android và deploy Rules; chưa coi emulator/widget test là E2E production. |
 
-**Bước tiếp theo:** commit `HL-03-05`, rồi làm `HL-03-06` Saved Words/Rules trên Web và Android; `HL-03-08` vẫn là cổng review bắt buộc trước nghiệm thu Phase 03.
+**Bước tiếp theo:** commit `HL-03-06`, làm `HL-03-08` review/khóa corpus rồi `HL-03-07` E2E production Web/Android; `main` chỉ fast-forward khi toàn bộ DoD Phase 03 đạt.

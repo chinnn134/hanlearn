@@ -1,6 +1,6 @@
 # HanLearn AI — Firestore data model
 
-> Issue `HL-00-05` · 2026-11-20 · Schema thiết kế cho MVP. `HL-02-04` đã hiện thực Rules cho `users/{uid}` và `vocabulary` trong Emulator; các nhánh còn lại đóng mặc định đến phase tương ứng. API/error contract thuộc `HL-00-06`. Thay đổi schema về sau phải cập nhật client, Rules, index, test và `plan.md`.
+> Issue `HL-00-05` · 2026-11-20 · Schema thiết kế cho MVP. `HL-02-04` đã hiện thực Rules cho `users/{uid}` và `vocabulary`; `HL-03-06` đã mở nhánh `saved_words` tối thiểu và kiểm thử bằng Emulator. API/error contract thuộc `HL-00-06`. Thay đổi schema về sau phải cập nhật client, Rules, index, test và `plan.md`.
 
 ## 1. Nguyên tắc dữ liệu
 
@@ -59,7 +59,7 @@ Client tìm qua backend dictionary API, không query/scan Firestore để search
 | `savedAt` | Timestamp | Có | Thời điểm lưu đầu tiên, giữ khi lưu lặp |
 | `masteryLevel` | int | Có | Giá trị khởi tạo `0`; ý nghĩa/thang cuối cùng chốt cùng thuật toán Phase 04 |
 
-`set`/transaction idempotent để tránh duplicate. Bỏ lưu phải có quyết định rõ về giữ/xóa `review_schedule` và lịch sử Quiz trước khi code; không xóa dữ liệu học âm thầm. `masteryLevel` chưa phải số liệu dashboard “đã học” cho đến khi Phase 04 chốt quy tắc.
+Client dùng transaction: chỉ tạo document khi chưa tồn tại nên thao tác lưu lặp giữ nguyên `savedAt` và không thể tạo duplicate vì `vocabId` chính là document ID. Rules chỉ cho tạo với đúng ba field, `savedAt` bằng server request time và `masteryLevel = 0`; update bị cấm trong Phase 03. Bỏ lưu hiện chỉ xóa document saved word; chưa có `review_schedule` hay lịch sử Quiz ở Phase 03. Phase 04 phải chốt quan hệ dữ liệu trước khi mở Rules cập nhật mastery/lịch ôn. `masteryLevel` chưa phải số liệu dashboard “đã học” cho đến khi Phase 04 chốt quy tắc.
 
 ### `users/{uid}/review_schedule/{vocabId}`
 

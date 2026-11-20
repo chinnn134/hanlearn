@@ -7,6 +7,7 @@ import '../../features/auth/auth_session.dart';
 import '../../features/auth/profile_page.dart';
 import '../../features/home/home_page.dart';
 import '../../features/dictionary/dictionary_page.dart';
+import '../../features/dictionary/saved_words_page.dart';
 import '../widgets/app_shell.dart';
 import '../widgets/feature_placeholder_page.dart';
 import '../widgets/state_panel.dart';
@@ -68,11 +69,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/saved-words',
-            builder: (context, state) => const FeaturePlaceholderPage(
-              title: 'Từ đã lưu',
-              phase: 'Phase 03',
-              description: 'Quản lý danh sách từ của tài khoản.',
-            ),
+            builder: (context, state) => const SavedWordsPage(),
           ),
           GoRoute(
             path: '/flashcards',

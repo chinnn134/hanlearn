@@ -19,6 +19,18 @@ service cloud.firestore {
             && data.email == request.auth.token.email));
     }
 
+    function validSavedWord(data, vocabId) {
+      return data.keys().hasAll(['vocabId', 'savedAt', 'masteryLevel'])
+        && data.keys().hasOnly(['vocabId', 'savedAt', 'masteryLevel'])
+        && data.vocabId is string
+        && data.vocabId == vocabId
+        && data.vocabId.size() > 0
+        && data.vocabId.size() <= 128
+        && data.savedAt is timestamp
+        && data.masteryLevel is int
+        && data.masteryLevel == 0;
+    }
+
     match /users/{uid} {
       allow get: if isOwner(uid);
       allow list, delete: if false;
@@ -37,6 +49,15 @@ service cloud.firestore {
     match /vocabulary/{vocabId} {
       allow get, list: if request.auth != null;
       allow create, update, delete: if false;
+    }
+
+    match /users/{uid}/saved_words/{vocabId} {
+      allow get, list: if isOwner(uid);
+      allow create: if isOwner(uid)
+        && validSavedWord(request.resource.data, vocabId)
+        && request.resource.data.savedAt == request.time;
+      allow delete: if isOwner(uid);
+      allow update: if false;
     }
 
     // Unimplemented personal collections remain closed until their own phase.

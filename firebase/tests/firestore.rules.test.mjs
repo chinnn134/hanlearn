@@ -117,3 +117,28 @@ test('signed-in users read vocabulary but no client writes it', async () => {
   await assertFails(deleteDoc(doc(alice, 'vocabulary/sample')));
   await assertFails(setDoc(doc(alice, 'users/alice/saved_words/sample'), { vocabId: 'sample' }));
 });
+
+test('saved words are idempotent references owned by one UID', async () => {
+  const alice = client('alice', 'alice@example.invalid');
+  const bob = client('bob', 'bob@example.invalid');
+  const guest = environment.unauthenticatedContext().firestore();
+  const reference = doc(alice, 'users/alice/saved_words/ocd_test');
+  const valid = {
+    vocabId: 'ocd_test',
+    savedAt: serverTimestamp(),
+    masteryLevel: 0,
+  };
+  await assertSucceeds(setDoc(reference, valid));
+  await assertSucceeds(getDoc(reference));
+  await assertSucceeds(getDocs(collection(alice, 'users/alice/saved_words')));
+  await assertFails(getDoc(doc(bob, 'users/alice/saved_words/ocd_test')));
+  await assertFails(getDoc(doc(guest, 'users/alice/saved_words/ocd_test')));
+  await assertFails(setDoc(doc(bob, 'users/alice/saved_words/new'), valid));
+  await assertFails(setDoc(doc(alice, 'users/alice/saved_words/wrong'), valid));
+  await assertFails(setDoc(doc(alice, 'users/alice/saved_words/extra'), {
+    ...valid, vocabId: 'extra', role: 'admin',
+  }));
+  await assertFails(updateDoc(reference, { masteryLevel: 1 }));
+  await assertFails(deleteDoc(doc(bob, 'users/alice/saved_words/ocd_test')));
+  await assertSucceeds(deleteDoc(reference));
+});

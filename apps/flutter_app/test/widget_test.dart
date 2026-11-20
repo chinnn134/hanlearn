@@ -7,6 +7,7 @@ import 'package:flutter_app/core/app.dart';
 import 'package:flutter_app/features/auth/auth_session.dart';
 import 'package:flutter_app/features/auth/user_profile_repository.dart';
 import 'package:flutter_app/features/dictionary/dictionary_repository.dart';
+import 'package:flutter_app/features/dictionary/saved_word_repository.dart';
 
 class FakeUserProfileRepository implements UserProfileRepository {
   UserProfile? profile;
@@ -120,6 +121,41 @@ class FakeDictionaryRepository implements DictionaryRepository {
       );
 }
 
+class FakeSavedWordRepository implements SavedWordRepository {
+  final saved = <String>{};
+  bool fail = false;
+
+  @override
+  Future<bool> isSaved(String expectedUid, String vocabId) async =>
+      saved.contains(vocabId);
+
+  @override
+  Future<List<SavedWord>> list(String expectedUid) async {
+    if (fail) throw StateError('Mất kết nối thử nghiệm');
+    return saved
+        .map(
+          (id) => SavedWord(
+            vocabId: id,
+            savedAt: DateTime.utc(2026),
+            masteryLevel: 0,
+          ),
+        )
+        .toList();
+  }
+
+  @override
+  Future<void> remove(String expectedUid, String vocabId) async {
+    if (fail) throw StateError('Mất kết nối thử nghiệm');
+    saved.remove(vocabId);
+  }
+
+  @override
+  Future<void> save(String expectedUid, String vocabId) async {
+    if (fail) throw StateError('Mất kết nối thử nghiệm');
+    saved.add(vocabId);
+  }
+}
+
 void main() {
   testWidgets('dictionary searches and opens source-aware detail', (
     tester,
@@ -131,6 +167,7 @@ void main() {
     final repository = FakeAuthRepository(
       const AuthIdentity(uid: 'test-user', email: 'test@example.com'),
     );
+    final savedWords = FakeSavedWordRepository();
     addTearDown(repository.dispose);
     await tester.pumpWidget(
       ProviderScope(
@@ -142,6 +179,7 @@ void main() {
           dictionaryRepositoryProvider.overrideWithValue(
             FakeDictionaryRepository(),
           ),
+          savedWordRepositoryProvider.overrideWithValue(savedWords),
         ],
         child: const HanLearnApp(),
       ),
@@ -165,6 +203,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Phồn thể: 學習'), findsOneWidget);
     expect(find.textContaining('OpenCidian'), findsWidgets);
+    await tester.tap(find.text('Lưu từ'));
+    await tester.pumpAndSettle();
+    expect(savedWords.saved, contains('ocd-test'));
+    expect(find.text('Bỏ lưu'), findsOneWidget);
     expect(find.byType(NavigationBar), findsOneWidget);
   });
 
@@ -209,6 +251,9 @@ void main() {
             FakeUserProfileRepository(),
           ),
           dictionaryRepositoryProvider.overrideWithValue(dictionary),
+          savedWordRepositoryProvider.overrideWithValue(
+            FakeSavedWordRepository(),
+          ),
         ],
         child: const HanLearnApp(),
       ),
@@ -231,6 +276,39 @@ void main() {
     await tester.tap(find.text('Thử lại'));
     await tester.pumpAndSettle();
     expect(find.textContaining('学习  xué xí'), findsOneWidget);
+  });
+
+  testWidgets('saved words lists and removes an idempotent reference', (
+    tester,
+  ) async {
+    final auth = FakeAuthRepository(
+      const AuthIdentity(uid: 'test-user', email: 'test@example.com'),
+    );
+    final savedWords = FakeSavedWordRepository()..saved.add('ocd-test');
+    addTearDown(auth.dispose);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(auth),
+          userProfileRepositoryProvider.overrideWithValue(
+            FakeUserProfileRepository(),
+          ),
+          dictionaryRepositoryProvider.overrideWithValue(
+            FakeDictionaryRepository(),
+          ),
+          savedWordRepositoryProvider.overrideWithValue(savedWords),
+        ],
+        child: const HanLearnApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Từ đã lưu').first);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('学习  xué xí'), findsOneWidget);
+    await tester.tap(find.byTooltip('Bỏ lưu 学习'));
+    await tester.pumpAndSettle();
+    expect(find.text('Bạn chưa lưu từ nào.'), findsOneWidget);
+    expect(savedWords.saved, isEmpty);
   });
 
   testWidgets('sign in and sign out update protected routes', (tester) async {

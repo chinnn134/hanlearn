@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'dictionary_repository.dart';
+import 'saved_word_repository.dart';
+import '../auth/auth_session.dart';
 
 class DictionaryPage extends ConsumerStatefulWidget {
   const DictionaryPage({super.key});
@@ -16,6 +18,8 @@ class _DictionaryPageState extends ConsumerState<DictionaryPage> {
   DictionaryDetail? _detail;
   Object? _error;
   bool _loading = false;
+  bool _saved = false;
+  bool _saving = false;
 
   @override
   void dispose() {
@@ -50,11 +54,43 @@ class _DictionaryPageState extends ConsumerState<DictionaryPage> {
       final detail = await ref
           .read(dictionaryRepositoryProvider)
           .detail(item.vocabId);
-      if (mounted) setState(() => _detail = detail);
+      final uid = ref.read(authSessionProvider).identity!.uid;
+      final saved = await ref
+          .read(savedWordRepositoryProvider)
+          .isSaved(uid, item.vocabId);
+      if (mounted) {
+        setState(() {
+          _detail = detail;
+          _saved = saved;
+        });
+      }
     } catch (error) {
       if (mounted) setState(() => _error = error);
     } finally {
       if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _toggleSaved() async {
+    final detail = _detail;
+    if (detail == null || _saving) return;
+    setState(() {
+      _saving = true;
+      _error = null;
+    });
+    try {
+      final uid = ref.read(authSessionProvider).identity!.uid;
+      final repository = ref.read(savedWordRepositoryProvider);
+      if (_saved) {
+        await repository.remove(uid, detail.item.vocabId);
+      } else {
+        await repository.save(uid, detail.item.vocabId);
+      }
+      if (mounted) setState(() => _saved = !_saved);
+    } catch (error) {
+      if (mounted) setState(() => _error = error);
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
   }
 
@@ -104,7 +140,13 @@ class _DictionaryPageState extends ConsumerState<DictionaryPage> {
                 padding: EdgeInsets.symmetric(vertical: 32),
                 child: Text('Không tìm thấy mục từ trong corpus hiện tại.'),
               ),
-            if (_detail case final detail?) _DetailCard(detail: detail),
+            if (_detail case final detail?)
+              _DetailCard(
+                detail: detail,
+                saved: _saved,
+                saving: _saving,
+                onToggleSaved: _toggleSaved,
+              ),
             if (_detail == null)
               for (final item in _items ?? const <DictionaryItem>[])
                 Card(
@@ -123,8 +165,16 @@ class _DictionaryPageState extends ConsumerState<DictionaryPage> {
 }
 
 class _DetailCard extends StatelessWidget {
-  const _DetailCard({required this.detail});
+  const _DetailCard({
+    required this.detail,
+    required this.saved,
+    required this.saving,
+    required this.onToggleSaved,
+  });
   final DictionaryDetail detail;
+  final bool saved;
+  final bool saving;
+  final VoidCallback onToggleSaved;
 
   @override
   Widget build(BuildContext context) => Card(
@@ -139,6 +189,12 @@ class _DetailCard extends StatelessWidget {
           ),
           Text('Phồn thể: ${detail.traditional}'),
           Text('${detail.item.pinyin} · ${detail.pinyinNumeric}'),
+          const SizedBox(height: 12),
+          FilledButton.icon(
+            onPressed: saving ? null : onToggleSaved,
+            icon: Icon(saved ? Icons.bookmark_remove : Icons.bookmark_add),
+            label: Text(saved ? 'Bỏ lưu' : 'Lưu từ'),
+          ),
           const Divider(),
           for (final sense in detail.meaningViSenses) Text('• $sense'),
           const SizedBox(height: 12),
