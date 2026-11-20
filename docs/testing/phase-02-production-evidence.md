@@ -1,6 +1,6 @@
 # Phase 02 — bằng chứng Firebase project thật
 
-Ngày: 2026-11-20. Project: `hanlearn-7553f`. Branch: `phase/02`. Chỉ dùng lệnh đọc cấu hình, kiểm tra build và deploy Rules đã được người dùng xác nhận; không ghi token, mật khẩu hoặc tài khoản production vào repo.
+Ngày: 2026-11-20–2026-11-21. Project: `hanlearn-7553f`. Branch: `phase/02`. Chỉ dùng tài khoản thử nghiệm miền `.invalid`; không ghi token hoặc mật khẩu vào repo.
 
 ## HL-02-07 — Firestore Rules
 
@@ -17,8 +17,26 @@ Ngày: 2026-11-20. Project: `hanlearn-7553f`. Branch: `phase/02`. Chỉ dùng l�
 
 Firebase CLI trên máy này cần `NODE_EXTRA_CA_CERTS=D:\Temp\hanlearn-local-root.pem` để dùng kho CA cục bộ; không tắt xác minh TLS. Nội dung Rules cho owner `get/create/update` hồ sơ của UID mình, không cho `list/delete`; người dùng đăng nhập chỉ đọc `vocabulary`, collection khác mặc định từ chối. Rules trên server trước deploy là `deny all`.
 
-## Cổng HL-02-08 còn mở
+## HL-02-08 — Auth và đồng bộ production
 
-`GET /admin/v2/projects/hanlearn-7553f/config` trả `CONFIGURATION_NOT_FOUND`. API `initializeAuth` trả `BILLING_NOT_ENABLED`; [tài liệu Google](https://docs.cloud.google.com/identity-platform/docs/reference/rest/v2/projects.identityPlatform/initializeAuth) mô tả cách API này dành cho project bật billing. Người dùng sẽ bật Authentication và Email/Password trong Firebase Console. Sau đó cần thử đăng ký/đăng nhập, đọc và sửa hồ sơ hai chiều trên Flutter Web/Android với project thật, cùng kiểm tra cách ly UID. Guest 403 và build thành công chưa đủ chứng minh toàn bộ DoD Phase 02.
+Ban đầu Auth chưa được khởi tạo và API `initializeAuth` bị chặn bởi billing. Sau khi người dùng bật Authentication → Email/Password trong Firebase Console, cấu hình project trả `email.enabled=true` và các kiểm tra sau đã chạy với project thật, không bật Emulator:
 
-Chưa fast-forward `main`, chưa push.
+| Kiểm tra | Kết quả |
+|---|---|
+| Flutter Web đăng ký/đăng nhập và tạo hồ sơ | Thành công; hồ sơ `users/{uid}` được tạo và đọc lại |
+| Flutter Android đăng nhập cùng tài khoản | Thành công; đọc đúng cùng document hồ sơ |
+| Android sửa `displayName` → Web reload | Web nhận `AndroidProd02` |
+| Web sửa `displayName` → Android mở lại | Android nhận `WebProd02` |
+| Token chủ tài khoản A đọc `users/{uidA}` qua Firestore REST | HTTP 200 |
+| Token tài khoản B đọc `users/{uidA}` | HTTP 403; UID A và UID B khác nhau |
+| Guest đọc `users/{uidA}` | HTTP 403 |
+| `flutter analyze`; `flutter test` | Không có lỗi analyze; 4/4 widget tests qua |
+| `flutter build web --no-wasm-dry-run` | Thành công |
+| `flutter build apk --release` | Thành công sau khi làm sạch cache Kotlin cũ và chạy compiler in-process, không incremental |
+| Kiểm manifest APK release bằng Android `aapt` | Không có `networkSecurityConfig`, `usesCleartextTraffic` hoặc `debuggable` |
+
+Máy phát triển có Avast HTTPS inspection. Android 15 emulator ban đầu không tin CA cục bộ nên Firebase Auth báo lỗi certificate. File `android/app/src/debug/res/xml/debug_network_security_config.xml` chỉ cho **debug build** tin CA do người dùng cài trên emulator; CA thật không nằm trong repo. Release manifest không kế thừa cấu hình này và tiếp tục dùng trust store mặc định của Android.
+
+## Kết luận Phase 02
+
+DoD đạt trên project production: Email/Password hoạt động trên Flutter Web và Android, cùng UID đồng bộ hai chiều, UID khác và guest bị từ chối. Rules production đã khớp repo. Hosted CI chưa chạy vì quy tắc dự án không cho push; việc này không thay thế các kiểm tra production ở trên. Sau commit `HL-02-08`, có thể fast-forward `main` cục bộ và mở `phase/03`. Không push.

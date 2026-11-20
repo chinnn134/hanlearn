@@ -5,5 +5,7 @@
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- Local Firebase Emulator traffic is HTTP only; release keeps cleartext off. -->
-    <application android:usesCleartextTraffic="true" />
+    <application
+        android:usesCleartextTraffic="true"
+        android:networkSecurityConfig="@xml/debug_network_security_config" />
 </manifest>

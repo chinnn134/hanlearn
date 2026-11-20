@@ -1,6 +1,6 @@
 # HanLearn AI — danh sách GitHub Issues cho Kanban
 
-> Phiên bản 1.8 · Nguồn: `plan.md` v1.1 · Phase 00–01 đã fast-forward vào `main` cục bộ; Phase 02 đang thực hiện trên `phase/02`.
+> Phiên bản 1.9 · Nguồn: `plan.md` v1.2 · Phase 00–01 đã fast-forward vào `main` cục bộ; Phase 02 đã đạt DoD trên `phase/02` và chờ commit/fast-forward cục bộ.
 > Thứ tự: **core Phase 00–08 → OCR thật Phase 09 → AI API thật Phase 10 → nghiệm thu Phase 11**.
 > Kiến trúc cố định: **Flutter Web + Flutter Android từ một codebase, backend Python/FastAPI**. Không `git push` nếu người dùng chưa yêu cầu.
 
@@ -13,7 +13,7 @@
 - Ước lượng là **ngày công tham khảo cho solo developer**, có thể sửa theo thực tế. Nếu một hàng vượt 2 ngày, tách issue con trước khi bắt đầu, giữ liên kết với mã gốc.
 - Trợ lý tự tạo branch cục bộ `phase/xx` khi mở phase và tự tạo commit sau mỗi issue hoàn thành; người dùng không cần thao tác Git hộ. Mỗi hàng `HL-xx-yy` tương ứng **đúng một commit mới** trên branch cùng phase; subject chứa `[HL-xx-yy]`. Gộp code, test và tài liệu của issue vào commit đó. Chỉ sau khi cả phase đạt DoD mới fast-forward `main` cục bộ; không push.
 
-**Tiến độ cục bộ:** Phase 00–01 đã tích hợp `main` cục bộ; `HL-02-00` DONE (`c7e8731`), `HL-02-01` DONE (`4bddd06`), `HL-02-02` DONE (`af35654`), `HL-02-03` DONE (`2ccefe3`), `HL-02-04` DONE (`2041c63`), `HL-02-05` DONE (`bda3946`), `HL-02-06` DONE (`bc863b4`). `HL-02-07` đã deploy và kiểm Rules production; `HL-02-08` chờ bật Email/Password để kiểm Auth/đồng bộ Web/Android production. Chưa tạo GitHub Issues online, chưa push.
+**Tiến độ cục bộ:** Phase 00–01 đã tích hợp `main` cục bộ; `HL-02-00` DONE (`c7e8731`), `HL-02-01` DONE (`4bddd06`), `HL-02-02` DONE (`af35654`), `HL-02-03` DONE (`2ccefe3`), `HL-02-04` DONE (`2041c63`), `HL-02-05` DONE (`bda3946`), `HL-02-06` DONE (`bc863b4`), `HL-02-07` DONE (`60ebccf`). `HL-02-08` đã đạt tiêu chí production trên Web/Android và sẵn sàng commit; Phase 02 đạt DoD. Chưa tạo GitHub Issues online, chưa push.
 
 Quy trình Git mẫu: từ `main` đã có phase trước, tạo `git switch -c phase/00`; hoàn thành HL-00-01 rồi commit `docs(requirements): write PRD [HL-00-01]`. Sau khi tất cả issue Phase 00 và DoD đạt, chuyển về `main`, chạy `git merge --ff-only phase/00`, rồi mới tạo `phase/01`. Lặp lại đến Phase 11. Nếu fast-forward không thực hiện được, kiểm tra và xử lý lịch sử branch trước; không ép merge hoặc push.
 
