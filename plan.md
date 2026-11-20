@@ -61,7 +61,8 @@ Phase 09 và 10 là hai phase cuối của **phát triển tính năng**; Phase 
 ### Phase 02 — Auth và dữ liệu
 
 - [x] Chuẩn bị Firebase Emulator/bootstrap Flutter hai target (`HL-02-00`): app demo riêng, Auth/Firestore emulator, Rules mặc định từ chối, Web và Android build; Android app mở không còn exception khởi tạo. Đây là môi trường local, chưa chứng minh project thật.
-- [ ] Cấu hình Firebase Web/Android; ít nhất một phương thức đăng nhập, logout, persistence, trạng thái lỗi/tải.
+- [x] Đăng ký Firebase Web/Android app cho project `hanlearn-7553f`, sinh `firebase_options.dart`, đổi Android package thành `com.hanlearn.app`; build và mở Home ở Web/Android với cấu hình thật (`HL-02-01`). Chưa kiểm chứng Auth hay đọc/ghi Firestore.
+- [ ] Thêm ít nhất một phương thức đăng nhập, logout, persistence, trạng thái lỗi/tải (`HL-02-02`).
 - [ ] Tạo idempotent `users/{uid}`; schema `vocabulary`, `saved_words`, `review_schedule`, `quiz_results`; dự trù `scan_history` cho Phase 09.
 - [ ] Firestore Rules giới hạn UID, field/type; từ điển chung chỉ đọc; backend kiểm ID token nếu xử lý dữ liệu cá nhân.
 - [ ] Emulator tests cùng/khác UID, test retry/lỗi mạng và đồng bộ Web/Android.
@@ -189,4 +190,6 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 
 | 2026-11-20 | Phase 02 · HL-02-00 | Đã fast-forward `phase/01` vào `main`, mở `phase/02`. Thêm Firebase Core/Auth/Firestore, bootstrap demo project, local Auth/Firestore Emulator và Rules mặc định từ chối; `flutter analyze`, 2 widget tests, Web build, Android debug APK build/cài/mở đều qua sau khi sửa default app. Auth/Firestore Emulator hub báo cả hai service hoạt động. Android dùng Pub cache trên D: và Windows root trust store để khắc phục lỗi Kotlin cache/TLS cục bộ. | Tiếp tục HL-02-01: `.env` đã có Project ID thật theo người dùng, nhưng Flutter còn cần Web/Android App ID, API key, Messaging Sender ID và Web Auth Domain; Firebase CLI cần đăng nhập lại để tự tạo cấu hình. Chưa xác nhận kết nối project thật, Auth hay sync. |
 
-**Bước tiếp theo:** commit `HL-02-00` trên `phase/02`, rồi hoàn thành `HL-02-01` khi có cấu hình app Web/Android của `hanlearn-7553f`. Chọn service/key OCR/AI cụ thể ở Phase 09–10 khi sẵn sàng.
+| 2026-11-20 | Phase 02 · HL-02-01 | Firebase CLI đã đăng nhập lại; bổ sung CA cục bộ cho Node để giữ TLS validation. Xác nhận project `hanlearn-7553f` ban đầu chưa có app, tạo `HanLearn Web` và `HanLearn Android` (`com.hanlearn.app`), FlutterFire sinh `lib/firebase_options.dart`. Dùng cấu hình SDK theo target; demo Emulator vẫn tách riêng. `flutter analyze`, 2 widget tests, Web build, Android debug APK build/cài/mở Home đều qua; bản Web phục vụ local trả HTTP 200 và Home hiển thị trực tiếp. | Tiếp tục HL-02-02 Auth; chưa kiểm chứng login, Firestore read/write hoặc sync. Chrome test runner đọc Firestore bị kẹt ở bước load nên không dùng làm bằng chứng. |
+
+**Bước tiếp theo:** commit `HL-02-01` trên `phase/02`, rồi làm `HL-02-02` Auth Web/Android. Chọn service/key OCR/AI cụ thể ở Phase 09–10 khi sẵn sàng.
