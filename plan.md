@@ -1,6 +1,6 @@
 # HanLearn AI — kế hoạch thực thi
 
-> Phiên bản 1.0, cập nhật 2026-11-20 theo CR-001 đến CR-006; người dùng đã xác nhận bắt đầu. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Phase 00 đã fast-forward vào `main` cục bộ; Phase 01 đạt DoD cục bộ trên `phase/01`, chờ commit issue cuối rồi fast-forward.
+> Phiên bản 1.1, cập nhật 2026-11-20 theo CR-001 đến CR-007; người dùng đã xác nhận bắt đầu. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Phase 00–01 đã fast-forward vào `main` cục bộ; Phase 02 đang triển khai trên `phase/02`.
 
 ## 1. Mục tiêu và thay đổi thứ tự
 
@@ -24,8 +24,8 @@ Sản phẩm cuối: đăng nhập → chụp/tải ảnh chữ Hán giản th�
 | Phase | Phạm vi | Phụ thuộc | Cổng bàn giao | Trạng thái |
 |---|---|---|---|---|
 | 00 | Yêu cầu, kiến trúc, contract | — | PRD, flow, schema, API, acceptance criteria | DONE |
-| 01 | Khởi tạo Flutter Web + Android, backend Python/FastAPI, CI | 00 | Cả Web/Android chạy, Python `/health`, README | IN PROGRESS |
-| 02 | Firebase Auth, Firestore, Rules | 01 | Đăng nhập, dữ liệu riêng, đồng bộ | NOT STARTED |
+| 01 | Khởi tạo Flutter Web + Android, backend Python/FastAPI, CI | 00 | Cả Web/Android chạy, Python `/health`, README | DONE cục bộ; hosted CI chưa chạy vì không push |
+| 02 | Firebase Auth, Firestore, Rules | 01 | Đăng nhập, dữ liệu riêng, đồng bộ | IN PROGRESS |
 | 03 | Từ điển, nhập tay, lưu từ | 02 | Nhập/dán → tra → lưu/bỏ lưu | NOT STARTED |
 | 04 | Flashcard, Quiz, lịch ôn | 03 | Học → quiz → lịch ôn | NOT STARTED |
 | 05 | Dashboard, lịch sử học, UX | 02–04 | Luồng học core liền mạch | NOT STARTED |
@@ -60,6 +60,7 @@ Phase 09 và 10 là hai phase cuối của **phát triển tính năng**; Phase 
 
 ### Phase 02 — Auth và dữ liệu
 
+- [x] Chuẩn bị Firebase Emulator/bootstrap Flutter hai target (`HL-02-00`): app demo riêng, Auth/Firestore emulator, Rules mặc định từ chối, Web và Android build; Android app mở không còn exception khởi tạo. Đây là môi trường local, chưa chứng minh project thật.
 - [ ] Cấu hình Firebase Web/Android; ít nhất một phương thức đăng nhập, logout, persistence, trạng thái lỗi/tải.
 - [ ] Tạo idempotent `users/{uid}`; schema `vocabulary`, `saved_words`, `review_schedule`, `quiz_results`; dự trù `scan_history` cho Phase 09.
 - [ ] Firestore Rules giới hạn UID, field/type; từ điển chung chỉ đọc; backend kiểm ID token nếu xử lý dữ liệu cá nhân.
@@ -152,6 +153,7 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 | CR-004 | 2026-11-19 | Người dùng muốn quản lý dự án bằng GitHub Issues/Kanban và yêu cầu `kanban_management.md` | Tạo backlog 73 issue theo Phase 00–11, có dependency/DoD/ước lượng; đồng bộ khi plan thay đổi | APPLIED |
 | CR-005 | 2026-11-20 | Người dùng yêu cầu mỗi phase là một branch, mỗi commit trong branch tương ứng một issue | Branch `phase/xx`; một issue nhỏ một commit có mã `HL-xx-yy`; tích hợp `main` bằng fast-forward cục bộ sau DoD, không push | APPLIED |
 | CR-006 | 2026-11-20 | Người dùng giao trợ lý chịu trách nhiệm tạo branch và commit | Trợ lý tự thực hiện toàn bộ thao tác Git cục bộ theo issue/phase; người dùng không phải tạo branch/commit hộ; vẫn không push | APPLIED |
+| CR-007 | 2026-11-20 | Người dùng báo đã tạo Firebase DB, đặt Project ID `hanlearn-7553f` trong `.env` và chưa tạo Web/Android app; yêu cầu tiếp tục Phase 02 | Tách bước local Emulator/bootstrap thành `HL-02-00` để có commit kiểm chứng riêng; `HL-02-01` vẫn yêu cầu tạo/cấu hình app Web/Android và kiểm chứng project thật. Không hạ DoD Auth/đồng bộ. | APPLIED |
 
 ## 6. Nhật ký tiến độ và nghiệm thu
 
@@ -185,4 +187,6 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 
 | 2026-11-20 | Phase 01 · HL-01-06 | Viết lại README lệnh setup/run/test cho Python, Flutter Web và Android, CORS/env, lockfile, CI; kiểm tra nội dung với lệnh và kết quả Phase 01. DoD Phase 01 đạt cục bộ; hosted CI chưa chạy vì không push. | Sau commit, fast-forward `main` cục bộ rồi mở `phase/02`. Firebase cần cấu hình để nghiệm thu Auth/sync thật. |
 
-**Bước tiếp theo:** commit `HL-01-06`, fast-forward `main` cục bộ và mở `phase/02`. Chọn service/key OCR/AI cụ thể ở Phase 09–10 khi sẵn sàng.
+| 2026-11-20 | Phase 02 · HL-02-00 | Đã fast-forward `phase/01` vào `main`, mở `phase/02`. Thêm Firebase Core/Auth/Firestore, bootstrap demo project, local Auth/Firestore Emulator và Rules mặc định từ chối; `flutter analyze`, 2 widget tests, Web build, Android debug APK build/cài/mở đều qua sau khi sửa default app. Auth/Firestore Emulator hub báo cả hai service hoạt động. Android dùng Pub cache trên D: và Windows root trust store để khắc phục lỗi Kotlin cache/TLS cục bộ. | Tiếp tục HL-02-01: `.env` đã có Project ID thật theo người dùng, nhưng Flutter còn cần Web/Android App ID, API key, Messaging Sender ID và Web Auth Domain; Firebase CLI cần đăng nhập lại để tự tạo cấu hình. Chưa xác nhận kết nối project thật, Auth hay sync. |
+
+**Bước tiếp theo:** commit `HL-02-00` trên `phase/02`, rồi hoàn thành `HL-02-01` khi có cấu hình app Web/Android của `hanlearn-7553f`. Chọn service/key OCR/AI cụ thể ở Phase 09–10 khi sẵn sàng.

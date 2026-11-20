@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Phase 02 starts closed; HL-02-04 adds validated per-user access.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

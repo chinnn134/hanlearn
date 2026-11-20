@@ -1,9 +1,30 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/app.dart';
+import 'core/firebase/firebase_bootstrap.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const ProviderScope(child: HanLearnApp()));
+  try {
+    await FirebaseBootstrap.initialize();
+    runApp(const ProviderScope(child: HanLearnApp()));
+  } on FormatException {
+    runApp(
+      const MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Text(
+                'Thiếu cấu hình Firebase cho nền tảng này. '
+                'Xem README để chạy với Firebase Emulator hoặc project thật.',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
