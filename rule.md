@@ -32,4 +32,4 @@
 
 ## 4. Cổng hiện tại
 
-Người dùng đã xác nhận bắt đầu. Phase 00–01 đã đạt DoD cục bộ và được fast-forward vào `main`; Phase 02 đang triển khai trên `phase/02`. `HL-02-00` là Emulator, `HL-02-01` là cấu hình Web/Android app cho project thật; cả hai không thay bằng chứng login, Firestore read/write và đồng bộ ở `HL-02-02` đến `HL-02-06`. Từng issue phải đạt tiêu chí và có đúng một commit cục bộ. Tiếp tục cập nhật plan, rule và backlog khi yêu cầu thay đổi; không push.
+Người dùng đã xác nhận bắt đầu. Phase 00–01 đã đạt DoD cục bộ và được fast-forward vào `main`; Phase 02 đang triển khai trên `phase/02`. `HL-02-00` là Emulator, `HL-02-01` là cấu hình Web/Android app cho project thật, `HL-02-02` là Auth kiểm chứng trên Emulator Web/Android. Không xem thử nghiệm Emulator là bằng chứng provider production đã bật hoặc Firestore read/write/sync đã xong. Từng issue phải đạt tiêu chí và có đúng một commit cục bộ. Tiếp tục cập nhật plan, rule và backlog khi yêu cầu thay đổi; không push.

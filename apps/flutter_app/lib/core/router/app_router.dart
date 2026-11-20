@@ -3,14 +3,58 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/login_page.dart';
+import '../../features/auth/auth_session.dart';
+import '../../features/auth/profile_page.dart';
 import '../../features/home/home_page.dart';
 import '../widgets/app_shell.dart';
 import '../widgets/feature_placeholder_page.dart';
+import '../widgets/state_panel.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
+  final session = ref.watch(authSessionProvider);
   final router = GoRouter(
     initialLocation: '/',
+    refreshListenable: session,
+    redirect: (context, state) {
+      final path = state.uri.path;
+      if (!session.ready) {
+        return path == '/auth-loading' ? null : '/auth-loading';
+      }
+      if (session.error != null) {
+        return path == '/auth-error' ? null : '/auth-error';
+      }
+      if (session.identity == null) {
+        return path == '/login' ? null : '/login';
+      }
+      if (path == '/login' ||
+          path == '/auth-loading' ||
+          path == '/auth-error') {
+        return '/';
+      }
+      return null;
+    },
     routes: [
+      GoRoute(
+        path: '/auth-loading',
+        builder: (context, state) => const Scaffold(
+          body: StatePanel(
+            state: ViewState.loading,
+            title: 'Đang kiểm tra phiên đăng nhập',
+            message: 'Vui lòng đợi trong giây lát.',
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/auth-error',
+        builder: (context, state) => Scaffold(
+          body: StatePanel(
+            state: ViewState.error,
+            title: 'Không thể kiểm tra phiên đăng nhập',
+            message: 'Kiểm tra kết nối mạng rồi thử lại.',
+            onRetry: session.retry,
+          ),
+        ),
+      ),
       GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
       ShellRoute(
         builder: (context, state, child) =>
@@ -68,11 +112,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/profile',
-            builder: (context, state) => const FeaturePlaceholderPage(
-              title: 'Hồ sơ',
-              phase: 'Phase 05',
-              description: 'Thông tin tài khoản và cài đặt.',
-            ),
+            builder: (context, state) => const ProfilePage(),
           ),
         ],
       ),

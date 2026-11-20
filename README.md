@@ -1,6 +1,6 @@
 # HanLearn AI
 
-HanLearn dùng **một codebase Flutter** cho Web và Android, cùng backend **Python/FastAPI**. Phase 01 cung cấp khung ứng dụng và health check. Các màn Auth, từ điển, học tập, OCR và AI đang được triển khai theo từng phase; nút đăng nhập hiện là điều hướng mẫu có nhãn rõ, chưa xác thực người dùng.
+HanLearn dùng **một codebase Flutter** cho Web và Android, cùng backend **Python/FastAPI**. Phase 02 đã có đăng ký, đăng nhập email/mật khẩu, duy trì phiên và đăng xuất bằng Firebase Auth; đã kiểm chứng trên Auth Emulator cho cả hai nền tảng. Firestore, từ điển, học tập, OCR và AI đang được triển khai theo từng phase.
 
 ## Yêu cầu môi trường
 
@@ -37,7 +37,7 @@ Mở `http://localhost:3000`. `.env.example` cho phép origin này qua CORS. L�
 
 ### Firebase Emulator trong Phase 02
 
-Phase 02 đang triển khai. Để chạy khung Flutter với Firebase Auth/Firestore Emulator, mở terminal ở thư mục gốc:
+Phase 02 đang triển khai. Để thử đăng ký/đăng nhập bằng Firebase Auth Emulator, mở terminal ở thư mục gốc:
 
 ```powershell
 firebase emulators:start --only 'auth,firestore' --project demo-hanlearn
@@ -45,7 +45,7 @@ firebase emulators:start --only 'auth,firestore' --project demo-hanlearn
 
 Trong terminal Flutter, thêm `--dart-define=USE_FIREBASE_EMULATOR=true` vào `flutter run` hoặc `flutter build`. Cùng codebase dùng `localhost` cho Web và `10.0.2.2` cho Android Emulator. `firebase/firestore.rules` hiện khóa toàn bộ truy cập; Rules riêng theo UID sẽ được thêm ở `HL-02-04`. Demo project không chứa dữ liệu Firebase production và không cần đăng nhập Firebase CLI.
 
-Web và Android app đã đăng ký trong Firebase project `hanlearn-7553f`; FlutterFire tạo `lib/firebase_options.dart` cho hai target. File này chỉ có cấu hình SDK công khai, không chứa service account. `.env` ở gốc dành cho backend và không được Flutter đóng gói. Android dùng package `com.hanlearn.app`. Phương thức đăng nhập, đọc/ghi Firestore và đồng bộ sẽ triển khai ở các issue Phase 02 tiếp theo; khởi chạy app chưa chứng minh các luồng đó. Không đưa OCR/AI key vào Flutter.
+Web và Android app đã đăng ký trong Firebase project `hanlearn-7553f`; FlutterFire tạo `lib/firebase_options.dart` cho hai target. File này chỉ có cấu hình SDK công khai, không chứa service account. `.env` ở gốc dành cho backend và không được Flutter đóng gói. Android dùng package `com.hanlearn.app`. Để dùng Auth với project thật, bật **Email/Password** trong Firebase Console → Authentication → Sign-in method; luồng này chưa được kiểm chứng với tài khoản production. Đọc/ghi Firestore và đồng bộ thuộc các issue Phase 02 tiếp theo. Không đưa OCR/AI key vào Flutter.
 
 Nếu Android build trên Windows báo lỗi Kotlin incremental cache do repo và Pub cache ở hai ổ khác nhau, đặt `PUB_CACHE` cùng ổ với repo trước `flutter pub get` và build (ví dụ `$env:PUB_CACHE='D:\PubCache'`). Máy phát triển này cũng cần `$env:JAVA_TOOL_OPTIONS='-Djavax.net.ssl.trustStoreType=Windows-ROOT'` để Gradle tải Firebase từ Google Maven qua kho chứng chỉ Windows. Đây là cấu hình môi trường cục bộ, không phải yêu cầu của CI Linux.
 
