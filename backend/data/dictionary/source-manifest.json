@@ -12,10 +12,18 @@
   "entrySchemaSha256": "a19fd0d2782d5c6fbeb265593db663b940202092ac764166722604ec9bba9b49",
   "buildLockSha256": "3c361910781d51a362146d32e0ab29d6ca16d023bed152ef16b96bef55d54eaf",
   "attribution": "OpenCidian by Perxel; includes CC-CEDICT and CVDICT data and the upstream sources listed in OpenCidian dist/meta.json.",
-  "artifact": null,
+  "artifact": {
+    "path": "backend/data/dictionary/hanlearn_dictionary.sqlite3",
+    "report": "backend/data/dictionary/build-report.json",
+    "sha256": "cb1e793905acabdb2d4f6d488946d07d1976da92c78580a81ca821477eb68edb",
+    "bytes": 380928,
+    "entries": 500,
+    "reviewStatus": "structurally-validated-source-candidates"
+  },
   "notes": [
-    "HL-03-02 must record the generated artifact path, SHA-256 and accepted entry count before import.",
+    "HL-03-02 built the pinned source byte-idempotently and recorded the artifact checksum and entry count.",
     "Only reviewed entries with simplified Hanzi, pinyin and non-empty Vietnamese senses may enter the HanLearn corpus.",
-    "Missing examples stay empty; missing levels stay null. AI must not fill canonical dictionary fields."
+    "Missing examples stay empty; missing levels stay null. AI must not fill canonical dictionary fields.",
+    "Independent Vietnamese linguistic review is a separate gate before Phase 03 can be accepted for release."
   ]
 }

@@ -60,6 +60,8 @@ Máy phát triển có HTTPS inspection có thể cần cài CA tương ứng v�
 
 Nguồn corpus Phase 03 được khóa tại OpenCidian commit `17873f10941c11ae4e410c91efdcb51c04b23c01`, dữ liệu theo CC BY-SA 4.0. Ghi công: **OpenCidian by Perxel**, CC-CEDICT, CVDICT và các upstream được liệt kê trong metadata nguồn. HanLearn sẽ build tập con đã duyệt thành SQLite cho backend; Flutter chỉ tra qua API. Xem `backend/data/dictionary/source-manifest.json` và `docs/architecture/dictionary-corpus-decision.md`.
 
+Corpus candidate hiện có 500 mục trong `backend/data/dictionary/hanlearn_dictionary.sqlite3`. Build lại bằng `backend/scripts/build_dictionary.py` với `dist/entries.jsonl` và `dist/meta.json` từ đúng OpenCidian commit đã pin; báo cáo nằm ở `backend/data/dictionary/build-report.json`. Artifact đã validate cấu trúc/nguồn và build idempotent, nhưng vẫn cần review tiếng Việt độc lập ở `HL-03-08` trước khi nghiệm thu Phase 03/release.
+
 Nếu Android build trên Windows báo lỗi Kotlin incremental cache do repo và Pub cache ở hai ổ khác nhau, đặt `PUB_CACHE` cùng ổ với repo trước `flutter pub get` và build (ví dụ `$env:PUB_CACHE='D:\PubCache'`). Máy phát triển này cũng cần `$env:JAVA_TOOL_OPTIONS='-Djavax.net.ssl.trustStoreType=Windows-ROOT'` để Gradle tải Firebase từ Google Maven qua kho chứng chỉ Windows. Đây là cấu hình môi trường cục bộ, không phải yêu cầu của CI Linux.
 
 ## Chạy Flutter Android

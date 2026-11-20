@@ -1,0 +1,40 @@
+{
+  "accepted": 500,
+  "artifact": {
+    "bytes": 380928,
+    "path": "backend/data/dictionary/hanlearn_dictionary.sqlite3",
+    "sha256": "cb1e793905acabdb2d4f6d488946d07d1976da92c78580a81ca821477eb68edb"
+  },
+  "levels": {
+    "hsk2": {
+      "1": 165,
+      "2": 99,
+      "3": 61,
+      "4": 19,
+      "5": 8,
+      "none": 148
+    },
+    "hsk3": {
+      "1": 500
+    }
+  },
+  "quality": {
+    "canonicalFieldsGeneratedByAi": false,
+    "examplesPolicy": "empty_without_verified_source",
+    "independentHumanLinguisticReview": false,
+    "note": "Source and structural validation completed; independent linguistic review remains recommended before public release."
+  },
+  "rejected": {
+    "duplicate_hanzi_pinyin": 428,
+    "invalid_simplified_hanzi": 1051,
+    "missing_verified_hsk_level": 86458,
+    "missing_vietnamese": 5961,
+    "not_selected_by_limit": 11273,
+    "proper_name_or_titlecase_pinyin": 19726
+  },
+  "schemaVersion": 1,
+  "selection": "verified HSK entries with non-empty Vietnamese senses; deterministic priority by HSK level",
+  "sourceCommit": "17873f10941c11ae4e410c91efdcb51c04b23c01",
+  "sourceId": "opencidian-17873f1",
+  "sourceVersion": "2026-11-20+17873f1"
+}

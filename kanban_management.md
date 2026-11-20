@@ -1,6 +1,6 @@
 # HanLearn AI — danh sách GitHub Issues cho Kanban
 
-> Phiên bản 2.0 · Nguồn: `plan.md` v1.3 · Phase 00–02 đã fast-forward vào `main` cục bộ; Phase 03 đang thực hiện trên `phase/03`.
+> Phiên bản 2.1 · Nguồn: `plan.md` v1.4 · Phase 00–02 đã fast-forward vào `main` cục bộ; Phase 03 đang thực hiện trên `phase/03`.
 > Thứ tự: **core Phase 00–08 → OCR thật Phase 09 → AI API thật Phase 10 → nghiệm thu Phase 11**.
 > Kiến trúc cố định: **Flutter Web + Flutter Android từ một codebase, backend Python/FastAPI**. Không `git push` nếu người dùng chưa yêu cầu.
 
@@ -13,7 +13,7 @@
 - Ước lượng là **ngày công tham khảo cho solo developer**, có thể sửa theo thực tế. Nếu một hàng vượt 2 ngày, tách issue con trước khi bắt đầu, giữ liên kết với mã gốc.
 - Trợ lý tự tạo branch cục bộ `phase/xx` khi mở phase và tự tạo commit sau mỗi issue hoàn thành; người dùng không cần thao tác Git hộ. Mỗi hàng `HL-xx-yy` tương ứng **đúng một commit mới** trên branch cùng phase; subject chứa `[HL-xx-yy]`. Gộp code, test và tài liệu của issue vào commit đó. Chỉ sau khi cả phase đạt DoD mới fast-forward `main` cục bộ; không push.
 
-**Tiến độ cục bộ:** Phase 00–02 đã tích hợp `main` cục bộ; Phase 02 hoàn tất qua `HL-02-08` (`75424ad`). Branch `phase/03` đã mở; `HL-03-01` đã chốt nguồn/schema và sẵn sàng commit. Chưa tạo GitHub Issues online, chưa push.
+**Tiến độ cục bộ:** Phase 00–02 đã tích hợp `main` cục bộ; Phase 02 hoàn tất qua `HL-02-08` (`75424ad`). Branch `phase/03` đã mở; `HL-03-01` DONE (`f642ff8`), `HL-03-02` đã build/test 500 candidate và sẵn sàng commit. Chưa tạo GitHub Issues online, chưa push.
 
 Quy trình Git mẫu: từ `main` đã có phase trước, tạo `git switch -c phase/00`; hoàn thành HL-00-01 rồi commit `docs(requirements): write PRD [HL-00-01]`. Sau khi tất cả issue Phase 00 và DoD đạt, chuyển về `main`, chạy `git merge --ff-only phase/00`, rồi mới tạo `phase/01`. Lặp lại đến Phase 11. Nếu fast-forward không thực hiện được, kiểm tra và xử lý lịch sử branch trước; không ép merge hoặc push.
 
@@ -89,12 +89,13 @@ Milestone `Phase-03`; label chung `phase-03`, `dictionary`. **DoD:** nhập/dán
 | ID | Tiêu đề issue | Phụ thuộc | Ước lượng | Tiêu chí xong / bằng chứng |
 |---|---|---|---:|---|
 | HL-03-01 | Chọn nguồn từ điển và schema mục từ | HL-02-06, HL-00-07 | 1 | Pin OpenCidian commit/checksum theo CC BY-SA 4.0; schema có giản thể/phồn thể, Pinyin, nghĩa Việt, ví dụ rỗng khi thiếu, HSK theo version, provenance; quyết định SQLite backend/search/ID ổn định được ghi. |
-| HL-03-02 | Viết seed/import từ điển idempotent | HL-03-01 | 2 | Import chạy lặp không trùng; validation; mục tiêu 300–500 từ hoặc báo số thật, không bịa nghĩa. |
-| HL-03-03 | Làm API search Hanzi/Pinyin | HL-03-02 | 1.5 | Backend Python search có giới hạn/phân trang và xử lý không tìm thấy; API tests pass. |
-| HL-03-04 | Làm API detail mục từ và nguồn dữ liệu | HL-03-02 | 1 | Detail trả mục từ/nguồn đúng contract; API tests pass. |
+| HL-03-02 | Viết seed/import candidate từ điển idempotent | HL-03-01 | 2 | Build 300–500 candidate chạy lặp cùng checksum; validation/reject report, schema/index/test; không bịa nghĩa/ví dụ và chưa nhận đã review độc lập. |
+| HL-03-03 | Làm API search Hanzi/Pinyin | HL-03-02 | 1.5 | Backend Python search candidate có giới hạn/phân trang và xử lý không tìm thấy; API tests pass; response giữ nguồn/giới hạn chất lượng. |
+| HL-03-04 | Làm API detail mục từ và nguồn dữ liệu | HL-03-02 | 1 | Detail trả mục từ/nguồn đúng contract; API tests pass; attribution có thể truy vết. |
 | HL-03-05 | Làm UI nhập/dán chữ và kết quả tra | HL-03-03, HL-03-04 | 2 | Web và Android nhập/chọn chữ, tra, xem Hanzi/Pinyin/nghĩa/ví dụ; empty/error rõ. |
 | HL-03-06 | Làm lưu/bỏ lưu từ không trùng | HL-03-05 | 2 | Saved Words trên hai target; Firestore không có bản lưu trùng; Rules cho `saved_words` giới hạn UID/field/type; offline/error hợp lý. |
-| HL-03-07 | Kiểm thử luồng nhập tay → tra → lưu | HL-03-06 | 1 | Widget/repository/API tests và demo Web/Android; TTS chỉ thêm nếu đã có giải pháp tin cậy. |
+| HL-03-07 | Kiểm thử luồng nhập tay → tra → lưu | HL-03-06, HL-03-08 | 1 | Widget/repository/API tests và demo Web/Android; TTS chỉ thêm nếu đã có giải pháp tin cậy. |
+| HL-03-08 | Review tiếng Việt và khóa corpus phát hành | HL-03-02 | 1.5 | Review manifest bao phủ 500 candidate; ghi reviewer/phương pháp, mục sửa/loại; build lại checksum/số thật; không dùng LLM làm nguồn chuẩn. |
 
 ## Phase 04 — Flashcard, Quiz và lịch ôn
 

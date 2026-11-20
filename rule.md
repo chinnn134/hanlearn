@@ -1,6 +1,6 @@
 # Quy tắc thực thi HanLearn AI
 
-> Phiên bản 1.1, theo CR-001 đến CR-007; cập nhật cổng thực thi ngày 2026-11-21. Đọc cùng `plan.md`, `kanban_management.md` và `HanLearn_AI_SOLO_PHASE_PLAN.md` trước mỗi lượt.
+> Phiên bản 1.2, theo CR-001 đến CR-007; cập nhật cổng thực thi ngày 2026-11-21. Đọc cùng `plan.md`, `kanban_management.md` và `HanLearn_AI_SOLO_PHASE_PLAN.md` trước mỗi lượt.
 
 ## 1. Nguồn yêu cầu và cập nhật
 
@@ -32,4 +32,4 @@
 
 ## 4. Cổng hiện tại
 
-Người dùng đã xác nhận bắt đầu. Phase 00–02 đã đạt DoD và được fast-forward vào `main`; Phase 03 đang mở trên `phase/03`. Nguồn từ điển bị khóa bởi `backend/data/dictionary/source-manifest.json`; không dùng “latest”, không nhập nguồn thiếu license/checksum, không dùng AI điền trường chuẩn. Corpus đã duyệt nằm trong SQLite read-only của backend Python và Flutter tra qua API; dữ liệu người dùng chỉ tham chiếu `vocabId`. Đổi nguồn/commit/schema/search phải cập nhật manifest, attribution, contract, migration và test trong issue riêng. `HL-03-01` chốt nguồn/schema; tiếp theo `HL-03-02` phải báo số accepted/rejected và checksum artifact thật. Từng issue phải đạt tiêu chí và có đúng một commit cục bộ; không push.
+Người dùng đã xác nhận bắt đầu và yêu cầu tiếp tục không dừng xin xác nhận giữa các issue đã rõ. Phase 00–02 đã đạt DoD và được fast-forward vào `main`; Phase 03 đang mở trên `phase/03`. Nguồn từ điển bị khóa bởi manifest; không dùng “latest”, nguồn thiếu license/checksum hay AI điền trường chuẩn. `HL-03-02` tạo 500 candidate trong SQLite với reject report/checksum idempotent. Candidate chưa đồng nghĩa với review ngôn ngữ độc lập: `HL-03-08` phải có review manifest, danh sách sửa/loại và checksum mới trước DoD Phase 03. API có thể phát triển trên candidate nhưng UI/release phải giữ attribution/giới hạn. Từng issue đạt tiêu chí có đúng một commit cục bộ; không push.
