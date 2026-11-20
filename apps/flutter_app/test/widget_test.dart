@@ -311,6 +311,81 @@ void main() {
     expect(savedWords.saved, isEmpty);
   });
 
+  testWidgets('flashcards load saved words, flip and record a rating', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final auth = FakeAuthRepository(
+      const AuthIdentity(uid: 'test-user', email: 'test@example.com'),
+    );
+    final savedWords = FakeSavedWordRepository()..saved.add('ocd-test');
+    addTearDown(auth.dispose);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(auth),
+          userProfileRepositoryProvider.overrideWithValue(
+            FakeUserProfileRepository(),
+          ),
+          dictionaryRepositoryProvider.overrideWithValue(
+            FakeDictionaryRepository(),
+          ),
+          savedWordRepositoryProvider.overrideWithValue(savedWords),
+        ],
+        child: const HanLearnApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ôn Flashcard'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Thẻ 1/1'), findsOneWidget);
+    expect(find.text('学习'), findsOneWidget);
+    expect(find.text('xué xí'), findsNothing);
+    await tester.tap(find.byKey(const Key('flashcard-surface')));
+    await tester.pumpAndSettle();
+    expect(find.text('xué xí'), findsOneWidget);
+    expect(find.text('học tập'), findsOneWidget);
+    expect(
+      find.text('Chưa có ví dụ đã được xác minh cho mục từ này.'),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Đã biết'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Đã đánh giá toàn bộ 1 thẻ'), findsOneWidget);
+  });
+
+  testWidgets('flashcards explain the empty saved-word state', (tester) async {
+    final auth = FakeAuthRepository(
+      const AuthIdentity(uid: 'test-user', email: 'test@example.com'),
+    );
+    addTearDown(auth.dispose);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(auth),
+          userProfileRepositoryProvider.overrideWithValue(
+            FakeUserProfileRepository(),
+          ),
+          dictionaryRepositoryProvider.overrideWithValue(
+            FakeDictionaryRepository(),
+          ),
+          savedWordRepositoryProvider.overrideWithValue(
+            FakeSavedWordRepository(),
+          ),
+        ],
+        child: const HanLearnApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ôn Flashcard'));
+    await tester.pumpAndSettle();
+    expect(find.text('Chưa có Flashcard'), findsOneWidget);
+  });
+
   testWidgets('sign in and sign out update protected routes', (tester) async {
     final repository = FakeAuthRepository(null);
     final profiles = FakeUserProfileRepository();
