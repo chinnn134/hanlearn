@@ -43,9 +43,10 @@ def test_cors_allows_only_configured_web_origin() -> None:
         {"allowed_origins": "*"},
         {"app_env": "staging"},
         {"app_env": "staging", "allowed_origins": "http://staging.example"},
+        {"firebase_token_clock_skew_seconds": 601},
     ],
 )
-def test_unsafe_cors_configuration_is_rejected(overrides: dict[str, str]) -> None:
+def test_unsafe_configuration_is_rejected(overrides: dict[str, object]) -> None:
     with pytest.raises(ValidationError):
         Settings(_env_file=None, **overrides)
 

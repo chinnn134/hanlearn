@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
 
-import firebase_admin
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from firebase_admin import auth
+from google.auth.transport.requests import Request as GoogleAuthRequest
+from google.oauth2 import id_token
 
 bearer = HTTPBearer(auto_error=False)
 
@@ -16,15 +15,16 @@ class AuthenticatedUser:
     uid: str
 
 
-def _firebase_app(project_id: str) -> firebase_admin.App:
-    name = f"hanlearn-{project_id}"
-    try:
-        return firebase_admin.get_app(name)
-    except ValueError:
-        return firebase_admin.initialize_app(
-            options={"projectId": project_id},
-            name=name,
-        )
+def verify_firebase_id_token(
+    token: str, project_id: str, clock_skew_seconds: int = 0
+) -> dict[str, object]:
+    """Verify signature and Firebase issuer/audience without requiring ADC."""
+    return id_token.verify_firebase_token(
+        token,
+        GoogleAuthRequest(),
+        audience=project_id,
+        clock_skew_in_seconds=clock_skew_seconds,
+    )
 
 
 def _unauthorized(message: str) -> HTTPException:
@@ -45,10 +45,10 @@ def require_user(
     if not project_id:
         raise _unauthorized("Backend chưa cấu hình Firebase project.")
     try:
-        decoded: dict[str, Any] = auth.verify_id_token(
+        decoded = verify_firebase_id_token(
             credentials.credentials,
-            app=_firebase_app(project_id),
-            check_revoked=False,
+            project_id,
+            request.app.state.settings.firebase_token_clock_skew_seconds,
         )
     except Exception as error:
         raise _unauthorized(

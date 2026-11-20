@@ -17,6 +17,7 @@ class Settings(BaseSettings):
 
     app_env: Literal["local", "staging", "production"] = "local"
     firebase_project_id: str | None = None
+    firebase_token_clock_skew_seconds: int = Field(default=0, ge=0, le=600)
     dictionary_db_path: Path = (
         REPO_ROOT / "backend/data/dictionary/hanlearn_dictionary.sqlite3"
     )

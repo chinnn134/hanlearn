@@ -23,7 +23,7 @@ Trong terminal khác:
 curl.exe http://127.0.0.1:8000/health
 ```
 
-Kết quả: `{"status":"ok"}` với HTTP 200. Tài liệu OpenAPI sinh bởi FastAPI ở `http://127.0.0.1:8000/docs`. Namespace `/api/v1` đã có router nhưng chưa có route chức năng; route từ điển xuất hiện ở Phase 03. `/health` chỉ báo tiến trình API sống, không báo Firebase/OCR/AI sẵn sàng.
+Kết quả: `{"status":"ok"}` với HTTP 200. Tài liệu OpenAPI sinh bởi FastAPI ở `http://127.0.0.1:8000/docs`. Namespace `/api/v1` có Dictionary search/detail yêu cầu Firebase ID token. `/health` chỉ báo tiến trình API sống, không báo Firebase/OCR/AI sẵn sàng.
 
 ## Chạy Flutter Web
 
@@ -36,15 +36,15 @@ flutter run -d chrome --web-port=3000 `
 
 Mở `http://localhost:3000`. `.env.example` cho phép origin này qua CORS. App dùng Firebase project `hanlearn-7553f` và gửi ID token tới backend Dictionary API. `API_BASE_URL` là bắt buộc cho tra từ; không chứa API key.
 
-### Firebase Emulator trong Phase 02
+### Firebase Emulator và Rules
 
-Phase 02 đang triển khai. Để thử đăng ký/đăng nhập bằng Firebase Auth Emulator, mở terminal ở thư mục gốc:
+Để thử đăng ký/đăng nhập bằng Firebase Auth Emulator, mở terminal ở thư mục gốc:
 
 ```powershell
 firebase emulators:start --only 'auth,firestore' --project demo-hanlearn
 ```
 
-Trong terminal Flutter, thêm `--dart-define=USE_FIREBASE_EMULATOR=true` vào `flutter run` hoặc `flutter build`. Cùng codebase dùng `localhost` cho Web và `10.0.2.2` cho Android Emulator. `firebase/firestore.rules` cho owner đọc/tạo/sửa `users/{uid}`, tài khoản đăng nhập đọc `vocabulary`; các collection khác vẫn bị từ chối. Demo project không chứa dữ liệu Firebase production và không cần đăng nhập Firebase CLI.
+Trong terminal Flutter, thêm `--dart-define=USE_FIREBASE_EMULATOR=true` vào `flutter run` hoặc `flutter build`. Cùng codebase dùng `localhost` cho Web và `10.0.2.2` cho Android Emulator. `firebase/firestore.rules` cho owner đọc/tạo/sửa `users/{uid}`, owner đọc/tạo/xóa `saved_words` đúng schema và tài khoản đăng nhập đọc `vocabulary`; các collection chưa đến phase vẫn bị từ chối. Demo project không chứa dữ liệu Firebase production và không cần đăng nhập Firebase CLI.
 
 Test Rules tự động khi Firestore Emulator đang chạy:
 
@@ -63,7 +63,7 @@ Nguồn corpus Phase 03 được khóa tại OpenCidian commit `17873f10941c11ae
 
 Corpus phát hành nội bộ hiện có 500 mục trong `backend/data/dictionary/hanlearn_dictionary.sqlite3`. Build lại bằng `backend/scripts/build_dictionary.py` với `dist/entries.jsonl`, `dist/meta.json` từ đúng OpenCidian commit đã pin và `--review backend/data/dictionary/review-manifest.json`; báo cáo nằm ở `backend/data/dictionary/build-report.json`. `HL-03-08` đã audit đủ 500 record và spot-check có hệ thống 100 record theo workflow solo của tài liệu nền. Đây không phải chứng nhận ngôn ngữ độc lập/chuyên gia; ứng dụng vẫn giữ attribution và không tuyên bố nghĩa luôn tuyệt đối chính xác.
 
-Dictionary API dùng Firebase Admin Python để xác minh ID token; backend local cần `FIREBASE_PROJECT_ID`, còn môi trường deploy dùng Application Default Credentials/service account ngoài Git. `GET /api/v1/dictionary/search?q=...` đọc SQLite ở chế độ read-only, hỗ trợ Hanzi/Pinyin và cursor. Không mở route v1 công khai hoặc đưa service-account JSON vào repository.
+Dictionary API dùng `google-auth` để xác minh mật mã chữ ký, expiry, issuer và audience của Firebase ID token theo project; không chỉ giải mã JWT và không cần service-account/ADC cho thao tác chỉ-verify này. Backend cần `FIREBASE_PROJECT_ID`; host production phải đồng bộ đồng hồ và giữ `FIREBASE_TOKEN_CLOCK_SKEW_SECONDS=0` (override có giới hạn chỉ dành cho môi trường test cô lập). `GET /api/v1/dictionary/search?q=...` đọc SQLite read-only, hỗ trợ Hanzi/Pinyin và cursor. Không mở route v1 công khai hoặc đưa service-account JSON vào repository.
 
 Nếu Android build trên Windows báo lỗi Kotlin incremental cache do repo và Pub cache ở hai ổ khác nhau, đặt `PUB_CACHE` cùng ổ với repo trước `flutter pub get` và build (ví dụ `$env:PUB_CACHE='D:\PubCache'`). Máy phát triển này cũng cần `$env:JAVA_TOOL_OPTIONS='-Djavax.net.ssl.trustStoreType=Windows-ROOT'` để Gradle tải Firebase từ Google Maven qua kho chứng chỉ Windows. Đây là cấu hình môi trường cục bộ, không phải yêu cầu của CI Linux.
 

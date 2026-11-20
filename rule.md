@@ -1,6 +1,6 @@
 # Quy tắc thực thi HanLearn AI
 
-> Phiên bản 1.3, theo CR-001 đến CR-007; cập nhật cổng thực thi ngày 2026-11-21. Đọc cùng `plan.md`, `kanban_management.md` và `HanLearn_AI_SOLO_PHASE_PLAN.md` trước mỗi lượt.
+> Phiên bản 1.4, theo CR-001 đến CR-007; cập nhật cổng thực thi ngày 2026-11-21. Đọc cùng `plan.md`, `kanban_management.md` và `HanLearn_AI_SOLO_PHASE_PLAN.md` trước mỗi lượt.
 
 ## 1. Nguồn yêu cầu và cập nhật
 
@@ -32,4 +32,4 @@
 
 ## 4. Cổng hiện tại
 
-Người dùng đã xác nhận bắt đầu và yêu cầu tiếp tục không dừng xin xác nhận giữa các issue đã rõ. Phase 00–02 đã đạt DoD và được fast-forward vào `main`; Phase 03 đang mở trên `phase/03`. Nguồn từ điển bị khóa bởi manifest; không dùng “latest”, nguồn thiếu license/checksum hay AI điền trường chuẩn. Corpus candidate có reject report/checksum idempotent; `HL-03-08` vẫn là cổng review. Mọi API v1 phải xác minh Firebase ID token thật ở backend, không chỉ parse bearer; pytest chỉ được override dependency trong test. Search/detail đọc SQLite ở chế độ read-only. Từng issue đạt tiêu chí có đúng một commit cục bộ; không push.
+Người dùng đã xác nhận bắt đầu và yêu cầu tiếp tục không dừng xin xác nhận giữa các issue đã rõ. Phase 00–03 đã đạt DoD cục bộ; Phase 03 được fast-forward vào `main` sau commit `HL-03-07`, không push. Corpus release bị khóa bởi source/review manifest và checksum; không dùng “latest”, nguồn thiếu license/checksum hay AI điền trường chuẩn. Mọi API v1 phải xác minh mật mã Firebase ID token thật (chữ ký/expiry/issuer/audience), không chỉ parse bearer; host production phải đồng bộ đồng hồ, clock-skew mặc định 0. Search/detail đọc SQLite read-only. Rules Saved Words khóa UID/field/type; collection phase sau vẫn deny-all. Phase tiếp theo phải dùng branch `phase/04`, từng issue đúng một commit và vẫn không push.

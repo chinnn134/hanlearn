@@ -1,4 +1,5 @@
 from pathlib import Path
+from unittest.mock import patch
 
 from backend.app.core.auth import AuthenticatedUser, require_user
 from backend.app.core.config import Settings
@@ -35,6 +36,52 @@ def test_search_requires_firebase_token() -> None:
     )
     with TestClient(app) as client:
         response = client.get("/api/v1/dictionary/search", params={"q": "学习"})
+    assert response.status_code == 401
+    assert response.json()["detail"]["code"] == "UNAUTHORIZED"
+
+
+def test_search_verifies_a_real_firebase_token_contract() -> None:
+    app = create_app(
+        Settings(
+            _env_file=None,
+            firebase_project_id="demo-hanlearn",
+            dictionary_db_path=DATABASE,
+        )
+    )
+    with patch(
+        "backend.app.core.auth.verify_firebase_id_token",
+        return_value={"uid": "signed-uid"},
+    ) as verify:
+        with TestClient(app) as client:
+            response = client.get(
+                "/api/v1/dictionary/search",
+                params={"q": "学习"},
+                headers={"Authorization": "Bearer signed-token"},
+            )
+
+    assert response.status_code == 200
+    verify.assert_called_once_with("signed-token", "demo-hanlearn", 0)
+
+
+def test_search_rejects_a_failed_firebase_signature_check() -> None:
+    app = create_app(
+        Settings(
+            _env_file=None,
+            firebase_project_id="demo-hanlearn",
+            dictionary_db_path=DATABASE,
+        )
+    )
+    with patch(
+        "backend.app.core.auth.verify_firebase_id_token",
+        side_effect=ValueError("invalid signature"),
+    ):
+        with TestClient(app) as client:
+            response = client.get(
+                "/api/v1/dictionary/search",
+                params={"q": "学习"},
+                headers={"Authorization": "Bearer forged-token"},
+            )
+
     assert response.status_code == 401
     assert response.json()["detail"]["code"] == "UNAUTHORIZED"
 

@@ -1,6 +1,6 @@
 # HanLearn AI — kế hoạch thực thi
 
-> Phiên bản 1.9, cập nhật 2026-11-21 theo CR-001 đến CR-007; người dùng đã xác nhận bắt đầu. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Phase 00–02 đã fast-forward vào `main` cục bộ; Phase 03 đang triển khai trên `phase/03`.
+> Phiên bản 2.0, cập nhật 2026-11-21 theo CR-001 đến CR-007; người dùng đã xác nhận bắt đầu. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Phase 00–03 đã đạt DoD cục bộ; Phase 03 được tích hợp `main` sau commit cuối, không push.
 
 ## 1. Mục tiêu và thay đổi thứ tự
 
@@ -26,7 +26,7 @@ Sản phẩm cuối: đăng nhập → chụp/tải ảnh chữ Hán giản th�
 | 00 | Yêu cầu, kiến trúc, contract | — | PRD, flow, schema, API, acceptance criteria | DONE |
 | 01 | Khởi tạo Flutter Web + Android, backend Python/FastAPI, CI | 00 | Cả Web/Android chạy, Python `/health`, README | DONE cục bộ; hosted CI chưa chạy vì không push |
 | 02 | Firebase Auth, Firestore, Rules | 01 | Đăng nhập, dữ liệu riêng, đồng bộ | DONE |
-| 03 | Từ điển, nhập tay, lưu từ | 02 | Nhập/dán → tra → lưu/bỏ lưu | IN PROGRESS |
+| 03 | Từ điển, nhập tay, lưu từ | 02 | Nhập/dán → tra → lưu/bỏ lưu | DONE |
 | 04 | Flashcard, Quiz, lịch ôn | 03 | Học → quiz → lịch ôn | NOT STARTED |
 | 05 | Dashboard, lịch sử học, UX | 02–04 | Luồng học core liền mạch | NOT STARTED |
 | 06 | UI ảnh và contract OCR/AI | 00–05 | Image picker/preview, adapter, chưa có OCR/AI thật | NOT STARTED |
@@ -80,7 +80,8 @@ Phase 09 và 10 là hai phase cuối của **phát triển tính năng**; Phase 
 - [x] API detail theo `vocabId`, trả schema đầy đủ và license/attribution/source refs; 404/validation/auth được test (`HL-03-04`).
 - [x] Flutter Dictionary nhập/dán Hanzi/Pinyin, gọi API bằng Firebase token, kết quả/detail/nguồn, loading/empty/error/retry responsive; Web/Android build (`HL-03-05`).
 - [x] Saved Words lưu/bỏ lưu không trùng bằng document `vocabId`, danh sách responsive và trạng thái loading/empty/error; Rules khóa UID/field/type/timestamp và cấm update (`HL-03-06`).
-- **DoD:** nhập tay → tra thông tin có nguồn → lưu/bỏ lưu → thấy trên Web/Android; test search/repository qua. Không phụ thuộc OCR/AI.
+- [x] E2E production cùng UID: Web tra/lưu `学习`, Android thấy và bỏ lưu, Web reload thấy danh sách trống; token UID khác và guest đều bị từ chối (`HL-03-07`).
+- **DoD: ĐẠT trên project thật.** Nhập tay → backend xác minh Firebase token → tra thông tin có nguồn → lưu/bỏ lưu → đồng bộ Web/Android; corpus đã khóa, Rules production và test search/repository qua. Bằng chứng: `docs/testing/phase-03-production-evidence.md`. Không phụ thuộc OCR/AI/TTS.
 
 ### Phase 04 — Flashcard và Quiz
 
@@ -211,5 +212,6 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 | 2026-11-21 | Phase 03 · HL-03-05 | Thêm HTTP 1.6.0, `API_BASE_URL`, Firebase ID token header và model/repository Dictionary. Màn responsive cho nhập/dán, search, detail, attribution, examples trống, loading/empty/error/retry. `flutter analyze`, 6 tests, Web build và Android debug APK build qua; Android dùng `10.0.2.2`, Web dùng `127.0.0.1`. Kotlin cache cũ cần clean/stop daemon trước build Android. | Tiếp tục `HL-03-06` Saved Words + Rules. Test thực với backend/Firebase production ở `HL-03-07`; không coi widget fake là E2E. |
 | 2026-11-21 | Phase 03 · HL-03-06 | Thêm repository Firestore `users/{uid}/saved_words/{vocabId}`, transaction tạo idempotent với server timestamp, lưu/bỏ lưu từ màn detail và danh sách Saved Words responsive. Rules chỉ cho owner get/list/create/delete đúng ba field, `masteryLevel = 0`, `savedAt == request.time`, cấm update/guest/UID khác. `flutter analyze`, 7/7 Flutter tests và 5/5 Rules emulator tests qua. | Tiếp tục `HL-03-08` khóa corpus, rồi `HL-03-07` kiểm thử thật Web/Android và deploy Rules; chưa coi emulator/widget test là E2E production. |
 | 2026-11-21 | Phase 03 · HL-03-08 | Audit đủ 500 record bằng manifest máy đọc; kiểm source/schema/ID/Pinyin/nghĩa Việt/HSK/provenance/examples, spot-check trực quan 100 record. 500 accepted, 0 sửa/loại; flags: 46 nhiều nghĩa, 17 biến thể/ngữ cảnh, 3 register nhạy cảm. Rebuild từ source pin với allowlist giữ nguyên SHA-256 `cb1e7939…68edb`; review manifest SHA-256 `62b1db94…c93ff`; Ruff và 14/14 pytest qua. Không nhận là review độc lập/chuyên gia và không dùng AI sinh trường chuẩn. | Tiếp tục `HL-03-07` E2E production Web/Android và deploy Rules; đây là cổng runtime cuối của Phase 03. |
+| 2026-11-21 | Phase 03 · HL-03-07 | Deploy Rules Saved Words lên `hanlearn-7553f`. Sửa verifier sang `google-auth` chính thức để kiểm chữ ký/expiry/issuer/audience mà không cần ADC; clean lockfile và 17/17 pytest qua. Web production tra/detail/lưu `学习`; Android cùng UID thấy từ, bỏ lưu; Web reload thấy trống. UID B và guest đọc nhánh A đều 403. Flutter analyze, 7/7 tests, Web build và Android debug build/install/run qua; Rules 5/5. Gradle giảm heap, tắt incremental và compiler in-process để build ổn định trên Windows/cross-drive cache. | Phase 03 đạt DoD; fast-forward `main` cục bộ sau commit. Phase tiếp theo là `phase/04`, không push. |
 
-**Bước tiếp theo:** commit `HL-03-08`, rồi làm `HL-03-07` E2E production Web/Android và deploy Rules; `main` chỉ fast-forward khi toàn bộ DoD Phase 03 đạt.
+**Bước tiếp theo:** sau commit `HL-03-07`, fast-forward `main` cục bộ. Chỉ mở `phase/04` khi bắt đầu issue Flashcard/Quiz/lịch ôn; không push.
