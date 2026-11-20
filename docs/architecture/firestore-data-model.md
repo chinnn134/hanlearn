@@ -67,12 +67,11 @@ Client dùng transaction: chỉ tạo document khi chưa tồn tại nên thao t
 |---|---|---|---|
 | `vocabId` | string | Có | Trùng document ID |
 | `dueAt` | Timestamp | Có | Thời điểm đến hạn UTC |
-| `intervalDays` | number | Có | Không âm; công thức chốt ở Phase 04 |
-| `easeFactor` | number/null | Không | Chỉ dùng nếu thuật toán được chọn cần hệ số |
+| `intervalDays` | int | Có | `0..365`; công thức trong `review-scheduling-decision.md` |
 | `lastReviewedAt` | Timestamp/null | Không | Null trước lượt ôn đầu tiên |
 | `reviewCount` | int | Có | Khởi tạo 0, không âm |
 
-Tính toán lịch ôn phải có một nguồn thực thi rõ (client hoặc server, được ghi ADR Phase 04). Khi cập nhật schedule và kết quả liên quan, dùng transaction/batch nếu cùng Firestore để tránh trạng thái nửa vời.
+Flutter client tính lịch theo ADR Phase 04, luôn đổi instant sang UTC. `again` giữ interval 0 và hẹn sau 10 phút; rating còn lại dùng ngày nguyên, tối đa 365. Khi cập nhật schedule và kết quả liên quan, dùng một Firestore batch để tránh trạng thái nửa vời. Schema không lưu `easeFactor` vì công thức hiện tại không dùng trường này.
 
 ### `users/{uid}/quiz_results/{resultId}`
 
