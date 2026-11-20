@@ -18,12 +18,15 @@
     "sha256": "cb1e793905acabdb2d4f6d488946d07d1976da92c78580a81ca821477eb68edb",
     "bytes": 380928,
     "entries": 500,
-    "reviewStatus": "structurally-validated-source-candidates"
+    "reviewStatus": "solo-audited-release-corpus",
+    "reviewManifest": "backend/data/dictionary/review-manifest.json",
+    "reviewManifestSha256": "62b1db94de999f7c996df75d3be817708d87445d4b288dffc1730ffa1f3c93ff"
   },
   "notes": [
     "HL-03-02 built the pinned source byte-idempotently and recorded the artifact checksum and entry count.",
     "Only reviewed entries with simplified Hanzi, pinyin and non-empty Vietnamese senses may enter the HanLearn corpus.",
     "Missing examples stay empty; missing levels stay null. AI must not fill canonical dictionary fields.",
-    "Independent Vietnamese linguistic review is a separate gate before Phase 03 can be accepted for release."
+    "HL-03-08 audited all 500 records and visually spot-checked a deterministic 100-record sample under the baseline solo-review workflow.",
+    "No independent human linguistic expert certification is claimed; source attribution and this limitation remain visible for release."
   ]
 }

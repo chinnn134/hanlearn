@@ -5,6 +5,7 @@ import json
 import sqlite3
 from pathlib import Path
 
+from backend.scripts.audit_dictionary import audit
 from backend.scripts.build_dictionary import (
     build,
     normalize_entry,
@@ -89,3 +90,42 @@ def test_builder_is_idempotent_and_writes_expected_rows(tmp_path: Path) -> None:
         ("学习", "[]", "opencidian-17873f1"),
         ("爱", "[]", "opencidian-17873f1"),
     ]
+
+
+def test_audit_manifest_can_lock_an_idempotent_build(tmp_path: Path) -> None:
+    source = tmp_path / "entries.jsonl"
+    source.write_text(
+        "\n".join(
+            json.dumps(item, ensure_ascii=False)
+            for item in [
+                sample_entry("学习|學習|xue2 xi2", "学习", "xué xí", "xue2 xi2"),
+                sample_entry("爱|愛|ai4", "爱", "ài", "ai4"),
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    meta = tmp_path / "meta.json"
+    meta.write_text(
+        json.dumps(
+            {
+                "commit": PINNED_COMMIT,
+                "version": "test",
+                "license": {"id": "CC-BY-SA-4.0", "attribution": "test"},
+            }
+        ),
+        encoding="utf-8",
+    )
+    candidate = tmp_path / "candidate.sqlite"
+    build(source, meta, candidate, tmp_path / "candidate.json", 2)
+    review = tmp_path / "review.json"
+    audit(candidate, review)
+    release = tmp_path / "release.sqlite"
+    report = build(source, meta, release, tmp_path / "release.json", 2, review)
+
+    assert report["quality"]["soloCorpusAudit"] is True
+    assert report["quality"]["manualSpotChecked"] == 1
+    assert (
+        hashlib.sha256(candidate.read_bytes()).digest()
+        == hashlib.sha256(release.read_bytes()).digest()
+    )

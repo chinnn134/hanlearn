@@ -24,6 +24,12 @@ Ngày: 2026-11-21. Branch: `phase/03`. Issue: `HL-03-02`.
 
 `build-report.json` giữ toàn bộ số reject theo lý do. Spot-check trực tiếp 80 record đầu xác nhận schema/Unicode/Pinyin/nghĩa Việt đọc được, đồng thời cho thấy corpus giữ các cách đọc đa âm như `上`, `和`, `哪`. Đây là dữ liệu có nguồn, không phải kết luận rằng mọi nghĩa đều hoàn hảo.
 
-## Giới hạn chất lượng và cổng bắt buộc
+## Review khóa corpus — HL-03-08
 
-CVDICT công bố phần lớn nghĩa từng được dịch với hỗ trợ AI và có thể còn lỗi. Build hiện tại mới là **candidate corpus đã validate cấu trúc/nguồn**, chưa có chuyên gia/người dùng kiểm duyệt độc lập toàn bộ 500 nghĩa. Vì vậy backlog thêm `HL-03-08`; Phase 03 không đạt DoD trước khi có review manifest, ghi mục sửa/loại và build lại checksum. API ở `HL-03-03/04` có thể phát triển/test trên candidate corpus nhưng UI/release phải giữ attribution và không tuyên bố độ chính xác tuyệt đối.
+`backend/scripts/audit_dictionary.py` đã kiểm tra đủ 500 record về ID, headword, Pinyin, nghĩa/senses Việt, HSK, chính sách ví dụ rỗng và provenance. Mỗi record có quyết định/flags trong `review-manifest.json`; 100 record lấy đều theo thứ tự Hanzi/Pinyin (mỗi record thứ năm) đã được đọc trực quan. Kết quả: 500 accepted, 0 corrected, 0 rejected; 46 record nhiều nghĩa, 17 cách đọc/biến thể phụ thuộc ngữ cảnh và 3 nghĩa có register nhạy cảm được gắn cờ để không bị hiểu là lỗi cấu trúc.
+
+Build release nhận review manifest như allowlist bắt buộc, chạy lại từ OpenCidian pin và vẫn cho đúng SHA-256 `cb1e7939…68edb`, chứng minh review không âm thầm đổi trường chuẩn. Manifest review SHA-256 là `62b1db94…c93ff`; Ruff pass và 14/14 pytest pass.
+
+## Giới hạn chất lượng công bố
+
+CVDICT công bố phần lớn nghĩa từng được dịch với hỗ trợ AI và có thể còn lỗi. Review này là self-review có dấu vết của dự án solo — đúng hướng dẫn tài liệu nền rằng solo developer có thể tự review bằng checklist — chứ không phải chứng nhận của người thứ hai/chuyên gia ngôn ngữ. Không dùng LLM để sinh/sửa nghĩa chuẩn, không bịa ví dụ, luôn giữ attribution và không tuyên bố mọi nghĩa hoàn hảo. Nếu phát hành công khai quy mô lớn, review độc lập vẫn là cải tiến được khuyến nghị nhưng không bị trình bày sai là bằng chứng đã có.

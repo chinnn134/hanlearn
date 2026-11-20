@@ -294,7 +294,12 @@ def sha256_file(path: Path) -> str:
 
 
 def build(
-    source: Path, meta_path: Path, output: Path, report_path: Path, limit: int
+    source: Path,
+    meta_path: Path,
+    output: Path,
+    report_path: Path,
+    limit: int,
+    review_path: Path | None = None,
 ) -> dict[str, Any]:
     meta = json.loads(meta_path.read_text(encoding="utf-8"))
     if meta.get("commit") != "17873f10941c11ae4e410c91efdcb51c04b23c01":
@@ -302,6 +307,25 @@ def build(
     if meta.get("license", {}).get("id") != "CC-BY-SA-4.0":
         raise ValueError("Unexpected OpenCidian data license")
     entries, rejected = load_and_select(source, limit)
+    review: dict[str, Any] | None = None
+    if review_path is not None:
+        review = json.loads(review_path.read_text(encoding="utf-8"))
+        accepted_ids = {
+            item["vocabId"]
+            for item in review.get("entries", [])
+            if item.get("decision") == "accepted"
+        }
+        selected_ids = {item["vocabId"] for item in entries}
+        if accepted_ids != selected_ids:
+            raise ValueError(
+                "Review manifest does not accept exactly the selected corpus"
+            )
+        if review.get("summary", {}).get("corrected") != 0:
+            raise ValueError(
+                "Corrected review records require an explicit source overlay"
+            )
+        if review.get("summary", {}).get("rejected") != 0:
+            raise ValueError("Rejected review records must be removed before build")
     write_database(output, entries, meta)
     report = {
         "schemaVersion": 1,
@@ -336,9 +360,18 @@ def build(
             "examplesPolicy": "empty_without_verified_source",
             "canonicalFieldsGeneratedByAi": False,
             "independentHumanLinguisticReview": False,
+            "soloCorpusAudit": review is not None,
+            "reviewManifest": review_path.as_posix() if review_path else None,
+            "reviewManifestSha256": sha256_file(review_path) if review_path else None,
+            "manualSpotChecked": (
+                review.get("summary", {}).get("manualSpotChecked", 0) if review else 0
+            ),
             "note": (
-                "Source and structural validation completed; independent linguistic "
-                "review remains recommended before public release."
+                "Full deterministic solo audit and representative Vietnamese "
+                "spot-check completed; no independent expert certification claimed."
+                if review
+                else "Source and structural validation completed; solo corpus audit "
+                "is required before Phase 03 acceptance."
             ),
         },
     }
@@ -359,10 +392,22 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
     parser.add_argument("--limit", type=int, default=500)
+    parser.add_argument(
+        "--review",
+        type=Path,
+        help="Review manifest that accepts exactly the selected corpus",
+    )
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
-    result = build(args.source, args.meta, args.output, args.report, args.limit)
+    result = build(
+        args.source,
+        args.meta,
+        args.output,
+        args.report,
+        args.limit,
+        args.review,
+    )
     print(json.dumps(result, ensure_ascii=False, indent=2))

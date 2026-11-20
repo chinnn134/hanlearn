@@ -22,7 +22,11 @@
     "canonicalFieldsGeneratedByAi": false,
     "examplesPolicy": "empty_without_verified_source",
     "independentHumanLinguisticReview": false,
-    "note": "Source and structural validation completed; independent linguistic review remains recommended before public release."
+    "manualSpotChecked": 100,
+    "note": "Full deterministic solo audit and representative Vietnamese spot-check completed; no independent expert certification claimed.",
+    "reviewManifest": "backend/data/dictionary/review-manifest.json",
+    "reviewManifestSha256": "62b1db94de999f7c996df75d3be817708d87445d4b288dffc1730ffa1f3c93ff",
+    "soloCorpusAudit": true
   },
   "rejected": {
     "duplicate_hanzi_pinyin": 428,
