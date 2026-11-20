@@ -78,3 +78,23 @@ def test_search_handles_empty_results_validation_and_bad_cursor() -> None:
     assert bad_limit.status_code == 422
     assert bad_cursor.status_code == 400
     assert bad_cursor.json()["detail"]["code"] == "INVALID_CURSOR"
+
+
+def test_dictionary_detail_has_traceable_source_and_not_found() -> None:
+    with authenticated_client() as client:
+        search = client.get("/api/v1/dictionary/search", params={"q": "学习"})
+        vocab_id = search.json()["items"][0]["vocabId"]
+        detail = client.get(f"/api/v1/dictionary/{vocab_id}")
+        missing = client.get("/api/v1/dictionary/ocd_missing")
+
+    assert detail.status_code == 200
+    payload = detail.json()
+    assert payload["vocabId"] == vocab_id
+    assert payload["hanzi"] == "学习"
+    assert payload["meaningViSenses"]
+    assert payload["examples"] == []
+    assert payload["sourceId"] == "opencidian-17873f1"
+    assert payload["license"] == "CC-BY-SA-4.0"
+    assert "OpenCidian" in payload["attribution"]
+    assert missing.status_code == 404
+    assert missing.json()["detail"]["code"] == "NOT_FOUND"

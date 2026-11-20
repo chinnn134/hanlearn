@@ -21,6 +21,25 @@ class DictionaryItem:
 
 
 @dataclass(frozen=True)
+class DictionaryDetail:
+    vocab_id: str
+    source_entry_id: str
+    hanzi: str
+    traditional: str
+    pinyin: str
+    pinyin_numeric: str
+    meaning_vi: str
+    meaning_vi_senses: list[str]
+    han_viet: list[dict[str, object]]
+    levels: dict[str, int]
+    examples: list[dict[str, str]]
+    source_id: str
+    source_refs: dict[str, str]
+    license: str
+    attribution: str
+
+
+@dataclass(frozen=True)
 class SearchPage:
     items: list[DictionaryItem]
     next_cursor: str | None
@@ -118,3 +137,39 @@ class DictionaryRepository:
         ]
         next_cursor = _encode_cursor(cursor_query, offset + limit) if has_more else None
         return SearchPage(items=items, next_cursor=next_cursor)
+
+    def get(self, vocab_id: str) -> DictionaryDetail | None:
+        with sqlite3.connect(
+            f"file:{self._database_path.as_posix()}?mode=ro", uri=True
+        ) as db:
+            db.row_factory = sqlite3.Row
+            row = db.execute(
+                """
+                SELECT vocab_id, source_entry_id, hanzi, traditional, pinyin,
+                    pinyin_numeric, meaning_vi, meaning_vi_senses_json,
+                    han_viet_json, levels_json, examples_json, source_id,
+                    source_refs_json
+                FROM vocabulary WHERE vocab_id = ?
+                """,
+                (vocab_id,),
+            ).fetchone()
+            if row is None:
+                return None
+            metadata = dict(db.execute("SELECT key, value FROM corpus_metadata"))
+        return DictionaryDetail(
+            vocab_id=row["vocab_id"],
+            source_entry_id=row["source_entry_id"],
+            hanzi=row["hanzi"],
+            traditional=row["traditional"],
+            pinyin=row["pinyin"],
+            pinyin_numeric=row["pinyin_numeric"],
+            meaning_vi=row["meaning_vi"],
+            meaning_vi_senses=json.loads(row["meaning_vi_senses_json"]),
+            han_viet=json.loads(row["han_viet_json"]),
+            levels=json.loads(row["levels_json"]),
+            examples=json.loads(row["examples_json"]),
+            source_id=row["source_id"],
+            source_refs=json.loads(row["source_refs_json"]),
+            license=metadata["data_license"],
+            attribution=metadata["attribution"],
+        )

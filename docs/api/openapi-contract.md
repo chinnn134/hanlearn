@@ -72,17 +72,25 @@ Ví dụ là **hình dạng dữ liệu**, không phải bằng chứng từ đ�
 ```json
 {
   "vocabId": "sample-001",
+  "sourceEntryId": "学习|學習|xue2 xi2",
   "hanzi": "学习",
+  "traditional": "學習",
   "pinyin": "xuéxí",
+  "pinyinNumeric": "xue2 xi2",
   "meaningVi": "học tập",
+  "meaningViSenses": ["học tập"],
+  "hanViet": [],
   "examples": [],
   "levels": {"hsk2": 2, "hsk3": 1},
   "sourceId": "opencidian-17873f1",
+  "sourceRefs": {"entry": "cc-cedict", "meaningVi": "cvdict", "levels": "hsk"},
+  "license": "CC-BY-SA-4.0",
+  "attribution": "OpenCidian by Perxel; ...",
   "request_id": "req-example"
 }
 ```
 
-`examples` có thể rỗng; chỉ hiện ví dụ có nguồn/xác minh. Không có ID → `404 NOT_FOUND`. Client lấy `sourceId` để hiển thị nguồn theo metadata được chốt ở `HL-00-07`. Không ghi API key hoặc dữ liệu cá nhân vào response.
+`examples` có thể rỗng; chỉ hiện ví dụ có nguồn/xác minh. Không có ID → `404 NOT_FOUND`. `sourceEntryId`, `sourceRefs`, `license` và `attribution` cho phép truy vết corpus pin; UI có thể rút gọn attribution nhưng phải có nơi xem đầy đủ. Không ghi API key hoặc dữ liệu cá nhân vào response.
 
 ## 5. OCR và AI — contract chuẩn bị, service thật ở cuối
 
