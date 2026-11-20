@@ -62,6 +62,8 @@ Nguồn corpus Phase 03 được khóa tại OpenCidian commit `17873f10941c11ae
 
 Corpus candidate hiện có 500 mục trong `backend/data/dictionary/hanlearn_dictionary.sqlite3`. Build lại bằng `backend/scripts/build_dictionary.py` với `dist/entries.jsonl` và `dist/meta.json` từ đúng OpenCidian commit đã pin; báo cáo nằm ở `backend/data/dictionary/build-report.json`. Artifact đã validate cấu trúc/nguồn và build idempotent, nhưng vẫn cần review tiếng Việt độc lập ở `HL-03-08` trước khi nghiệm thu Phase 03/release.
 
+Dictionary API dùng Firebase Admin Python để xác minh ID token; backend local cần `FIREBASE_PROJECT_ID`, còn môi trường deploy dùng Application Default Credentials/service account ngoài Git. `GET /api/v1/dictionary/search?q=...` đọc SQLite ở chế độ read-only, hỗ trợ Hanzi/Pinyin và cursor. Không mở route v1 công khai hoặc đưa service-account JSON vào repository.
+
 Nếu Android build trên Windows báo lỗi Kotlin incremental cache do repo và Pub cache ở hai ổ khác nhau, đặt `PUB_CACHE` cùng ổ với repo trước `flutter pub get` và build (ví dụ `$env:PUB_CACHE='D:\PubCache'`). Máy phát triển này cũng cần `$env:JAVA_TOOL_OPTIONS='-Djavax.net.ssl.trustStoreType=Windows-ROOT'` để Gradle tải Firebase từ Google Maven qua kho chứng chỉ Windows. Đây là cấu hình môi trường cục bộ, không phải yêu cầu của CI Linux.
 
 ## Chạy Flutter Android

@@ -13,6 +13,7 @@ class HealthResponse(BaseModel):
 def create_app(settings: Settings | None = None) -> FastAPI:
     config = settings or Settings()
     application = FastAPI(title="HanLearn API", version="0.1.0")
+    application.state.settings = config
     application.add_middleware(
         CORSMiddleware,
         allow_origins=config.cors_origins,

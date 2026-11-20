@@ -17,6 +17,9 @@ class Settings(BaseSettings):
 
     app_env: Literal["local", "staging", "production"] = "local"
     firebase_project_id: str | None = None
+    dictionary_db_path: Path = (
+        REPO_ROOT / "backend/data/dictionary/hanlearn_dictionary.sqlite3"
+    )
     allowed_origins: str = Field(default="http://localhost:3000")
 
     @field_validator("allowed_origins")
@@ -46,7 +49,10 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_deployment(self) -> "Settings":
+        self.dictionary_db_path = self.dictionary_db_path.resolve()
         if self.app_env != "local":
+            if not self.firebase_project_id:
+                raise ValueError("FIREBASE_PROJECT_ID is required outside local")
             if "allowed_origins" not in self.model_fields_set:
                 raise ValueError("ALLOWED_ORIGINS is required outside local")
             if any(not origin.startswith("https://") for origin in self.cors_origins):

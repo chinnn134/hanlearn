@@ -1,6 +1,6 @@
 # Quy tắc thực thi HanLearn AI
 
-> Phiên bản 1.2, theo CR-001 đến CR-007; cập nhật cổng thực thi ngày 2026-11-21. Đọc cùng `plan.md`, `kanban_management.md` và `HanLearn_AI_SOLO_PHASE_PLAN.md` trước mỗi lượt.
+> Phiên bản 1.3, theo CR-001 đến CR-007; cập nhật cổng thực thi ngày 2026-11-21. Đọc cùng `plan.md`, `kanban_management.md` và `HanLearn_AI_SOLO_PHASE_PLAN.md` trước mỗi lượt.
 
 ## 1. Nguồn yêu cầu và cập nhật
 
@@ -32,4 +32,4 @@
 
 ## 4. Cổng hiện tại
 
-Người dùng đã xác nhận bắt đầu và yêu cầu tiếp tục không dừng xin xác nhận giữa các issue đã rõ. Phase 00–02 đã đạt DoD và được fast-forward vào `main`; Phase 03 đang mở trên `phase/03`. Nguồn từ điển bị khóa bởi manifest; không dùng “latest”, nguồn thiếu license/checksum hay AI điền trường chuẩn. `HL-03-02` tạo 500 candidate trong SQLite với reject report/checksum idempotent. Candidate chưa đồng nghĩa với review ngôn ngữ độc lập: `HL-03-08` phải có review manifest, danh sách sửa/loại và checksum mới trước DoD Phase 03. API có thể phát triển trên candidate nhưng UI/release phải giữ attribution/giới hạn. Từng issue đạt tiêu chí có đúng một commit cục bộ; không push.
+Người dùng đã xác nhận bắt đầu và yêu cầu tiếp tục không dừng xin xác nhận giữa các issue đã rõ. Phase 00–02 đã đạt DoD và được fast-forward vào `main`; Phase 03 đang mở trên `phase/03`. Nguồn từ điển bị khóa bởi manifest; không dùng “latest”, nguồn thiếu license/checksum hay AI điền trường chuẩn. Corpus candidate có reject report/checksum idempotent; `HL-03-08` vẫn là cổng review. Mọi API v1 phải xác minh Firebase ID token thật ở backend, không chỉ parse bearer; pytest chỉ được override dependency trong test. Search/detail đọc SQLite ở chế độ read-only. Từng issue đạt tiêu chí có đúng một commit cục bộ; không push.

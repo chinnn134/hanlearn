@@ -1,6 +1,6 @@
 # HanLearn AI — danh sách GitHub Issues cho Kanban
 
-> Phiên bản 2.1 · Nguồn: `plan.md` v1.4 · Phase 00–02 đã fast-forward vào `main` cục bộ; Phase 03 đang thực hiện trên `phase/03`.
+> Phiên bản 2.2 · Nguồn: `plan.md` v1.5 · Phase 00–02 đã fast-forward vào `main` cục bộ; Phase 03 đang thực hiện trên `phase/03`.
 > Thứ tự: **core Phase 00–08 → OCR thật Phase 09 → AI API thật Phase 10 → nghiệm thu Phase 11**.
 > Kiến trúc cố định: **Flutter Web + Flutter Android từ một codebase, backend Python/FastAPI**. Không `git push` nếu người dùng chưa yêu cầu.
 
@@ -13,7 +13,7 @@
 - Ước lượng là **ngày công tham khảo cho solo developer**, có thể sửa theo thực tế. Nếu một hàng vượt 2 ngày, tách issue con trước khi bắt đầu, giữ liên kết với mã gốc.
 - Trợ lý tự tạo branch cục bộ `phase/xx` khi mở phase và tự tạo commit sau mỗi issue hoàn thành; người dùng không cần thao tác Git hộ. Mỗi hàng `HL-xx-yy` tương ứng **đúng một commit mới** trên branch cùng phase; subject chứa `[HL-xx-yy]`. Gộp code, test và tài liệu của issue vào commit đó. Chỉ sau khi cả phase đạt DoD mới fast-forward `main` cục bộ; không push.
 
-**Tiến độ cục bộ:** Phase 00–02 đã tích hợp `main` cục bộ; Phase 02 hoàn tất qua `HL-02-08` (`75424ad`). Branch `phase/03` đã mở; `HL-03-01` DONE (`f642ff8`), `HL-03-02` đã build/test 500 candidate và sẵn sàng commit. Chưa tạo GitHub Issues online, chưa push.
+**Tiến độ cục bộ:** Phase 00–02 đã tích hợp `main` cục bộ; Phase 02 hoàn tất qua `HL-02-08` (`75424ad`). Trên `phase/03`: `HL-03-01` DONE (`f642ff8`), `HL-03-02` DONE (`0bfe1b1`), `HL-03-03` đã đạt test và sẵn sàng commit. Chưa tạo GitHub Issues online, chưa push.
 
 Quy trình Git mẫu: từ `main` đã có phase trước, tạo `git switch -c phase/00`; hoàn thành HL-00-01 rồi commit `docs(requirements): write PRD [HL-00-01]`. Sau khi tất cả issue Phase 00 và DoD đạt, chuyển về `main`, chạy `git merge --ff-only phase/00`, rồi mới tạo `phase/01`. Lặp lại đến Phase 11. Nếu fast-forward không thực hiện được, kiểm tra và xử lý lịch sử branch trước; không ép merge hoặc push.
 

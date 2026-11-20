@@ -54,6 +54,7 @@ def test_staging_accepts_explicit_https_origin() -> None:
     settings = Settings(
         _env_file=None,
         app_env="staging",
+        firebase_project_id="staging-project",
         allowed_origins="https://staging.example",
     )
     assert settings.cors_origins == ["https://staging.example"]

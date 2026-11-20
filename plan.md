@@ -1,6 +1,6 @@
 # HanLearn AI — kế hoạch thực thi
 
-> Phiên bản 1.4, cập nhật 2026-11-21 theo CR-001 đến CR-007; người dùng đã xác nhận bắt đầu. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Phase 00–02 đã fast-forward vào `main` cục bộ; Phase 03 đang triển khai trên `phase/03`.
+> Phiên bản 1.5, cập nhật 2026-11-21 theo CR-001 đến CR-007; người dùng đã xác nhận bắt đầu. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Phase 00–02 đã fast-forward vào `main` cục bộ; Phase 03 đang triển khai trên `phase/03`.
 
 ## 1. Mục tiêu và thay đổi thứ tự
 
@@ -76,7 +76,8 @@ Phase 09 và 10 là hai phase cuối của **phát triển tính năng**; Phase 
 - [x] Chọn OpenCidian commit `17873f1…`, khóa manifest/checksum/CC BY-SA 4.0; chốt schema, search normalization, ID ổn định và SQLite backend (`HL-03-01`).
 - [x] Build 500 candidate HSK phổ biến vào SQLite bằng importer Python idempotent; validation/reject report/checksum thật, không bịa nghĩa/ví dụ (`HL-03-02`).
 - [ ] Review tiếng Việt độc lập cho 500 candidate, ghi mục sửa/loại và build lại manifest/checksum trước DoD (`HL-03-08`).
-- [ ] API search Hanzi/Pinyin và detail, phân trang/giới hạn, fallback từ không có trong corpus.
+- [x] Backend Python xác minh Firebase ID token và API search Hanzi/Pinyin trên SQLite, limit/cursor/ranking/empty/validation (`HL-03-03`).
+- [ ] API detail mục từ và attribution theo `vocabId` (`HL-03-04`).
 - [ ] UI nhập/dán/chọn chữ, Dictionary/Saved Words, lưu/bỏ lưu không trùng, offline/error; TTS nếu tương thích.
 - **DoD:** nhập tay → tra thông tin có nguồn → lưu/bỏ lưu → thấy trên Web/Android; test search/repository qua. Không phụ thuộc OCR/AI.
 
@@ -204,5 +205,6 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 | 2026-11-21 | Phase 02 · HL-02-08 | Người dùng đã bật Email/Password; config xác nhận `email.enabled=true`. Web tạo/đọc hồ sơ, Android đăng nhập cùng UID; Android sửa tên thành `AndroidProd02` thì Web đọc được, Web sửa thành `WebProd02` thì Android đọc được. Firestore REST: owner A đọc A trả 200, token B đọc A trả 403, guest trả 403; hai UID khác nhau. `flutter analyze`, 4/4 widget tests, Web build và Android release APK build qua. Avast TLS inspection chỉ được hỗ trợ bằng CA do user cài và network security config thuộc `src/debug`; `aapt` xác nhận APK release không có cấu hình debug/cleartext này. | Phase 02 đạt DoD production. Commit đúng một issue, fast-forward `main` cục bộ, mở `phase/03`; không push. |
 | 2026-11-21 | Phase 03 · HL-03-01 | Đã fast-forward Phase 02 vào `main` và mở `phase/03`. Xác minh trực tiếp OpenCidian tại commit `17873f10941c11ae4e410c91efdcb51c04b23c01`, CC BY-SA 4.0, checksum license/schema/lock; chốt manifest máy đọc. Quyết định corpus đã duyệt nằm trong SQLite read-only của backend, `vocabId` SHA-256 ổn định, Pinyin search normalize, HSK giữ riêng theo phiên bản và ví dụ thiếu giữ rỗng; cập nhật schema/API/attribution. | Tiếp tục `HL-03-02`: build nguồn pin, tạo import idempotent/artifact checksum, duyệt 300–500 mục hoặc báo số thật; không push. |
 | 2026-11-21 | Phase 03 · HL-03-02 | Build OpenCidian pin thành công: 125.397 entry nguồn. Importer Python chọn 500 mục HSK 3.0 level 1 có nghĩa Việt, loại tên riêng/record sai cấu trúc và gộp trùng Hanzi+Pinyin; SQLite 380.928 bytes, SHA-256 `cb1e7939…68edb`. Hai lần build cho hash giống nhau; Ruff và 9/9 pytest qua. Spot-check 80 mục ghi nhận polyphone hợp lệ; không tạo nghĩa/ví dụ bằng AI. | Artifact là candidate đã validate nguồn/cấu trúc. Thêm `HL-03-08` review tiếng Việt độc lập trước DoD; có thể tiếp tục API search/detail trên candidate. |
+| 2026-11-21 | Phase 03 · HL-03-03 | Thêm Firebase Admin Python 7.8.0 và lockfile tái lập; mọi `/api/v1/dictionary/search` yêu cầu ID token được Firebase xác minh. Search SQLite read-only hỗ trợ Hanzi/Pinyin dấu, số, không dấu/có-không khoảng trắng; exact/prefix ranking, limit 1–50, cursor gắn query, empty/invalid states. Ruff và 12/12 pytest qua, gồm unauthorized, pagination không trùng và bad cursor. | Tiếp tục `HL-03-04` detail/attribution; production token và Flutter client được kiểm ở các issue UI/E2E. |
 
-**Bước tiếp theo:** commit `HL-03-02`, sau đó làm `HL-03-03` API search trên SQLite; `HL-03-08` vẫn là cổng review bắt buộc trước nghiệm thu Phase 03. Chọn service/key OCR/AI cụ thể ở Phase 09–10 khi sẵn sàng.
+**Bước tiếp theo:** commit `HL-03-03`, rồi làm `HL-03-04` API detail/attribution; `HL-03-08` vẫn là cổng review bắt buộc trước nghiệm thu Phase 03. Chọn service/key OCR/AI cụ thể ở Phase 09–10 khi sẵn sàng.
