@@ -1,6 +1,6 @@
 # HanLearn AI — danh sách GitHub Issues cho Kanban
 
-> Phiên bản 1.6 · Nguồn: `plan.md` v1.1 · Phase 00–01 đã fast-forward vào `main` cục bộ; Phase 02 đang thực hiện trên `phase/02`.
+> Phiên bản 1.7 · Nguồn: `plan.md` v1.1 · Phase 00–01 đã fast-forward vào `main` cục bộ; Phase 02 đang thực hiện trên `phase/02`.
 > Thứ tự: **core Phase 00–08 → OCR thật Phase 09 → AI API thật Phase 10 → nghiệm thu Phase 11**.
 > Kiến trúc cố định: **Flutter Web + Flutter Android từ một codebase, backend Python/FastAPI**. Không `git push` nếu người dùng chưa yêu cầu.
 
@@ -13,7 +13,7 @@
 - Ước lượng là **ngày công tham khảo cho solo developer**, có thể sửa theo thực tế. Nếu một hàng vượt 2 ngày, tách issue con trước khi bắt đầu, giữ liên kết với mã gốc.
 - Trợ lý tự tạo branch cục bộ `phase/xx` khi mở phase và tự tạo commit sau mỗi issue hoàn thành; người dùng không cần thao tác Git hộ. Mỗi hàng `HL-xx-yy` tương ứng **đúng một commit mới** trên branch cùng phase; subject chứa `[HL-xx-yy]`. Gộp code, test và tài liệu của issue vào commit đó. Chỉ sau khi cả phase đạt DoD mới fast-forward `main` cục bộ; không push.
 
-**Tiến độ cục bộ:** Phase 00–01 đã tích hợp `main` cục bộ; `HL-02-00` DONE (`c7e8731`), `HL-02-01` DONE (`4bddd06`), `HL-02-02` DONE (`af35654`), `HL-02-03` DONE (`2ccefe3`), `HL-02-04` DONE (`2041c63`). `HL-02-05` có test Rules hai UID và retry, sẵn sàng commit; đồng bộ hai nền tảng thuộc issue kế tiếp. Chưa tạo GitHub Issues online, chưa push.
+**Tiến độ cục bộ:** Phase 00–01 đã tích hợp `main` cục bộ; `HL-02-00` DONE (`c7e8731`), `HL-02-01` DONE (`4bddd06`), `HL-02-02` DONE (`af35654`), `HL-02-03` DONE (`2ccefe3`), `HL-02-04` DONE (`2041c63`), `HL-02-05` DONE (`bda3946`). `HL-02-06` đã kiểm chứng đồng bộ Web/Android hai chiều trên Emulator; xem `docs/testing/phase-02-evidence.md`. `HL-02-07` là cổng project thật còn mở. Chưa tạo GitHub Issues online, chưa push.
 
 Quy trình Git mẫu: từ `main` đã có phase trước, tạo `git switch -c phase/00`; hoàn thành HL-00-01 rồi commit `docs(requirements): write PRD [HL-00-01]`. Sau khi tất cả issue Phase 00 và DoD đạt, chuyển về `main`, chạy `git merge --ff-only phase/00`, rồi mới tạo `phase/01`. Lặp lại đến Phase 11. Nếu fast-forward không thực hiện được, kiểm tra và xử lý lịch sử branch trước; không ép merge hoặc push.
 
@@ -68,7 +68,7 @@ Milestone `Phase-01`; label chung `phase-01`. **DoD:** Flutter Web, Flutter Andr
 
 ## Phase 02 — Firebase Auth, Firestore và Rules
 
-Milestone `Phase-02`; label chung `phase-02`, `firebase`. **DoD:** login/logout, dữ liệu riêng theo UID, đồng bộ Web/Android, A không truy cập B.
+Milestone `Phase-02`; label chung `phase-02`, `firebase`. **DoD:** login/logout, dữ liệu riêng theo UID, đồng bộ Web/Android, A không truy cập B. Bằng chứng Emulator cho các issue không tự đóng cổng production của phase; provider, Rules và luồng hai target trên project thật phải được kiểm tra trước khi chuyển phase.
 
 | ID | Tiêu đề issue | Phụ thuộc | Ước lượng | Tiêu chí xong / bằng chứng |
 |---|---|---|---:|---|
@@ -79,6 +79,7 @@ Milestone `Phase-02`; label chung `phase-02`, `firebase`. **DoD:** login/logout,
 | HL-02-04 | Viết Firestore Rules cho users và từ điển chung | HL-02-03 | 1.5 | Rules giới hạn UID/field/type; vocabulary client chỉ đọc; mặc định từ chối truy cập không hợp lệ. |
 | HL-02-05 | Test Rules hai tài khoản và lỗi mạng | HL-02-04 | 1.5 | Emulator tests chứng minh A không đọc/ghi B; retry/error states được kiểm tra. |
 | HL-02-06 | Kiểm chứng đồng bộ Auth/Firestore hai nền tảng | HL-02-05 | 1 | Cùng UID đọc dữ liệu trên Flutter Web và Android; ghi bằng chứng và DoD. |
+| HL-02-07 | Nghiệm thu Firebase trên project thật | HL-02-06 | 1.5 | Xác minh Email/Password provider, triển khai và kiểm Rules; Web/Android đăng nhập, cùng UID đồng bộ hồ sơ, UID khác/guest bị từ chối trên `hanlearn-7553f`; ghi bằng chứng production và giữ bí mật tài khoản thử nghiệm. |
 
 ## Phase 03 — Từ điển, nhập tay và lưu từ
 
