@@ -58,6 +58,8 @@ Web và Android app đã đăng ký trong Firebase project `hanlearn-7553f`; Flu
 
 Máy phát triển có HTTPS inspection có thể cần cài CA tương ứng vào Android emulator. Cấu hình `src/debug` cho phép debug build tin CA do user cài để kiểm thử cục bộ; APK release không mang cấu hình này và vẫn dùng trust store mặc định. Không commit CA vào repository.
 
+Nguồn corpus Phase 03 được khóa tại OpenCidian commit `17873f10941c11ae4e410c91efdcb51c04b23c01`, dữ liệu theo CC BY-SA 4.0. Ghi công: **OpenCidian by Perxel**, CC-CEDICT, CVDICT và các upstream được liệt kê trong metadata nguồn. HanLearn sẽ build tập con đã duyệt thành SQLite cho backend; Flutter chỉ tra qua API. Xem `backend/data/dictionary/source-manifest.json` và `docs/architecture/dictionary-corpus-decision.md`.
+
 Nếu Android build trên Windows báo lỗi Kotlin incremental cache do repo và Pub cache ở hai ổ khác nhau, đặt `PUB_CACHE` cùng ổ với repo trước `flutter pub get` và build (ví dụ `$env:PUB_CACHE='D:\PubCache'`). Máy phát triển này cũng cần `$env:JAVA_TOOL_OPTIONS='-Djavax.net.ssl.trustStoreType=Windows-ROOT'` để Gradle tải Firebase từ Google Maven qua kho chứng chỉ Windows. Đây là cấu hình môi trường cục bộ, không phải yêu cầu của CI Linux.
 
 ## Chạy Flutter Android

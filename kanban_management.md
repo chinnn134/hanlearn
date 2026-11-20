@@ -1,6 +1,6 @@
 # HanLearn AI — danh sách GitHub Issues cho Kanban
 
-> Phiên bản 1.9 · Nguồn: `plan.md` v1.2 · Phase 00–01 đã fast-forward vào `main` cục bộ; Phase 02 đã đạt DoD trên `phase/02` và chờ commit/fast-forward cục bộ.
+> Phiên bản 2.0 · Nguồn: `plan.md` v1.3 · Phase 00–02 đã fast-forward vào `main` cục bộ; Phase 03 đang thực hiện trên `phase/03`.
 > Thứ tự: **core Phase 00–08 → OCR thật Phase 09 → AI API thật Phase 10 → nghiệm thu Phase 11**.
 > Kiến trúc cố định: **Flutter Web + Flutter Android từ một codebase, backend Python/FastAPI**. Không `git push` nếu người dùng chưa yêu cầu.
 
@@ -13,7 +13,7 @@
 - Ước lượng là **ngày công tham khảo cho solo developer**, có thể sửa theo thực tế. Nếu một hàng vượt 2 ngày, tách issue con trước khi bắt đầu, giữ liên kết với mã gốc.
 - Trợ lý tự tạo branch cục bộ `phase/xx` khi mở phase và tự tạo commit sau mỗi issue hoàn thành; người dùng không cần thao tác Git hộ. Mỗi hàng `HL-xx-yy` tương ứng **đúng một commit mới** trên branch cùng phase; subject chứa `[HL-xx-yy]`. Gộp code, test và tài liệu của issue vào commit đó. Chỉ sau khi cả phase đạt DoD mới fast-forward `main` cục bộ; không push.
 
-**Tiến độ cục bộ:** Phase 00–01 đã tích hợp `main` cục bộ; `HL-02-00` DONE (`c7e8731`), `HL-02-01` DONE (`4bddd06`), `HL-02-02` DONE (`af35654`), `HL-02-03` DONE (`2ccefe3`), `HL-02-04` DONE (`2041c63`), `HL-02-05` DONE (`bda3946`), `HL-02-06` DONE (`bc863b4`), `HL-02-07` DONE (`60ebccf`). `HL-02-08` đã đạt tiêu chí production trên Web/Android và sẵn sàng commit; Phase 02 đạt DoD. Chưa tạo GitHub Issues online, chưa push.
+**Tiến độ cục bộ:** Phase 00–02 đã tích hợp `main` cục bộ; Phase 02 hoàn tất qua `HL-02-08` (`75424ad`). Branch `phase/03` đã mở; `HL-03-01` đã chốt nguồn/schema và sẵn sàng commit. Chưa tạo GitHub Issues online, chưa push.
 
 Quy trình Git mẫu: từ `main` đã có phase trước, tạo `git switch -c phase/00`; hoàn thành HL-00-01 rồi commit `docs(requirements): write PRD [HL-00-01]`. Sau khi tất cả issue Phase 00 và DoD đạt, chuyển về `main`, chạy `git merge --ff-only phase/00`, rồi mới tạo `phase/01`. Lặp lại đến Phase 11. Nếu fast-forward không thực hiện được, kiểm tra và xử lý lịch sử branch trước; không ép merge hoặc push.
 
@@ -88,7 +88,7 @@ Milestone `Phase-03`; label chung `phase-03`, `dictionary`. **DoD:** nhập/dán
 
 | ID | Tiêu đề issue | Phụ thuộc | Ước lượng | Tiêu chí xong / bằng chứng |
 |---|---|---|---:|---|
-| HL-03-01 | Chọn nguồn từ điển và schema mục từ | HL-02-06, HL-00-07 | 1 | Quyền dùng, Hanzi giản thể, Pinyin, nghĩa Việt, ví dụ, HSK nếu xác minh, metadata nguồn được ghi. |
+| HL-03-01 | Chọn nguồn từ điển và schema mục từ | HL-02-06, HL-00-07 | 1 | Pin OpenCidian commit/checksum theo CC BY-SA 4.0; schema có giản thể/phồn thể, Pinyin, nghĩa Việt, ví dụ rỗng khi thiếu, HSK theo version, provenance; quyết định SQLite backend/search/ID ổn định được ghi. |
 | HL-03-02 | Viết seed/import từ điển idempotent | HL-03-01 | 2 | Import chạy lặp không trùng; validation; mục tiêu 300–500 từ hoặc báo số thật, không bịa nghĩa. |
 | HL-03-03 | Làm API search Hanzi/Pinyin | HL-03-02 | 1.5 | Backend Python search có giới hạn/phân trang và xử lý không tìm thấy; API tests pass. |
 | HL-03-04 | Làm API detail mục từ và nguồn dữ liệu | HL-03-02 | 1 | Detail trả mục từ/nguồn đúng contract; API tests pass. |

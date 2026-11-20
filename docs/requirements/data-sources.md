@@ -1,16 +1,18 @@
 # HanLearn AI — nguồn dữ liệu và quyền sử dụng
 
-> Issue `HL-00-07` · Kiểm tra nguồn ngày 2026-11-20. Đây là quyết định nguồn cho thiết kế; Phase 03 phải khóa release/hash, kiểm tra dữ liệu thực tế và ghi attribution trước khi import. Không có dữ liệu bên thứ ba nào đã được tải/seed vào repo ở issue này.
+> Issue `HL-00-07`, cập nhật bởi `HL-03-01` ngày 2026-11-21. Phase 03 đã khóa nguồn/schema; chưa import corpus ở issue này.
 
 ## 1. Quyết định nguồn từ điển
 
 **Nguồn ưu tiên cho seed MVP:** [OpenCidian data của Perxel](https://github.com/OpenCidian/opencidian-data). Repo công bố dữ liệu Trung–Việt có Hanzi giản thể, Pinyin, nghĩa Việt, nguồn theo từng field, và build từ các nguồn được pin; tác giả ghi dữ liệu theo **CC BY-SA 4.0**, code theo MIT. [README nguồn và giấy phép](https://github.com/OpenCidian/opencidian-data#licence), [LICENSE-DATA](https://github.com/OpenCidian/opencidian-data/blob/main/LICENSE-DATA). Đây là lựa chọn dựa trên cấu trúc truy vết nguồn và khả năng lấy nghĩa Việt, không phải khẳng định mọi mục đều chính xác.
 
+**Khóa Phase 03:** commit `17873f10941c11ae4e410c91efdcb51c04b23c01` (2026-11-10), `LICENSE-DATA` SHA-256 `0bdfb0201d1803634f268cdff0993b8349d2c70e956a06dbb667c8dd65254ec5`. Manifest ở `backend/data/dictionary/source-manifest.json`; schema và quyết định lưu/search ở `docs/architecture/dictionary-corpus-decision.md`. Đổi commit hoặc nguồn phải cập nhật manifest, checksum, attribution, test và ghi quyết định mới.
+
 Nguồn gốc chính được OpenCidian ghi: [CC-CEDICT](https://cc-cedict.org/editor/editor.php?handler=Download) cho mục từ/Pinyin và [CVDICT của Phong Phan](https://github.com/ph0ngp/CVDICT) cho nghĩa tiếng Việt. Cả hai trang nguồn công bố **CC BY-SA 4.0**. CVDICT nói rõ nhiều nghĩa được dịch với hỗ trợ AI và có thể còn lỗi; vì vậy seed MVP phải **duyệt thủ công** các mục được chọn, không coi dữ liệu mở là đồng nghĩa với đúng tuyệt đối. Không tự trộn nghĩa từ web/app không có quyền tái sử dụng.
 
 ### Cách dùng ở Phase 03
 
-1. Pin một release/tag/commit của OpenCidian; lưu URL, commit/release, SHA-256 file tải, ngày truy cập và license vào manifest của seed. Không tải “latest” rồi để dữ liệu thay đổi ngầm giữa các lần test.
+1. Dùng đúng commit đã khóa; `HL-03-02` ghi thêm SHA-256 artifact build, số mục accepted/rejected và metadata `dist/meta.json`. Không tải “latest” rồi để dữ liệu thay đổi ngầm giữa các lần test.
 2. Chọn mục từ chữ Hán giản thể in phổ biến, có `pinyin` và `vi.senses` hiện hữu; mục tiêu 300–500 mục nếu kiểm duyệt được, báo số thực. Mục thiếu nghĩa/Pinyin hoặc nghĩa đáng ngờ thì bỏ qua/chờ hiệu đính, không dùng LLM tự điền như nguồn chuẩn.
 3. Mỗi record import giữ `sourceId` và nguồn gốc field theo khả năng schema; hiển thị nhãn nguồn trong Dictionary Detail, kèm trang attribution đầy đủ ở README/app. Ghi việc chuyển đổi/rút gọn dữ liệu và điều kiện chia sẻ lại dữ liệu dẫn xuất theo CC BY-SA 4.0. Giữ giấy phép dữ liệu trong bản phân phối theo yêu cầu nguồn.
 4. Ví dụ câu Trung/Pinyin/dịch **không được giả định có sẵn** trong OpenCidian. Chỉ nhập ví dụ do dự án tự biên soạn và được kiểm tra thủ công, hoặc từ nguồn có quyền rõ ràng; thiếu ví dụ thì `examples: []` và UI hiển thị đúng. Không ghi AI-generated example thành ví dụ từ điển chuẩn.

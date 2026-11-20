@@ -5,7 +5,7 @@
 ## 1. Nguyên tắc dữ liệu
 
 - Firebase Authentication cung cấp UID. Dữ liệu cá nhân nằm dưới `users/{uid}/...`; client chỉ truy cập nhánh có `request.auth.uid == uid`. Không dùng UID tự gửi trong request làm căn cứ quyền.
-- `vocabulary/{vocabId}` là dữ liệu chung có nguồn; client chỉ đọc. Việc import/sửa dùng backend/admin có quyền thích hợp, không qua client thường.
+- Corpus từ điển Phase 03 nằm trong SQLite read-only của backend theo `dictionary-corpus-decision.md`; client tra qua FastAPI. `vocabulary/{vocabId}` vẫn là path được bảo vệ/read-only nhưng chưa bắt buộc seed; dữ liệu cá nhân tham chiếu cùng `vocabId` ổn định.
 - Timestamps là Firestore `Timestamp` do server tạo khi có thể; lịch ôn lưu thời điểm UTC, UI đổi sang timezone địa phương để hiển thị. Không lưu ngày dạng chuỗi mơ hồ.
 - Mọi collection có danh sách field cho phép, type và giới hạn kích thước; Rules xác minh các điều kiện khả thi. Backend/seed validation bổ sung các điều kiện Rules không biểu đạt được.
 - Không lưu ảnh quét mặc định. Lịch sử quét chỉ sinh sau người dùng xác nhận text, giữ text OCR gốc và text đã sửa riêng.
@@ -45,11 +45,11 @@ Document này được tạo idempotent sau đăng nhập lần đầu. Email/di
 | `pinyin` | string | Có | Pinyin có dấu thanh hoặc cách thể hiện đã được nguồn xác minh |
 | `meaningVi` | string | Có | Nghĩa tiếng Việt có nguồn; không điền AI như dữ liệu chuẩn |
 | `examples` | list of map | Không | Mỗi map có `zh`, `pinyin`, `vi` khi nguồn cung cấp và đã xác minh |
-| `level` | string/null | Không | HSK/chỉ số khác chỉ khi xác định nguồn và phiên bản phân loại |
+| `levels` | map/null | Không | Chỉ `hsk2` 1–6 và `hsk3` 1–7 từ nguồn đã pin; không gộp hai chuẩn thành một level mơ hồ |
 | `sourceId` | string | Có | Tham chiếu metadata nguồn/import license trong docs/seed manifest |
 | `updatedAt` | Timestamp | Có | Theo lần import/cập nhật dữ liệu chung |
 
-Client có thể tìm qua backend dictionary API, không nhất thiết query Firestore trực tiếp. Trường `sourceId` phải đủ để truy ngược giấy phép và nguồn; metadata nguồn chi tiết thuộc `HL-00-07`/Phase 03. Số lượng/độ dài examples giới hạn khi seed để tránh document lớn.
+Client tìm qua backend dictionary API, không query/scan Firestore để search. Schema corpus đầy đủ gồm `sourceEntryId`, `traditional`, `pinyinNumeric`, `meaningViSenses`, `hanViet`, `levels` và `sourceRefs`; bảng trên chỉ mô tả projection nếu sau này mirror sang Firestore. Trường `sourceId` phải truy ngược manifest/giấy phép. Seed đầu giữ `examples: []` vì chưa có nguồn ví dụ đã duyệt.
 
 ### `users/{uid}/saved_words/{vocabId}`
 
@@ -117,7 +117,7 @@ Từ điển client **không được ghi** trong mọi trường hợp. Rules P
 | Today Review | `review_schedule` với `dueAt <= now`, order `dueAt`, giới hạn | Cần index nếu query phối hợp filter/order; xác nhận trong Phase 04 |
 | Recent Quiz | `quiz_results` theo `createdAt desc`, giới hạn | Dùng số lượng nhỏ cho dashboard |
 | Scan History | `scan_history` theo `createdAt desc`, giới hạn | Chỉ Phase 09; không hiện dữ liệu giả ở core |
-| Dictionary | Backend search Hanzi/Pinyin có phân trang | Không quét toàn bộ Firestore ở client |
+| Dictionary | Backend search Hanzi/Pinyin trên SQLite read-only, có limit/cursor | Không quét toàn bộ Firestore ở client |
 
 `firebase/firestore.indexes.json` được tạo khi truy vấn thực tế được chốt; chỉ thêm index có test/use case. Dashboard tránh đếm bằng cách tải toàn bộ documents khi dữ liệu lớn; chiến lược count/cache được quyết định trong Phase 05 với số đo thực tế.
 

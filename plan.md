@@ -1,6 +1,6 @@
 # HanLearn AI — kế hoạch thực thi
 
-> Phiên bản 1.2, cập nhật 2026-11-21 theo CR-001 đến CR-007; người dùng đã xác nhận bắt đầu. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Phase 00–01 đã fast-forward vào `main` cục bộ; Phase 02 đã đạt DoD trên `phase/02` và chờ commit/fast-forward cục bộ.
+> Phiên bản 1.3, cập nhật 2026-11-21 theo CR-001 đến CR-007; người dùng đã xác nhận bắt đầu. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Phase 00–02 đã fast-forward vào `main` cục bộ; Phase 03 đang triển khai trên `phase/03`.
 
 ## 1. Mục tiêu và thay đổi thứ tự
 
@@ -25,8 +25,8 @@ Sản phẩm cuối: đăng nhập → chụp/tải ảnh chữ Hán giản th�
 |---|---|---|---|---|
 | 00 | Yêu cầu, kiến trúc, contract | — | PRD, flow, schema, API, acceptance criteria | DONE |
 | 01 | Khởi tạo Flutter Web + Android, backend Python/FastAPI, CI | 00 | Cả Web/Android chạy, Python `/health`, README | DONE cục bộ; hosted CI chưa chạy vì không push |
-| 02 | Firebase Auth, Firestore, Rules | 01 | Đăng nhập, dữ liệu riêng, đồng bộ | DONE; chờ fast-forward cục bộ |
-| 03 | Từ điển, nhập tay, lưu từ | 02 | Nhập/dán → tra → lưu/bỏ lưu | NOT STARTED |
+| 02 | Firebase Auth, Firestore, Rules | 01 | Đăng nhập, dữ liệu riêng, đồng bộ | DONE |
+| 03 | Từ điển, nhập tay, lưu từ | 02 | Nhập/dán → tra → lưu/bỏ lưu | IN PROGRESS |
 | 04 | Flashcard, Quiz, lịch ôn | 03 | Học → quiz → lịch ôn | NOT STARTED |
 | 05 | Dashboard, lịch sử học, UX | 02–04 | Luồng học core liền mạch | NOT STARTED |
 | 06 | UI ảnh và contract OCR/AI | 00–05 | Image picker/preview, adapter, chưa có OCR/AI thật | NOT STARTED |
@@ -73,7 +73,7 @@ Phase 09 và 10 là hai phase cuối của **phát triển tính năng**; Phase 
 
 ### Phase 03 — Từ điển và nhập chữ thủ công
 
-- [ ] Chọn dữ liệu có quyền dùng, lưu metadata nguồn; chuẩn hóa giản thể, Pinyin dấu thanh, nghĩa Việt, ví dụ, HSK nếu xác minh.
+- [x] Chọn OpenCidian commit `17873f1…`, khóa manifest/checksum/CC BY-SA 4.0; chốt schema, search normalization, ID ổn định và SQLite backend (`HL-03-01`).
 - [ ] Seed mục phổ biến (mục tiêu 300–500, báo số thật), import idempotent/validation, không bịa nghĩa.
 - [ ] API search Hanzi/Pinyin và detail, phân trang/giới hạn, fallback từ không có trong corpus.
 - [ ] UI nhập/dán/chọn chữ, Dictionary/Saved Words, lưu/bỏ lưu không trùng, offline/error; TTS nếu tương thích.
@@ -201,5 +201,6 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 | 2026-11-20 | Phase 02 · HL-02-06 | Auth/Firestore Emulator cùng UID `VSWeCC6BkgyIOTHXVzNYu7ijksSx`: Android lưu `RuleTest` → Web đọc; Web sửa `WebSync02` → Android mở lại đọc; Android sửa `AndroidSync02` → Web reload đọc. REST Emulator xác nhận một document `users/{uid}`, `displayName=AndroidSync02`, `createdAt` giữ nguyên. Web build và Android debug APK chạy trên hai target; bằng chứng và lệnh ở `docs/testing/phase-02-evidence.md`. | Issue đạt trên Emulator. Phase 02 còn cổng production: xác minh/bật Email/Password provider, deploy/kiểm Rules và thử Web/Android với project thật. Chưa fast-forward `main`, chưa push. |
 | 2026-11-20 | Phase 02 · HL-02-07 | Firebase CLI với TLS CA cục bộ xác nhận database `(default)` và hai app Web/Android. Auth config API trả `CONFIGURATION_NOT_FOUND`. Thử khởi tạo Auth qua API trả `BILLING_NOT_ENABLED`, nên người dùng sẽ bật Email/Password qua Console. Deploy `firebase/firestore.rules` lên `hanlearn-7553f` thành công; đọc Rules release `662f0926-44ca-4263-91cd-0258d8e5b02f`, nội dung trùng repo; guest GET `users/{uid}` trả 403. 4/4 Rules tests, `flutter analyze`, 4/4 widget tests, Web build và Android debug APK build qua với cấu hình thật. Chi tiết ở `docs/testing/phase-02-production-evidence.md`. | Chỉ phần Rules production đạt. Tiếp tục `HL-02-08` sau khi Email/Password được bật: kiểm chứng đăng nhập, cùng UID Web/Android, UID khác. Chưa fast-forward `main`, chưa push. |
 | 2026-11-21 | Phase 02 · HL-02-08 | Người dùng đã bật Email/Password; config xác nhận `email.enabled=true`. Web tạo/đọc hồ sơ, Android đăng nhập cùng UID; Android sửa tên thành `AndroidProd02` thì Web đọc được, Web sửa thành `WebProd02` thì Android đọc được. Firestore REST: owner A đọc A trả 200, token B đọc A trả 403, guest trả 403; hai UID khác nhau. `flutter analyze`, 4/4 widget tests, Web build và Android release APK build qua. Avast TLS inspection chỉ được hỗ trợ bằng CA do user cài và network security config thuộc `src/debug`; `aapt` xác nhận APK release không có cấu hình debug/cleartext này. | Phase 02 đạt DoD production. Commit đúng một issue, fast-forward `main` cục bộ, mở `phase/03`; không push. |
+| 2026-11-21 | Phase 03 · HL-03-01 | Đã fast-forward Phase 02 vào `main` và mở `phase/03`. Xác minh trực tiếp OpenCidian tại commit `17873f10941c11ae4e410c91efdcb51c04b23c01`, CC BY-SA 4.0, checksum license/schema/lock; chốt manifest máy đọc. Quyết định corpus đã duyệt nằm trong SQLite read-only của backend, `vocabId` SHA-256 ổn định, Pinyin search normalize, HSK giữ riêng theo phiên bản và ví dụ thiếu giữ rỗng; cập nhật schema/API/attribution. | Tiếp tục `HL-03-02`: build nguồn pin, tạo import idempotent/artifact checksum, duyệt 300–500 mục hoặc báo số thật; không push. |
 
-**Bước tiếp theo:** commit `HL-02-08`, fast-forward `phase/02` vào `main` cục bộ, mở `phase/03` và bắt đầu `HL-03-01` về nguồn/schema từ điển. Chọn service/key OCR/AI cụ thể ở Phase 09–10 khi sẵn sàng.
+**Bước tiếp theo:** hoàn tất/commit `HL-03-01`, rồi làm `HL-03-02` build/import từ nguồn pin với validation, review và số liệu thật. Chọn service/key OCR/AI cụ thể ở Phase 09–10 khi sẵn sàng.

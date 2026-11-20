@@ -121,7 +121,7 @@ docs/                   requirements, architecture, api, testing, report
 | HTTP request/response/error/size/quota | HL-00-06 | Cần contract chi tiết |
 | Nguồn từ điển/ảnh và giấy phép | HL-00-07 | Cần kiểm tra nguồn thực tế |
 | Auth method | Phase 02 | Ít nhất một method chạy trên cả hai target |
-| Corpus từ điển đặt ở Firestore hay backend store | Phase 03, ghi ADR | Phụ thuộc license/size/search; client vẫn có dictionary API |
+| Corpus từ điển đặt ở Firestore hay backend store | Đã chốt HL-03-01: SQLite read-only trong backend Python | Manifest/checksum và search schema ở `dictionary-corpus-decision.md`; client dùng API |
 | OCR service riêng hay PaddleOCR nội bộ | Phase 09 | Người dùng có thể cung cấp service; cần đo được thực tế |
 | LLM provider/model/key và quota | Phase 10 | Phụ thuộc API key, chi phí và chính sách provider |
 

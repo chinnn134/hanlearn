@@ -1,6 +1,6 @@
 # Quy tắc thực thi HanLearn AI
 
-> Phiên bản 1.0, theo CR-001 đến CR-007; cập nhật cổng thực thi ngày 2026-11-21. Đọc cùng `plan.md`, `kanban_management.md` và `HanLearn_AI_SOLO_PHASE_PLAN.md` trước mỗi lượt.
+> Phiên bản 1.1, theo CR-001 đến CR-007; cập nhật cổng thực thi ngày 2026-11-21. Đọc cùng `plan.md`, `kanban_management.md` và `HanLearn_AI_SOLO_PHASE_PLAN.md` trước mỗi lượt.
 
 ## 1. Nguồn yêu cầu và cập nhật
 
@@ -32,4 +32,4 @@
 
 ## 4. Cổng hiện tại
 
-Người dùng đã xác nhận bắt đầu. Phase 00–01 đã đạt DoD cục bộ và được fast-forward vào `main`. Phase 02 đã đạt cổng production trên `phase/02`: Email/Password hoạt động, Rules đã deploy/đọc lại, cùng UID đồng bộ Web ↔ Android hai chiều, UID khác và guest bị từ chối. Collection chưa triển khai vẫn deny-all. Cấu hình tin CA do user cài chỉ được phép nằm trong Android `src/debug`; không commit CA và không nới trust/cleartext cho release. Sau commit duy nhất của `HL-02-08`, fast-forward `phase/02` vào `main` rồi mới tạo `phase/03`; issue đầu tiên là `HL-03-01`. Từng issue phải đạt tiêu chí và có đúng một commit cục bộ. Tiếp tục cập nhật plan, rule và backlog khi yêu cầu thay đổi; không push.
+Người dùng đã xác nhận bắt đầu. Phase 00–02 đã đạt DoD và được fast-forward vào `main`; Phase 03 đang mở trên `phase/03`. Nguồn từ điển bị khóa bởi `backend/data/dictionary/source-manifest.json`; không dùng “latest”, không nhập nguồn thiếu license/checksum, không dùng AI điền trường chuẩn. Corpus đã duyệt nằm trong SQLite read-only của backend Python và Flutter tra qua API; dữ liệu người dùng chỉ tham chiếu `vocabId`. Đổi nguồn/commit/schema/search phải cập nhật manifest, attribution, contract, migration và test trong issue riêng. `HL-03-01` chốt nguồn/schema; tiếp theo `HL-03-02` phải báo số accepted/rejected và checksum artifact thật. Từng issue phải đạt tiêu chí và có đúng một commit cục bộ; không push.

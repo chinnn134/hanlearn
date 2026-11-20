@@ -54,8 +54,8 @@ Query:
       "hanzi": "学习",
       "pinyin": "xuéxí",
       "meaningVi": "học tập",
-      "level": null,
-      "sourceId": "source-a"
+      "levels": {"hsk2": 2, "hsk3": 1},
+      "sourceId": "opencidian-17873f1"
     }
   ],
   "nextCursor": null,
@@ -63,7 +63,7 @@ Query:
 }
 ```
 
-Ví dụ là **hình dạng dữ liệu**, không phải bằng chứng từ đã seed hay giấy phép nguồn. Không có kết quả → `items: []`, không phải lỗi. `nextCursor` null khi hết trang. Kiểu và cách normalize Pinyin (dấu thanh/không dấu, exact/prefix) sẽ được ghi thành quyết định Phase 03; không đổi tên field/giới hạn mà không cập nhật contract/test. Backend không dùng LLM để điền mục từ vắng mặt.
+Ví dụ là **hình dạng dữ liệu**, không phải bằng chứng từ đã seed hay giấy phép nguồn. Không có kết quả → `items: []`, không phải lỗi. `nextCursor` null khi hết trang. Phase 03 chuẩn hóa Pinyin dấu/số/không dấu, có/không khoảng trắng theo `dictionary-corpus-decision.md`; thứ tự exact Hanzi → prefix Hanzi → exact Pinyin → prefix Pinyin và tie-break ổn định. Backend không dùng LLM để điền mục từ vắng mặt.
 
 ### `GET /api/v1/dictionary/{vocabId}`
 
@@ -75,11 +75,9 @@ Ví dụ là **hình dạng dữ liệu**, không phải bằng chứng từ đ�
   "hanzi": "学习",
   "pinyin": "xuéxí",
   "meaningVi": "học tập",
-  "examples": [
-    { "zh": "我学习中文。", "pinyin": "Wǒ xuéxí Zhōngwén.", "vi": "Tôi học tiếng Trung." }
-  ],
-  "level": null,
-  "sourceId": "source-a",
+  "examples": [],
+  "levels": {"hsk2": 2, "hsk3": 1},
+  "sourceId": "opencidian-17873f1",
   "request_id": "req-example"
 }
 ```
@@ -180,7 +178,7 @@ Backend không trả 500 cho lỗi xác thực, file sai hoặc quota đã biế
 
 | Dữ liệu | Nguồn API/Firestore | Ghi chú |
 |---|---|---|
-| Từ điển chung | Python dictionary API; corpus có thể nằm Firestore hoặc backend store | Client không được ghi vocabulary |
+| Từ điển chung | Python dictionary API đọc SQLite corpus đã pin/duyệt | Client không đọc SQLite hoặc ghi vocabulary |
 | Hồ sơ/từ đã lưu/lịch ôn/Quiz | Firestore SDK trong Flutter dưới Rules | Không tạo CRUD FastAPI trùng lặp nếu không có ADR |
 | Lịch sử quét | Firestore `users/{uid}/scan_history/{scanId}` sau xác nhận | Backend OCR không tự ghi history khi user chưa sửa |
 | Giải thích AI | Python AI API, không phải corpus | Gắn nhãn và fallback |
@@ -195,7 +193,7 @@ Flutter Web cần CORS allowlist theo origin môi trường; Android không dùn
 | OCR có box/confidence hay không | Optional trong contract | Phase 09, không bịa dữ liệu |
 | OCR max size/timeout cuối | Default 8 MiB/20 MP, timeout config | Phase 09 theo service và đo thực tế |
 | AI provider/model, cost, quota cuối | Default 2/phút, 20/ngày/UID | Phase 10 và ADR chi phí |
-| Pinyin normalization/search strategy | Hanzi/Pinyin, limit/cursor đã chốt | Phase 03 dựa corpus và test |
+| Pinyin normalization/search strategy | Đã chốt ở HL-03-01; hiện thực/test ở HL-03-02/03 | Theo `dictionary-corpus-decision.md` |
 | Quiz/review xử lý client hay server | Chưa có endpoint trong contract | Phase 04 ADR |
 
 Không dùng các lựa chọn còn mở làm bằng chứng implementation đã hoàn thành. PRD, schema Firestore và contract này là baseline để viết acceptance criteria `HL-00-08`.
