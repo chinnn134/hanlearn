@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_app/core/app.dart';
 import 'package:flutter_app/features/auth/auth_session.dart';
 import 'package:flutter_app/features/auth/user_profile_repository.dart';
+import 'package:flutter_app/features/dictionary/dictionary_repository.dart';
 
 class FakeUserProfileRepository implements UserProfileRepository {
   UserProfile? profile;
@@ -74,11 +75,53 @@ class FakeAuthRepository implements AuthRepository {
     _changes.add(null);
   }
 
+  @override
+  Future<String> getIdToken() async => 'test-token';
+
   Future<void> dispose() => _changes.close();
 }
 
+class FakeDictionaryRepository implements DictionaryRepository {
+  bool fail = false;
+
+  @override
+  Future<List<DictionaryItem>> search(String query) async {
+    if (fail) throw const DictionaryApiException('Mất kết nối thử nghiệm');
+    if (query == 'none') return [];
+    return const [
+      DictionaryItem(
+        vocabId: 'ocd-test',
+        hanzi: '学习',
+        pinyin: 'xué xí',
+        meaningVi: 'học tập',
+        levels: {'hsk3': 1},
+        sourceId: 'opencidian-17873f1',
+      ),
+    ];
+  }
+
+  @override
+  Future<DictionaryDetail> detail(String vocabId) async =>
+      const DictionaryDetail(
+        item: DictionaryItem(
+          vocabId: 'ocd-test',
+          hanzi: '学习',
+          pinyin: 'xué xí',
+          meaningVi: 'học tập',
+          levels: {'hsk3': 1},
+          sourceId: 'opencidian-17873f1',
+        ),
+        traditional: '學習',
+        pinyinNumeric: 'xue2 xi2',
+        meaningViSenses: ['học tập'],
+        examples: [],
+        license: 'CC-BY-SA-4.0',
+        attribution: 'OpenCidian by Perxel',
+      );
+}
+
 void main() {
-  testWidgets('home navigates to a clearly marked unfinished feature', (
+  testWidgets('dictionary searches and opens source-aware detail', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(390, 844);
@@ -96,6 +139,9 @@ void main() {
           userProfileRepositoryProvider.overrideWithValue(
             FakeUserProfileRepository(),
           ),
+          dictionaryRepositoryProvider.overrideWithValue(
+            FakeDictionaryRepository(),
+          ),
         ],
         child: const HanLearnApp(),
       ),
@@ -106,10 +152,19 @@ void main() {
     await tester.tap(find.text('Tra từ').first);
     await tester.pumpAndSettle();
 
-    expect(
-      find.textContaining('Chức năng sẽ được triển khai ở Phase 03.'),
-      findsOneWidget,
+    await tester.enterText(find.byType(TextField), '学习');
+    await tester.tap(
+      find.descendant(
+        of: find.byType(TextField),
+        matching: find.byType(IconButton),
+      ),
     );
+    await tester.pumpAndSettle();
+    expect(find.textContaining('学习  xué xí'), findsOneWidget);
+    await tester.tap(find.textContaining('学习  xué xí'));
+    await tester.pumpAndSettle();
+    expect(find.text('Phồn thể: 學習'), findsOneWidget);
+    expect(find.textContaining('OpenCidian'), findsWidgets);
     expect(find.byType(NavigationBar), findsOneWidget);
   });
 
@@ -136,6 +191,46 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(NavigationRail), findsOneWidget);
+  });
+
+  testWidgets('dictionary shows empty and retryable error states', (
+    tester,
+  ) async {
+    final auth = FakeAuthRepository(
+      const AuthIdentity(uid: 'test-user', email: 'test@example.com'),
+    );
+    final dictionary = FakeDictionaryRepository();
+    addTearDown(auth.dispose);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(auth),
+          userProfileRepositoryProvider.overrideWithValue(
+            FakeUserProfileRepository(),
+          ),
+          dictionaryRepositoryProvider.overrideWithValue(dictionary),
+        ],
+        child: const HanLearnApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Tra từ').first);
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField), 'none');
+    await tester.testTextInput.receiveAction(TextInputAction.search);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Không tìm thấy mục từ'), findsOneWidget);
+
+    dictionary.fail = true;
+    await tester.enterText(find.byType(TextField), '学习');
+    await tester.testTextInput.receiveAction(TextInputAction.search);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Không thể tra từ'), findsOneWidget);
+    dictionary.fail = false;
+    await tester.tap(find.text('Thử lại'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('学习  xué xí'), findsOneWidget);
   });
 
   testWidgets('sign in and sign out update protected routes', (tester) async {

@@ -30,10 +30,11 @@ Kết quả: `{"status":"ok"}` với HTTP 200. Tài liệu OpenAPI sinh bởi Fa
 ```powershell
 Set-Location apps\flutter_app
 flutter pub get --enforce-lockfile
-flutter run -d chrome --web-port=3000
+flutter run -d chrome --web-port=3000 `
+  --dart-define=API_BASE_URL=http://127.0.0.1:8000
 ```
 
-Mở `http://localhost:3000`. `.env.example` cho phép origin này qua CORS. Lệnh mặc định dùng Firebase project `hanlearn-7553f` qua `lib/firebase_options.dart`. Backend Python có thể chạy riêng vì UI chưa gọi API. Khi API client được thêm, URL backend công khai sẽ truyền qua `--dart-define=API_BASE_URL=http://127.0.0.1:8000`; biến này hiện chưa được ứng dụng đọc.
+Mở `http://localhost:3000`. `.env.example` cho phép origin này qua CORS. App dùng Firebase project `hanlearn-7553f` và gửi ID token tới backend Dictionary API. `API_BASE_URL` là bắt buộc cho tra từ; không chứa API key.
 
 ### Firebase Emulator trong Phase 02
 
@@ -72,10 +73,11 @@ Khởi động emulator hoặc kết nối thiết bị, rồi kiểm tra `flutt
 
 ```powershell
 flutter pub get --enforce-lockfile
-flutter run -d emulator-5554
+flutter run -d emulator-5554 `
+  --dart-define=API_BASE_URL=http://10.0.2.2:8000
 ```
 
-Thay `emulator-5554` bằng ID thật do `flutter devices` báo. Nếu cần build APK debug: `flutter build apk --debug`; file nằm ở `apps/flutter_app/build/app/outputs/flutter-apk/app-debug.apk`. Android emulator sẽ dùng `http://10.0.2.2:8000` để gọi backend trên máy host khi API client được thêm. Phase 01 chưa có kết nối API thực trong Flutter.
+Thay `emulator-5554` bằng ID thật do `flutter devices` báo. Nếu cần build APK debug, truyền cùng `--dart-define`; Android emulator dùng `10.0.2.2` để gọi backend trên máy host. Thiết bị thật cần URL HTTPS/LAN phù hợp, không dùng `127.0.0.1` của máy phát triển.
 
 ## Kiểm tra cục bộ
 

@@ -6,6 +6,7 @@ import '../../features/auth/login_page.dart';
 import '../../features/auth/auth_session.dart';
 import '../../features/auth/profile_page.dart';
 import '../../features/home/home_page.dart';
+import '../../features/dictionary/dictionary_page.dart';
 import '../widgets/app_shell.dart';
 import '../widgets/feature_placeholder_page.dart';
 import '../widgets/state_panel.dart';
@@ -63,11 +64,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(path: '/', builder: (context, state) => const HomePage()),
           GoRoute(
             path: '/dictionary',
-            builder: (context, state) => const FeaturePlaceholderPage(
-              title: 'Tra từ',
-              phase: 'Phase 03',
-              description: 'Tra Hanzi/Pinyin và xem nghĩa tiếng Việt có nguồn.',
-            ),
+            builder: (context, state) => const DictionaryPage(),
           ),
           GoRoute(
             path: '/saved-words',
