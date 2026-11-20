@@ -5,6 +5,40 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_app/core/app.dart';
 import 'package:flutter_app/features/auth/auth_session.dart';
+import 'package:flutter_app/features/auth/user_profile_repository.dart';
+
+class FakeUserProfileRepository implements UserProfileRepository {
+  UserProfile? profile;
+
+  @override
+  Future<UserProfile> ensureCurrentUser(String expectedUid) async =>
+      profile ??= UserProfile(
+        uid: expectedUid,
+        displayName: 'Người học',
+        email: 'test@example.com',
+        createdAt: DateTime.utc(2026),
+        updatedAt: DateTime.utc(2026),
+      );
+
+  @override
+  Future<UserProfile> readCurrentUser(String expectedUid) =>
+      ensureCurrentUser(expectedUid);
+
+  @override
+  Future<UserProfile> updateDisplayName(
+    String expectedUid,
+    String displayName,
+  ) async {
+    final current = await ensureCurrentUser(expectedUid);
+    return profile = UserProfile(
+      uid: current.uid,
+      displayName: displayName,
+      email: current.email,
+      createdAt: current.createdAt,
+      updatedAt: DateTime.utc(2026),
+    );
+  }
+}
 
 class FakeAuthRepository implements AuthRepository {
   FakeAuthRepository(this.current);
@@ -51,7 +85,12 @@ void main() {
     addTearDown(repository.dispose);
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [authRepositoryProvider.overrideWithValue(repository)],
+        overrides: [
+          authRepositoryProvider.overrideWithValue(repository),
+          userProfileRepositoryProvider.overrideWithValue(
+            FakeUserProfileRepository(),
+          ),
+        ],
         child: const HanLearnApp(),
       ),
     );
@@ -79,7 +118,12 @@ void main() {
     addTearDown(repository.dispose);
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [authRepositoryProvider.overrideWithValue(repository)],
+        overrides: [
+          authRepositoryProvider.overrideWithValue(repository),
+          userProfileRepositoryProvider.overrideWithValue(
+            FakeUserProfileRepository(),
+          ),
+        ],
         child: const HanLearnApp(),
       ),
     );
@@ -90,10 +134,14 @@ void main() {
 
   testWidgets('sign in and sign out update protected routes', (tester) async {
     final repository = FakeAuthRepository(null);
+    final profiles = FakeUserProfileRepository();
     addTearDown(repository.dispose);
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [authRepositoryProvider.overrideWithValue(repository)],
+        overrides: [
+          authRepositoryProvider.overrideWithValue(repository),
+          userProfileRepositoryProvider.overrideWithValue(profiles),
+        ],
         child: const HanLearnApp(),
       ),
     );
@@ -113,6 +161,14 @@ void main() {
     await tester.tap(find.byTooltip('Hồ sơ'));
     await tester.pumpAndSettle();
     expect(find.text('test@example.com'), findsOneWidget);
+    expect(profiles.profile?.uid, 'test-user');
+    await tester.tap(find.text('Sửa tên hiển thị'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField).last, 'Tên mới');
+    await tester.tap(find.text('Lưu'));
+    await tester.pumpAndSettle();
+    expect(find.text('Tên hiển thị: Tên mới'), findsOneWidget);
+    expect(profiles.profile?.displayName, 'Tên mới');
     await tester.tap(find.text('Đăng xuất'));
     await tester.pumpAndSettle();
 

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/firebase/firebase_bootstrap.dart';
+import 'user_profile_repository.dart';
 
 @immutable
 class AuthIdentity {
@@ -57,23 +58,35 @@ final authRepositoryProvider = Provider<AuthRepository>(
 );
 
 class AuthSessionController extends ChangeNotifier {
-  AuthSessionController(this._repository) {
+  AuthSessionController(this._repository, this._profiles) {
     _subscribe();
   }
 
   final AuthRepository _repository;
+  final UserProfileRepository _profiles;
   StreamSubscription<AuthIdentity?>? _subscription;
+  int _generation = 0;
   bool ready = false;
   AuthIdentity? identity;
   Object? error;
+  UserProfile? profile;
+  Object? profileError;
+  bool profileLoading = false;
 
   void _subscribe() {
     _subscription = _repository.authStateChanges().listen(
       (value) {
+        final generation = ++_generation;
         identity = value;
         error = null;
         ready = true;
+        profile = null;
+        profileError = null;
+        profileLoading = value != null;
         notifyListeners();
+        if (value != null) {
+          _ensureProfile(value.uid, generation);
+        }
       },
       onError: (Object failure) {
         error = failure;
@@ -81,6 +94,39 @@ class AuthSessionController extends ChangeNotifier {
         notifyListeners();
       },
     );
+  }
+
+  Future<void> _ensureProfile(String uid, int generation) async {
+    try {
+      final result = await _profiles.ensureCurrentUser(uid);
+      if (generation != _generation) return;
+      profile = result;
+      profileError = null;
+    } catch (failure) {
+      if (generation != _generation) return;
+      profileError = failure;
+    } finally {
+      if (generation == _generation) {
+        profileLoading = false;
+        notifyListeners();
+      }
+    }
+  }
+
+  Future<void> retryProfile() async {
+    final uid = identity?.uid;
+    if (uid == null) return;
+    profileLoading = true;
+    profileError = null;
+    notifyListeners();
+    await _ensureProfile(uid, _generation);
+  }
+
+  Future<void> updateDisplayName(String name) async {
+    final uid = identity?.uid;
+    if (uid == null) throw StateError('Chưa đăng nhập.');
+    profile = await _profiles.updateDisplayName(uid, name);
+    notifyListeners();
   }
 
   Future<void> retry() async {
@@ -93,13 +139,17 @@ class AuthSessionController extends ChangeNotifier {
 
   @override
   void dispose() {
+    ++_generation;
     _subscription?.cancel();
     super.dispose();
   }
 }
 
 final authSessionProvider = Provider<AuthSessionController>((ref) {
-  final session = AuthSessionController(ref.watch(authRepositoryProvider));
+  final session = AuthSessionController(
+    ref.watch(authRepositoryProvider),
+    ref.watch(userProfileRepositoryProvider),
+  );
   ref.onDispose(session.dispose);
   return session;
 });
