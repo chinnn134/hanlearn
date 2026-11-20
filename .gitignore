@@ -45,6 +45,7 @@ Thumbs.db
 firebase-debug.log
 *-debug.log
 .firebase/
+firebase/node_modules/
 
 # Local OCR datasets, predictions and model weights
 ai/datasets/private/
