@@ -5,6 +5,8 @@ import '../../core/widgets/state_panel.dart';
 import '../auth/auth_session.dart';
 import '../dictionary/dictionary_repository.dart';
 import '../dictionary/saved_word_repository.dart';
+import 'learning_repository.dart';
+import 'review_scheduler.dart';
 
 class FlashcardPage extends ConsumerStatefulWidget {
   const FlashcardPage({super.key});
@@ -19,6 +21,7 @@ class _FlashcardPageState extends ConsumerState<FlashcardPage> {
   Object? _error;
   var _index = 0;
   var _showAnswer = false;
+  var _saving = false;
 
   @override
   void initState() {
@@ -56,15 +59,39 @@ class _FlashcardPageState extends ConsumerState<FlashcardPage> {
     });
   }
 
-  void _rate(bool known) {
+  Future<void> _rate(bool known) async {
     final cards = _cards!;
-    setState(() {
-      _sessionRatings[cards[_index].item.vocabId] = known;
-      if (_index < cards.length - 1) {
-        _index++;
-        _showAnswer = false;
+    final card = cards[_index];
+    setState(() => _saving = true);
+    try {
+      final uid = ref.read(authSessionProvider).identity!.uid;
+      await ref
+          .read(learningRepositoryProvider)
+          .recordFlashcardReview(
+            uid,
+            card.item.vocabId,
+            known ? ReviewRating.good : ReviewRating.again,
+            DateTime.now(),
+          );
+      if (!mounted) return;
+      setState(() {
+        _sessionRatings[card.item.vocabId] = known;
+        if (_index < cards.length - 1) {
+          _index++;
+          _showAnswer = false;
+        }
+      });
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Không thể lưu lịch ôn. Vui lòng thử lại.'),
+          ),
+        );
       }
-    });
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   @override
@@ -186,7 +213,7 @@ class _FlashcardPageState extends ConsumerState<FlashcardPage> {
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () => _rate(false),
+                      onPressed: _saving ? null : () => _rate(false),
                       icon: const Icon(Icons.replay),
                       label: const Text('Chưa biết'),
                     ),
@@ -194,7 +221,7 @@ class _FlashcardPageState extends ConsumerState<FlashcardPage> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: FilledButton.icon(
-                      onPressed: () => _rate(true),
+                      onPressed: _saving ? null : () => _rate(true),
                       icon: const Icon(Icons.check),
                       label: const Text('Đã biết'),
                     ),

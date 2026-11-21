@@ -70,6 +70,7 @@ Client dùng transaction: chỉ tạo document khi chưa tồn tại nên thao t
 | `intervalDays` | int | Có | `0..365`; công thức trong `review-scheduling-decision.md` |
 | `lastReviewedAt` | Timestamp/null | Không | Null trước lượt ôn đầu tiên |
 | `reviewCount` | int | Có | Khởi tạo 0, không âm |
+| `updatedAt` | Timestamp | Có sau lượt đầu | Server timestamp của lần ghi gần nhất |
 
 Flutter client tính lịch theo ADR Phase 04, luôn đổi instant sang UTC. `again` giữ interval 0 và hẹn sau 10 phút; rating còn lại dùng ngày nguyên, tối đa 365. Khi cập nhật schedule và kết quả liên quan, dùng một Firestore batch để tránh trạng thái nửa vời. Schema không lưu `easeFactor` vì công thức hiện tại không dùng trường này.
 
@@ -79,8 +80,10 @@ Flutter client tính lịch theo ADR Phase 04, luôn đổi instant sang UTC. `a
 |---|---|---|---|
 | `score` | int | Có | 0 ≤ score ≤ totalQuestions |
 | `totalQuestions` | int | Có | > 0; câu bỏ qua không tính đúng |
+| `answeredQuestions` | int | Có | `score <= answeredQuestions <= totalQuestions` |
+| `skippedQuestions` | int | Có | `totalQuestions - answeredQuestions` |
 | `createdAt` | Timestamp | Có | Thời điểm hoàn thành phiên |
-| `wordIds` | list of string | Không | Danh sách ID câu hỏi nếu cần kiểm tra lại; giới hạn số lượng |
+| `wordIds` | list of string | Có | Danh sách ID câu hỏi, 1–100 phần tử và cùng độ dài `totalQuestions` |
 
 Không ghi toàn bộ nội dung từ điển vào kết quả Quiz nếu chỉ cần ID; tránh duplicate và tăng dung lượng.
 

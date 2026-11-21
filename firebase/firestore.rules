@@ -31,6 +31,58 @@ service cloud.firestore {
         && data.masteryLevel == 0;
     }
 
+    function validReviewSchedule(data, vocabId) {
+      return data.keys().hasAll([
+          'vocabId', 'dueAt', 'intervalDays', 'lastReviewedAt',
+          'reviewCount', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'vocabId', 'dueAt', 'intervalDays', 'lastReviewedAt',
+          'reviewCount', 'updatedAt'
+        ])
+        && data.vocabId is string
+        && data.vocabId == vocabId
+        && data.vocabId.size() > 0
+        && data.vocabId.size() <= 128
+        && data.dueAt is timestamp
+        && data.intervalDays is int
+        && data.intervalDays >= 0
+        && data.intervalDays <= 365
+        && data.lastReviewedAt is timestamp
+        // Tolerate at most ten minutes of device clock skew.
+        && data.lastReviewedAt <= request.time + duration.value(10, 'm')
+        && data.dueAt > data.lastReviewedAt
+        && data.reviewCount is int
+        && data.reviewCount > 0
+        && data.updatedAt is timestamp
+        && data.updatedAt == request.time;
+    }
+
+    function validQuizResult(data) {
+      return data.keys().hasAll([
+          'score', 'totalQuestions', 'answeredQuestions', 'skippedQuestions',
+          'createdAt', 'wordIds'
+        ])
+        && data.keys().hasOnly([
+          'score', 'totalQuestions', 'answeredQuestions', 'skippedQuestions',
+          'createdAt', 'wordIds'
+        ])
+        && data.score is int
+        && data.totalQuestions is int
+        && data.answeredQuestions is int
+        && data.skippedQuestions is int
+        && data.totalQuestions > 0
+        && data.totalQuestions <= 100
+        && data.score >= 0
+        && data.score <= data.answeredQuestions
+        && data.answeredQuestions <= data.totalQuestions
+        && data.skippedQuestions == data.totalQuestions - data.answeredQuestions
+        && data.createdAt is timestamp
+        && data.createdAt == request.time
+        && data.wordIds is list
+        && data.wordIds.size() == data.totalQuestions;
+    }
+
     match /users/{uid} {
       allow get: if isOwner(uid);
       allow list, delete: if false;
@@ -58,6 +110,23 @@ service cloud.firestore {
         && request.resource.data.savedAt == request.time;
       allow delete: if isOwner(uid);
       allow update: if false;
+    }
+
+    match /users/{uid}/review_schedule/{vocabId} {
+      allow get, list: if isOwner(uid);
+      allow create: if isOwner(uid)
+        && validReviewSchedule(request.resource.data, vocabId)
+        && request.resource.data.reviewCount == 1;
+      allow update: if isOwner(uid)
+        && validReviewSchedule(request.resource.data, vocabId)
+        && request.resource.data.reviewCount == resource.data.reviewCount + 1;
+      allow delete: if false;
+    }
+
+    match /users/{uid}/quiz_results/{resultId} {
+      allow get, list: if isOwner(uid);
+      allow create: if isOwner(uid) && validQuizResult(request.resource.data);
+      allow update, delete: if false;
     }
 
     // Unimplemented personal collections remain closed until their own phase.

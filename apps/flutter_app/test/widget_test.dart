@@ -8,6 +8,9 @@ import 'package:flutter_app/features/auth/auth_session.dart';
 import 'package:flutter_app/features/auth/user_profile_repository.dart';
 import 'package:flutter_app/features/dictionary/dictionary_repository.dart';
 import 'package:flutter_app/features/dictionary/saved_word_repository.dart';
+import 'package:flutter_app/features/learning/learning_repository.dart';
+import 'package:flutter_app/features/learning/quiz_engine.dart';
+import 'package:flutter_app/features/learning/review_scheduler.dart';
 
 class FakeUserProfileRepository implements UserProfileRepository {
   UserProfile? profile;
@@ -172,6 +175,75 @@ class FakeSavedWordRepository implements SavedWordRepository {
   Future<void> save(String expectedUid, String vocabId) async {
     if (fail) throw StateError('Mất kết nối thử nghiệm');
     saved.add(vocabId);
+  }
+}
+
+class FakeLearningRepository implements LearningRepository {
+  final schedules = <String, ReviewSchedule>{};
+  final results = <QuizResult>[];
+  bool fail = false;
+
+  @override
+  Future<List<ReviewSchedule>> listSchedules(String expectedUid) async =>
+      schedules.values.toList();
+
+  @override
+  Future<List<QuizResult>> listQuizResults(
+    String expectedUid, {
+    int limit = 20,
+  }) async => results.take(limit).toList();
+
+  @override
+  Future<ReviewSchedule> recordFlashcardReview(
+    String expectedUid,
+    String vocabId,
+    ReviewRating rating,
+    DateTime reviewedAt,
+  ) async {
+    if (fail) throw StateError('Mất kết nối thử nghiệm');
+    final current =
+        schedules[vocabId] ?? ReviewSchedule.initial(vocabId, reviewedAt);
+    return schedules[vocabId] = const ReviewScheduler().apply(
+      current,
+      rating,
+      reviewedAt,
+    );
+  }
+
+  @override
+  Future<QuizResult> recordQuizResult(
+    String expectedUid,
+    List<QuizQuestion> questions,
+    Map<String, String> answers,
+    DateTime completedAt,
+  ) async {
+    if (fail) throw StateError('Mất kết nối thử nghiệm');
+    const engine = QuizEngine();
+    const scheduler = ReviewScheduler();
+    final score = engine.score(questions, answers);
+    for (final question in questions) {
+      final current =
+          schedules[question.id] ??
+          ReviewSchedule.initial(question.id, completedAt);
+      schedules[question.id] = scheduler.apply(
+        current,
+        answers[question.id] == question.correctAnswer
+            ? ReviewRating.good
+            : ReviewRating.again,
+        completedAt,
+      );
+    }
+    final result = QuizResult(
+      id: 'result-${results.length + 1}',
+      score: score.correct,
+      totalQuestions: score.total,
+      answeredQuestions: score.answered,
+      skippedQuestions: score.skipped,
+      createdAt: completedAt.toUtc(),
+      wordIds: questions.map((question) => question.id).toList(),
+    );
+    results.add(result);
+    return result;
   }
 }
 
@@ -341,6 +413,7 @@ void main() {
       const AuthIdentity(uid: 'test-user', email: 'test@example.com'),
     );
     final savedWords = FakeSavedWordRepository()..saved.add('ocd-test');
+    final learning = FakeLearningRepository();
     addTearDown(auth.dispose);
     await tester.pumpWidget(
       ProviderScope(
@@ -353,6 +426,7 @@ void main() {
             FakeDictionaryRepository(),
           ),
           savedWordRepositoryProvider.overrideWithValue(savedWords),
+          learningRepositoryProvider.overrideWithValue(learning),
         ],
         child: const HanLearnApp(),
       ),
@@ -375,6 +449,7 @@ void main() {
     await tester.tap(find.text('Đã biết'));
     await tester.pumpAndSettle();
     expect(find.textContaining('Đã đánh giá toàn bộ 1 thẻ'), findsOneWidget);
+    expect(learning.schedules['ocd-test']?.reviewCount, 1);
   });
 
   testWidgets('flashcards explain the empty saved-word state', (tester) async {
@@ -417,6 +492,7 @@ void main() {
     );
     final savedWords = FakeSavedWordRepository()
       ..saved.addAll(['ocd-test', 'friend-test']);
+    final learning = FakeLearningRepository();
     addTearDown(auth.dispose);
     await tester.pumpWidget(
       ProviderScope(
@@ -429,6 +505,7 @@ void main() {
             FakeDictionaryRepository(),
           ),
           savedWordRepositoryProvider.overrideWithValue(savedWords),
+          learningRepositoryProvider.overrideWithValue(learning),
         ],
         child: const HanLearnApp(),
       ),
@@ -459,6 +536,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Hoàn thành Quiz'), findsOneWidget);
     expect(find.text('Đúng 1/2 · Đã trả lời 1 · Bỏ qua 1'), findsOneWidget);
+    expect(learning.results.single.score, 1);
+    expect(learning.schedules, hasLength(2));
   });
 
   testWidgets('quiz explains when saved words are insufficient', (
