@@ -95,11 +95,21 @@ class ApiDictionaryRepository implements DictionaryRepository {
     if (_baseUrl.isEmpty) {
       throw const DictionaryApiException('Backend API chưa được cấu hình.');
     }
-    final token = await _auth.getIdToken();
-    final response = await _client.get(
+    var token = await _auth.getIdToken();
+    var response = await _client.get(
       uri,
       headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
     );
+    if (response.statusCode == 401) {
+      token = await _auth.getIdToken(forceRefresh: true);
+      response = await _client.get(
+        uri,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
+    }
     final payload = jsonDecode(response.body) as Map<String, dynamic>;
     if (response.statusCode < 200 || response.statusCode >= 300) {
       final detail = payload['detail'];

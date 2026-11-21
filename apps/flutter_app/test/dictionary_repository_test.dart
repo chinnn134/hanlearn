@@ -7,10 +7,16 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
 class TokenAuthRepository implements AuthRepository {
+  final requests = <bool>[];
+
   @override
   Stream<AuthIdentity?> authStateChanges() => const Stream.empty();
   @override
-  Future<String> getIdToken() async => 'firebase-token';
+  Future<String> getIdToken({bool forceRefresh = false}) async {
+    requests.add(forceRefresh);
+    return forceRefresh ? 'refreshed-token' : 'firebase-token';
+  }
+
   @override
   Future<void> register({
     required String email,
@@ -63,4 +69,43 @@ void main() {
       expect(items.single.meaningVi, 'học tập');
     },
   );
+
+  test('API repository refreshes an expired token once after 401', () async {
+    final auth = TokenAuthRepository();
+    var calls = 0;
+    final client = MockClient((request) async {
+      calls++;
+      if (calls == 1) {
+        expect(request.headers['authorization'], 'Bearer firebase-token');
+        return http.Response(
+          jsonEncode({
+            'detail': {'message': 'Firebase ID token không hợp lệ.'},
+          }),
+          401,
+          headers: {'content-type': 'application/json'},
+        );
+      }
+      expect(request.headers['authorization'], 'Bearer refreshed-token');
+      return http.Response(
+        jsonEncode({
+          'items': <Map<String, dynamic>>[],
+          'nextCursor': null,
+          'request_id': 'retry',
+        }),
+        200,
+        headers: {'content-type': 'application/json'},
+      );
+    });
+    final repository = ApiDictionaryRepository(
+      auth,
+      client,
+      'https://api.example',
+    );
+
+    final items = await repository.search('学习');
+
+    expect(items, isEmpty);
+    expect(calls, 2);
+    expect(auth.requests, [false, true]);
+  });
 }

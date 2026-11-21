@@ -81,7 +81,7 @@ class FakeAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<String> getIdToken() async => 'test-token';
+  Future<String> getIdToken({bool forceRefresh = false}) async => 'test-token';
 
   Future<void> dispose() => _changes.close();
 }

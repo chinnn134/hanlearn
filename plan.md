@@ -28,7 +28,7 @@ Sản phẩm cuối: đăng nhập → chụp/tải ảnh chữ Hán giản th�
 | 02 | Firebase Auth, Firestore, Rules | 01 | Đăng nhập, dữ liệu riêng, đồng bộ | DONE |
 | 03 | Từ điển, nhập tay, lưu từ | 02 | Nhập/dán → tra → lưu/bỏ lưu | DONE |
 | 04 | Flashcard, Quiz, lịch ôn | 03 | Học → quiz → lịch ôn | DONE |
-| 05 | Dashboard, lịch sử học, UX | 02–04 | Luồng học core liền mạch | IN PROGRESS |
+| 05 | Dashboard, lịch sử học, UX | 02–04 | Luồng học core liền mạch | DONE |
 | 06 | UI ảnh và contract OCR/AI | 00–05 | Image picker/preview, adapter, chưa có OCR/AI thật | NOT STARTED |
 | 07 | Kiểm thử core, bảo mật | 01–06 | E2E nhập tay, Rules, Web/Android | NOT STARTED |
 | 08 | Build và demo bản core | 07 | Web/APK core, hướng dẫn chạy và giới hạn | NOT STARTED |
@@ -93,10 +93,10 @@ Phase 09 và 10 là hai phase cuối của **phát triển tính năng**; Phase 
 
 ### Phase 05 — Dashboard và UX core
 
-- [ ] Dashboard tổng từ lưu/đã học/đến hạn, quiz gần đây, lịch sử học; lịch sử quét chỉ hiện khi có OCR thật.
-- [ ] Profile/Settings, responsive Web/mobile, loading/empty/error/retry, xác nhận xóa, accessibility cơ bản.
-- [ ] Kiểm tra offline, pagination/listeners, trạng thái sync thật, mức đọc Firestore và cross-device.
-- **DoD:** demo nhập tay → học → tiến độ không cần DB/terminal, dùng được trên Web/Android.
+- [x] Dashboard tổng từ lưu/đã học/đến hạn, quiz gần đây, lịch sử học; lịch sử quét chỉ hiện khi có OCR thật.
+- [x] Profile/Settings, responsive Web/mobile, loading/empty/error/retry, xác nhận xóa, accessibility cơ bản.
+- [x] Kiểm tra offline, giới hạn đọc/listener, trạng thái sync thật và dữ liệu production trên hai target.
+- **DoD: ĐẠT.** Luồng nhập tay → học → tiến độ có bằng chứng cộng dồn production Web/Android từ Phase 03–05. Android kiểm thử offline/cache thật; Web và Android build lại. Token retry sau 401 có test và cần smoke lại trên bundle Web sạch ở Phase 07/08. Bằng chứng: `docs/testing/phase-05-evidence.md`.
 
 ### Phase 06 — UI ảnh và hợp đồng tích hợp
 
@@ -224,5 +224,6 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 | 2026-11-21 | Phase 05 · HL-05-02 | Mở rộng Profile bằng route Settings: hiển thị email và UID đang sở hữu dữ liệu, trạng thái backend từ `API_BASE_URL`, nhãn OCR/AI chưa tích hợp và ghi rõ API key chỉ ở backend. Giữ sửa tên/logout hiện có, không thêm secret hay cấu hình provider giả. Flutter analyze sạch và 23/23 tests qua. | Tiếp tục `HL-05-03` chuẩn hóa responsive/state/accessibility. |
 | 2026-11-21 | Phase 05 · HL-05-03 | Chuẩn hóa UX core: xác nhận trước khi bỏ lưu từ ở danh sách và detail, giữ lịch ôn/Quiz; nút toàn app có vùng chạm tối thiểu 48px; Profile/Settings giới hạn chiều rộng Web. Bổ sung kiểm thử màn 320px với text scale 1.5 và hồi quy hộp thoại xác nhận. Flutter analyze sạch và 24/24 tests qua. | Tiếp tục `HL-05-04` offline/sync/read audit. |
 | 2026-11-21 | Phase 05 · HL-05-04 | Repository truyền `isFromCache` thật từ Firestore; Dashboard chỉ nhận “đã đồng bộ” khi mọi query đến từ server, nếu không gắn nhãn cache/offline và cho kéo refresh. Audit khóa ba query hữu hạn, tối đa 205 reads mỗi lần Dashboard, không listener/poll nền; cảnh báo khi chạm cap 100. Chiến lược ở `docs/architecture/firestore-read-strategy.md`. Flutter analyze sạch và 25/25 tests qua, gồm cache metadata. | Tiếp tục `HL-05-05` production Web/Android, gồm cross-device/offline thực tế. |
+| 2026-11-21 | Phase 05 · HL-05-05 | Web production hiển thị Dashboard empty và server-sync đúng cho tài khoản hiện hành. Android production giữ nguyên dữ liệu Phase 04: 2 saved/2 learned/0 due, hai Quiz 2/2 và hai schedule reviewCount=3; airplane mode chuyển sang cache label rồi phục hồi server label khi bật mạng. Phát hiện phiên Web cũ trả 401; thêm retry một lần bằng forced Firebase token refresh và test hồi quy. Flutter analyze + 26/26 tests, Web release/Android debug build, backend 17/17 pytest và Rules 7/7 qua. Bằng chứng ở `docs/testing/phase-05-evidence.md`. | Phase 05 đạt DoD; commit rồi fast-forward `main`. Phase tiếp theo `phase/06`; không push. |
 
-**Bước tiếp theo:** hoàn thành và commit `HL-05-04`, sau đó làm `HL-05-05` trên `phase/05`; không push.
+**Bước tiếp theo:** commit `HL-05-05`, fast-forward `phase/05` vào `main`. Chỉ mở `phase/06` khi tiếp tục; không push.
