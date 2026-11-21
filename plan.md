@@ -1,6 +1,6 @@
 # HanLearn AI — kế hoạch thực thi
 
-> Phiên bản 2.0, cập nhật 2026-11-21 theo CR-001 đến CR-007; người dùng đã xác nhận bắt đầu. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Phase 00–03 đã đạt DoD cục bộ; Phase 03 được tích hợp `main` sau commit cuối, không push.
+> Phiên bản 2.1, cập nhật 2026-11-21 theo CR-001 đến CR-007; người dùng đã xác nhận bắt đầu. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Phase 00–04 đã đạt DoD cục bộ và production; không push.
 
 ## 1. Mục tiêu và thay đổi thứ tự
 
@@ -27,7 +27,7 @@ Sản phẩm cuối: đăng nhập → chụp/tải ảnh chữ Hán giản th�
 | 01 | Khởi tạo Flutter Web + Android, backend Python/FastAPI, CI | 00 | Cả Web/Android chạy, Python `/health`, README | DONE cục bộ; hosted CI chưa chạy vì không push |
 | 02 | Firebase Auth, Firestore, Rules | 01 | Đăng nhập, dữ liệu riêng, đồng bộ | DONE |
 | 03 | Từ điển, nhập tay, lưu từ | 02 | Nhập/dán → tra → lưu/bỏ lưu | DONE |
-| 04 | Flashcard, Quiz, lịch ôn | 03 | Học → quiz → lịch ôn | NOT STARTED |
+| 04 | Flashcard, Quiz, lịch ôn | 03 | Học → quiz → lịch ôn | DONE |
 | 05 | Dashboard, lịch sử học, UX | 02–04 | Luồng học core liền mạch | NOT STARTED |
 | 06 | UI ảnh và contract OCR/AI | 00–05 | Image picker/preview, adapter, chưa có OCR/AI thật | NOT STARTED |
 | 07 | Kiểm thử core, bảo mật | 01–06 | E2E nhập tay, Rules, Web/Android | NOT STARTED |
@@ -85,11 +85,11 @@ Phase 09 và 10 là hai phase cuối của **phát triển tính năng**; Phase 
 
 ### Phase 04 — Flashcard và Quiz
 
-- [ ] Flashcard Hanzi ↔ Pinyin/nghĩa/ví dụ, flip, điều hướng, biết/chưa biết.
-- [ ] Quiz từ saved words, đáp án hợp lệ/không trùng, lời giải, score/total; ADR nếu tạo đề client thay vì server.
-- [ ] Chọn công thức lịch ôn đơn giản/SM-2; test rating, interval, dueAt, timezone, dữ liệu trống.
-- [ ] Lưu review schedule/quiz results nhất quán; Today Review, Due Count, Completed State.
-- **DoD:** trên cả Flutter Web và Flutter Android: lưu từ → học → quiz → lịch ôn mới → logout/login dữ liệu còn; scheduler tests pass.
+- [x] Flashcard Hanzi ↔ Pinyin/nghĩa/ví dụ, flip, điều hướng, biết/chưa biết.
+- [x] Quiz từ saved words, đáp án hợp lệ/không trùng, lời giải, score/total; ADR tạo đề client từ dữ liệu từ điển đã xác thực.
+- [x] Công thức lịch ôn bốn mức; test rating, interval, dueAt, timezone, dữ liệu trống.
+- [x] Lưu review schedule/quiz results nhất quán; Today Review, Due Count, Completed State.
+- **DoD: ĐẠT trên project thật.** Flutter Web và Flutter Android cùng tài khoản đã đọc Saved Words, chạy Flashcard/Quiz, cập nhật lịch ôn và hiển thị Today Review hoàn tất. Logout/login giữ dữ liệu; Rules owner/schema/transaction và scheduler tests pass. Bằng chứng: `docs/testing/phase-04-persistence-evidence.md`, `docs/testing/phase-04-evidence.md`.
 
 ### Phase 05 — Dashboard và UX core
 
@@ -219,5 +219,6 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 | 2026-11-21 | Phase 04 · HL-04-03 | Nối Quiz vào router và Saved Words: loading/error/retry, trạng thái cần ít nhất hai nghĩa khác nhau, chọn hoặc bỏ qua từng câu, khóa lựa chọn sau chấm, hiện đáp án/lời giải và tổng kết correct/answered/skipped/total. UI hẹp có cuộn và RadioGroup hỗ trợ bàn phím/semantics. `dart format`, `flutter analyze`, 14/14 Flutter tests qua, gồm làm bài và trạng thái thiếu từ. | Tiếp tục `HL-04-04` thuật toán lịch ôn và unit tests; kết quả Quiz mới ở session cho đến `HL-04-05`. |
 | 2026-11-21 | Phase 04 · HL-04-04 | Chốt ADR lịch ôn bốn rating ở Flutter: again 10 phút/interval 0; hard/good/easy tăng ngày theo công thức, chặn 365; mọi instant lưu/tính UTC và due khi `dueAt <= now`. Cập nhật schema bỏ `easeFactor` không dùng. Thêm model/scheduler thuần và 5 test cho khởi tạo, rating, giới hạn, timezone, due sort/empty. `dart format`, `flutter analyze`, 19/19 Flutter tests qua. | Tiếp tục `HL-04-05` Firestore repository, batch nguyên tử, Rules và nối Flashcard/Quiz. |
 | 2026-11-21 | Phase 04 · HL-04-05 | Thêm Firestore LearningRepository theo UID; Flashcard ghi một schedule trong transaction, Quiz ghi result + mọi schedule trong cùng transaction và chỉ chuyển completed khi ghi thành công. Rules owner/schema/count/append-only qua 7/7 nhóm Emulator rồi deploy production. Flutter analyze và 19/19 tests qua. Web production lưu 2 từ → Flashcard → Quiz 2/2 → logout/login; owner REST xác nhận 2 schedule `reviewCount=2` và 1 result còn nguyên. Bằng chứng ở `docs/testing/phase-04-persistence-evidence.md`. | Tiếp tục `HL-04-06` Today Review/Due Count và E2E Web/Android đầy đủ; Rules production đã sẵn sàng. |
+| 2026-11-21 | Phase 04 · HL-04-06 | Thêm Today Review và Due Count: saved word chưa có schedule được xem là đến hạn, schedule tương lai bị loại, hoàn thành khi không còn thẻ đến hạn. Route `/progress`, Home và shell cùng trỏ vào luồng ôn; Flashcard hỗ trợ `dueOnly`. Flutter analyze, 21/21 tests, Web release build, Android debug build/install/run, backend Ruff + 17/17 pytest và Rules 7/7 qua. Web và Android production cùng tài khoản hiển thị trạng thái hoàn tất; Android tiếp tục Flashcard/Quiz 2/2, REST xác nhận 2 schedule `reviewCount=3` và 2 result còn nguyên. Bằng chứng ở `docs/testing/phase-04-evidence.md`. | Phase 04 đạt DoD; commit đúng một issue rồi fast-forward `main` cục bộ. Phase tiếp theo là `phase/05`; không push. |
 
-**Bước tiếp theo:** commit `HL-04-05`, sau đó làm `HL-04-06` trên cùng `phase/04`; không push.
+**Bước tiếp theo:** sau commit `HL-04-06`, fast-forward `phase/04` vào `main`. Chỉ mở `phase/05` khi tiếp tục triển khai; không push.

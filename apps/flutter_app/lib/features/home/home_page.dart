@@ -43,6 +43,11 @@ class HomePage extends StatelessWidget {
               path: '/quiz',
             ),
             _HomeAction(
+              label: 'Ôn hôm nay',
+              icon: Icons.today_outlined,
+              path: '/progress',
+            ),
+            _HomeAction(
               label: 'Scanner',
               icon: Icons.document_scanner_outlined,
               path: '/scanner',

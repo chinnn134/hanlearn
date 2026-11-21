@@ -8,7 +8,7 @@ class AppShell extends StatelessWidget {
   final Widget child;
 
   static const _paths = ['/', '/dictionary', '/saved-words', '/progress'];
-  static const _labels = ['Home', 'Tra từ', 'Từ đã lưu', 'Tiến độ'];
+  static const _labels = ['Home', 'Tra từ', 'Từ đã lưu', 'Ôn tập'];
   static const _icons = [
     Icons.home_outlined,
     Icons.search,
@@ -27,7 +27,7 @@ class AppShell extends StatelessWidget {
     '/saved-words' => 'Từ đã lưu',
     '/flashcards' => 'Flashcard',
     '/quiz' => 'Quiz',
-    '/progress' => 'Tiến độ',
+    '/progress' => 'Ôn hôm nay',
     '/scanner' => 'Scanner',
     '/profile' => 'Hồ sơ',
     _ => 'HanLearn AI',

@@ -9,7 +9,9 @@ import 'learning_repository.dart';
 import 'review_scheduler.dart';
 
 class FlashcardPage extends ConsumerStatefulWidget {
-  const FlashcardPage({super.key});
+  const FlashcardPage({super.key, this.dueOnly = false});
+
+  final bool dueOnly;
 
   @override
   ConsumerState<FlashcardPage> createState() => _FlashcardPageState();
@@ -40,8 +42,25 @@ class _FlashcardPageState extends ConsumerState<FlashcardPage> {
     try {
       final uid = ref.read(authSessionProvider).identity!.uid;
       final saved = await ref.read(savedWordRepositoryProvider).list(uid);
+      var selected = saved;
+      if (widget.dueOnly) {
+        final schedules = await ref
+            .read(learningRepositoryProvider)
+            .listSchedules(uid);
+        final scheduleById = {
+          for (final schedule in schedules) schedule.vocabId: schedule,
+        };
+        const scheduler = ReviewScheduler();
+        final now = DateTime.now();
+        selected = saved
+            .where((word) {
+              final schedule = scheduleById[word.vocabId];
+              return schedule == null || scheduler.isDue(schedule, now);
+            })
+            .toList(growable: false);
+      }
       final cards = await Future.wait(
-        saved.map(
+        selected.map(
           (word) => ref.read(dictionaryRepositoryProvider).detail(word.vocabId),
         ),
       );
@@ -113,10 +132,14 @@ class _FlashcardPageState extends ConsumerState<FlashcardPage> {
               message: 'Đang tải các từ bạn đã lưu.',
             )
           : cards.isEmpty
-          ? const StatePanel(
+          ? StatePanel(
               state: ViewState.empty,
-              title: 'Chưa có Flashcard',
-              message: 'Hãy lưu ít nhất một từ trong Từ điển để bắt đầu học.',
+              title: widget.dueOnly
+                  ? 'Đã hoàn thành ôn hôm nay'
+                  : 'Chưa có Flashcard',
+              message: widget.dueOnly
+                  ? '0 từ đến hạn. Hãy quay lại khi lịch ôn tiếp theo đến.'
+                  : 'Hãy lưu ít nhất một từ trong Từ điển để bắt đầu học.',
             )
           : _buildSession(context, cards),
     );
