@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_app/core/app.dart';
+import 'package:flutter_app/core/data/sync_snapshot.dart';
 import 'package:flutter_app/features/auth/auth_session.dart';
 import 'package:flutter_app/features/auth/user_profile_repository.dart';
 import 'package:flutter_app/features/dictionary/dictionary_repository.dart';
@@ -146,6 +147,7 @@ class FakeDictionaryRepository implements DictionaryRepository {
 class FakeSavedWordRepository implements SavedWordRepository {
   final saved = <String>{};
   bool fail = false;
+  bool fromCache = false;
 
   @override
   Future<bool> isSaved(String expectedUid, String vocabId) async =>
@@ -166,6 +168,14 @@ class FakeSavedWordRepository implements SavedWordRepository {
   }
 
   @override
+  Future<SyncSnapshot<SavedWord>> listSnapshot(String expectedUid) async =>
+      SyncSnapshot(
+        items: await list(expectedUid),
+        isFromCache: fromCache,
+        readLimit: 100,
+      );
+
+  @override
   Future<void> remove(String expectedUid, String vocabId) async {
     if (fail) throw StateError('Mất kết nối thử nghiệm');
     saved.remove(vocabId);
@@ -182,16 +192,36 @@ class FakeLearningRepository implements LearningRepository {
   final schedules = <String, ReviewSchedule>{};
   final results = <QuizResult>[];
   bool fail = false;
+  bool fromCache = false;
 
   @override
   Future<List<ReviewSchedule>> listSchedules(String expectedUid) async =>
       schedules.values.toList();
 
   @override
+  Future<SyncSnapshot<ReviewSchedule>> listSchedulesSnapshot(
+    String expectedUid,
+  ) async => SyncSnapshot(
+    items: await listSchedules(expectedUid),
+    isFromCache: fromCache,
+    readLimit: 100,
+  );
+
+  @override
   Future<List<QuizResult>> listQuizResults(
     String expectedUid, {
     int limit = 20,
   }) async => results.take(limit).toList();
+
+  @override
+  Future<SyncSnapshot<QuizResult>> listQuizResultsSnapshot(
+    String expectedUid, {
+    int limit = 20,
+  }) async => SyncSnapshot(
+    items: await listQuizResults(expectedUid, limit: limit),
+    isFromCache: fromCache,
+    readLimit: limit,
+  );
 
   @override
   Future<ReviewSchedule> recordFlashcardReview(
@@ -306,10 +336,47 @@ void main() {
       scrollable: find.byType(Scrollable).first,
     );
     expect(find.text('Lịch sử học'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Lịch sử quét sẽ xuất hiện sau khi OCR thật được tích hợp.'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(
       find.text('Lịch sử quét sẽ xuất hiện sau khi OCR thật được tích hợp.'),
       findsOneWidget,
     );
+  });
+
+  testWidgets('dashboard labels cached data instead of claiming sync', (
+    tester,
+  ) async {
+    final auth = FakeAuthRepository(
+      const AuthIdentity(uid: 'test-user', email: 'test@example.com'),
+    );
+    final savedWords = FakeSavedWordRepository()..fromCache = true;
+    final learning = FakeLearningRepository()..fromCache = true;
+    addTearDown(auth.dispose);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(auth),
+          userProfileRepositoryProvider.overrideWithValue(
+            FakeUserProfileRepository(),
+          ),
+          savedWordRepositoryProvider.overrideWithValue(savedWords),
+          learningRepositoryProvider.overrideWithValue(learning),
+        ],
+        child: const HanLearnApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Dữ liệu lưu cục bộ'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Dữ liệu lưu cục bộ'), findsOneWidget);
+    expect(find.text('Đã đồng bộ từ máy chủ'), findsNothing);
   });
 
   testWidgets('dictionary searches and opens source-aware detail', (

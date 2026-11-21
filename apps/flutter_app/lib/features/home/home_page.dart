@@ -31,16 +31,21 @@ class _HomePageState extends ConsumerState<HomePage> {
     });
     try {
       final uid = ref.read(authSessionProvider).identity!.uid;
-      final savedFuture = ref.read(savedWordRepositoryProvider).list(uid);
+      final savedFuture = ref
+          .read(savedWordRepositoryProvider)
+          .listSnapshot(uid);
       final schedulesFuture = ref
           .read(learningRepositoryProvider)
-          .listSchedules(uid);
+          .listSchedulesSnapshot(uid);
       final quizFuture = ref
           .read(learningRepositoryProvider)
-          .listQuizResults(uid, limit: 5);
-      final saved = await savedFuture;
-      final schedules = await schedulesFuture;
-      final quizzes = await quizFuture;
+          .listQuizResultsSnapshot(uid, limit: 5);
+      final savedSnapshot = await savedFuture;
+      final scheduleSnapshot = await schedulesFuture;
+      final quizSnapshot = await quizFuture;
+      final saved = savedSnapshot.items;
+      final schedules = scheduleSnapshot.items;
+      final quizzes = quizSnapshot.items;
       final savedIds = saved.map((word) => word.vocabId).toSet();
       final scheduleById = {
         for (final schedule in schedules) schedule.vocabId: schedule,
@@ -68,6 +73,12 @@ class _HomePageState extends ConsumerState<HomePage> {
             dueCount: due,
             quizzes: quizzes,
             recentReviews: recentReviews.take(5).toList(growable: false),
+            isFromCache:
+                savedSnapshot.isFromCache ||
+                scheduleSnapshot.isFromCache ||
+                quizSnapshot.isFromCache,
+            mayBeCapped:
+                savedSnapshot.mayHaveMore || scheduleSnapshot.mayHaveMore,
           );
         });
       }
@@ -171,6 +182,31 @@ class _HomePageState extends ConsumerState<HomePage> {
                   ),
                 )
               else ...[
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Chip(
+                    avatar: Icon(
+                      data.isFromCache
+                          ? Icons.cloud_off_outlined
+                          : Icons.cloud_done_outlined,
+                      size: 18,
+                    ),
+                    label: Text(
+                      data.isFromCache
+                          ? 'Dữ liệu lưu cục bộ'
+                          : 'Đã đồng bộ từ máy chủ',
+                    ),
+                  ),
+                ),
+                if (data.isFromCache)
+                  const Text(
+                    'Bạn đang xem dữ liệu cache. Kéo xuống để thử đồng bộ lại khi có mạng.',
+                  ),
+                if (data.mayBeCapped)
+                  const Text(
+                    'Dashboard đang hiển thị tối đa 100 từ/lịch ôn gần nhất.',
+                  ),
+                const SizedBox(height: 12),
                 GridView.count(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -249,6 +285,8 @@ class _DashboardData {
     required this.dueCount,
     required this.quizzes,
     required this.recentReviews,
+    required this.isFromCache,
+    required this.mayBeCapped,
   });
 
   final int savedCount;
@@ -256,6 +294,8 @@ class _DashboardData {
   final int dueCount;
   final List<QuizResult> quizzes;
   final List<ReviewSchedule> recentReviews;
+  final bool isFromCache;
+  final bool mayBeCapped;
 }
 
 class _MetricCard extends StatelessWidget {

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/firebase/firebase_bootstrap.dart';
+import '../../core/data/sync_snapshot.dart';
 
 class SavedWord {
   const SavedWord({
@@ -18,6 +19,7 @@ class SavedWord {
 
 abstract class SavedWordRepository {
   Future<List<SavedWord>> list(String expectedUid);
+  Future<SyncSnapshot<SavedWord>> listSnapshot(String expectedUid);
   Future<bool> isSaved(String expectedUid, String vocabId);
   Future<void> save(String expectedUid, String vocabId);
   Future<void> remove(String expectedUid, String vocabId);
@@ -41,12 +43,17 @@ class FirestoreSavedWordRepository implements SavedWordRepository {
   }
 
   @override
-  Future<List<SavedWord>> list(String expectedUid) async {
+  Future<List<SavedWord>> list(String expectedUid) async =>
+      (await listSnapshot(expectedUid)).items;
+
+  @override
+  Future<SyncSnapshot<SavedWord>> listSnapshot(String expectedUid) async {
+    const readLimit = 100;
     final snapshot = await _collection(expectedUid)
         .orderBy('savedAt', descending: true)
-        .limit(100)
+        .limit(readLimit)
         .get();
-    return snapshot.docs
+    final items = snapshot.docs
         .map((document) {
           final data = document.data();
           return SavedWord(
@@ -56,6 +63,11 @@ class FirestoreSavedWordRepository implements SavedWordRepository {
           );
         })
         .toList(growable: false);
+    return SyncSnapshot(
+      items: items,
+      isFromCache: snapshot.metadata.isFromCache,
+      readLimit: readLimit,
+    );
   }
 
   @override

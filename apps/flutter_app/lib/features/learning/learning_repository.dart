@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/firebase/firebase_bootstrap.dart';
+import '../../core/data/sync_snapshot.dart';
 import 'quiz_engine.dart';
 import 'review_scheduler.dart';
 
@@ -30,6 +31,9 @@ class QuizResult {
 
 abstract class LearningRepository {
   Future<List<ReviewSchedule>> listSchedules(String expectedUid);
+  Future<SyncSnapshot<ReviewSchedule>> listSchedulesSnapshot(
+    String expectedUid,
+  );
 
   Future<ReviewSchedule> recordFlashcardReview(
     String expectedUid,
@@ -46,6 +50,10 @@ abstract class LearningRepository {
   );
 
   Future<List<QuizResult>> listQuizResults(
+    String expectedUid, {
+    int limit = 20,
+  });
+  Future<SyncSnapshot<QuizResult>> listQuizResultsSnapshot(
     String expectedUid, {
     int limit = 20,
   });
@@ -101,12 +109,23 @@ class FirestoreLearningRepository implements LearningRepository {
   };
 
   @override
-  Future<List<ReviewSchedule>> listSchedules(String expectedUid) async {
+  Future<List<ReviewSchedule>> listSchedules(String expectedUid) async =>
+      (await listSchedulesSnapshot(expectedUid)).items;
+
+  @override
+  Future<SyncSnapshot<ReviewSchedule>> listSchedulesSnapshot(
+    String expectedUid,
+  ) async {
+    const readLimit = 100;
     final snapshot = await _schedules(expectedUid)
         .orderBy('dueAt')
-        .limit(100)
+        .limit(readLimit)
         .get();
-    return snapshot.docs.map(_scheduleFrom).toList(growable: false);
+    return SyncSnapshot(
+      items: snapshot.docs.map(_scheduleFrom).toList(growable: false),
+      isFromCache: snapshot.metadata.isFromCache,
+      readLimit: readLimit,
+    );
   }
 
   @override
@@ -195,13 +214,19 @@ class FirestoreLearningRepository implements LearningRepository {
   Future<List<QuizResult>> listQuizResults(
     String expectedUid, {
     int limit = 20,
+  }) async => (await listQuizResultsSnapshot(expectedUid, limit: limit)).items;
+
+  @override
+  Future<SyncSnapshot<QuizResult>> listQuizResultsSnapshot(
+    String expectedUid, {
+    int limit = 20,
   }) async {
     if (limit < 1 || limit > 100) throw ArgumentError.value(limit, 'limit');
     final snapshot = await _results(expectedUid)
         .orderBy('createdAt', descending: true)
         .limit(limit)
         .get();
-    return snapshot.docs
+    final items = snapshot.docs
         .map((document) {
           final data = document.data();
           return QuizResult(
@@ -215,6 +240,11 @@ class FirestoreLearningRepository implements LearningRepository {
           );
         })
         .toList(growable: false);
+    return SyncSnapshot(
+      items: items,
+      isFromCache: snapshot.metadata.isFromCache,
+      readLimit: limit,
+    );
   }
 }
 
