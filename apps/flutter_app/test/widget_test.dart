@@ -786,4 +786,39 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Tên hiển thị: Người học'), findsOneWidget);
   });
+
+  testWidgets('profile opens UID-scoped core settings', (tester) async {
+    final auth = FakeAuthRepository(
+      const AuthIdentity(uid: 'test-user', email: 'test@example.com'),
+    );
+    addTearDown(auth.dispose);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(auth),
+          userProfileRepositoryProvider.overrideWithValue(
+            FakeUserProfileRepository(),
+          ),
+          savedWordRepositoryProvider.overrideWithValue(
+            FakeSavedWordRepository(),
+          ),
+          learningRepositoryProvider.overrideWithValue(
+            FakeLearningRepository(),
+          ),
+        ],
+        child: const HanLearnApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Hồ sơ'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Mở cài đặt'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('UID dữ liệu'), findsOneWidget);
+    expect(find.text('test-user'), findsOneWidget);
+    expect(find.text('Backend từ điển'), findsOneWidget);
+    expect(find.text('OCR'), findsOneWidget);
+    expect(find.text('AI giải thích'), findsOneWidget);
+  });
 }

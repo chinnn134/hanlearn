@@ -30,6 +30,7 @@ class AppShell extends StatelessWidget {
     '/progress' => 'Ôn hôm nay',
     '/scanner' => 'Scanner',
     '/profile' => 'Hồ sơ',
+    '/settings' => 'Cài đặt',
     _ => 'HanLearn AI',
   };
 
