@@ -76,56 +76,64 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final session = ref.read(authSessionProvider);
-    return ListenableBuilder(
-      listenable: session,
-      builder: (context, _) => ListView(
-        padding: const EdgeInsets.all(24),
-        children: [
-          Text('Tài khoản', style: Theme.of(context).textTheme.headlineSmall),
-          const SizedBox(height: 12),
-          Text(session.identity?.email ?? 'Tài khoản không có email'),
-          const SizedBox(height: 16),
-          if (session.profileLoading)
-            const Text('Đang tải hồ sơ...')
-          else if (session.profileError != null) ...[
-            const Text('Không thể tải hồ sơ.'),
-            TextButton(
-              onPressed: session.retryProfile,
-              child: const Text('Thử lại'),
-            ),
-          ] else if (session.profile != null) ...[
-            Text('Tên hiển thị: ${session.profile!.displayName}'),
-            TextButton(
-              onPressed: _busy ? null : () => _editName(session),
-              child: const Text('Sửa tên hiển thị'),
-            ),
-          ],
-          const SizedBox(height: 24),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: OutlinedButton.icon(
-              onPressed: _busy ? null : () => context.go('/settings'),
-              icon: const Icon(Icons.settings_outlined),
-              label: const Text('Mở cài đặt'),
-            ),
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 760),
+        child: ListenableBuilder(
+          listenable: session,
+          builder: (context, _) => ListView(
+            padding: const EdgeInsets.all(24),
+            children: [
+              Text(
+                'Tài khoản',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 12),
+              Text(session.identity?.email ?? 'Tài khoản không có email'),
+              const SizedBox(height: 16),
+              if (session.profileLoading)
+                const Text('Đang tải hồ sơ...')
+              else if (session.profileError != null) ...[
+                const Text('Không thể tải hồ sơ.'),
+                TextButton(
+                  onPressed: session.retryProfile,
+                  child: const Text('Thử lại'),
+                ),
+              ] else if (session.profile != null) ...[
+                Text('Tên hiển thị: ${session.profile!.displayName}'),
+                TextButton(
+                  onPressed: _busy ? null : () => _editName(session),
+                  child: const Text('Sửa tên hiển thị'),
+                ),
+              ],
+              const SizedBox(height: 24),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: OutlinedButton.icon(
+                  onPressed: _busy ? null : () => context.go('/settings'),
+                  icon: const Icon(Icons.settings_outlined),
+                  label: const Text('Mở cài đặt'),
+                ),
+              ),
+              const SizedBox(height: 12),
+              if (_error != null) ...[
+                Text(
+                  _error!,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+                const SizedBox(height: 12),
+              ],
+              Align(
+                alignment: Alignment.centerLeft,
+                child: FilledButton.icon(
+                  onPressed: _busy ? null : _signOut,
+                  icon: const Icon(Icons.logout),
+                  label: Text(_busy ? 'Đang xử lý...' : 'Đăng xuất'),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 12),
-          if (_error != null) ...[
-            Text(
-              _error!,
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
-            ),
-            const SizedBox(height: 12),
-          ],
-          Align(
-            alignment: Alignment.centerLeft,
-            child: FilledButton.icon(
-              onPressed: _busy ? null : _signOut,
-              icon: const Icon(Icons.logout),
-              label: Text(_busy ? 'Đang xử lý...' : 'Đăng xuất'),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

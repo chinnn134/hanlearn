@@ -326,7 +326,7 @@ class _HomeAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SizedBox(
     width: 180,
-    height: 120,
+    height: 152,
     child: Card(
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
