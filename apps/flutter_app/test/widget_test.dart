@@ -248,6 +248,70 @@ class FakeLearningRepository implements LearningRepository {
 }
 
 void main() {
+  testWidgets('dashboard summarizes saved, learned, due and recent quiz data', (
+    tester,
+  ) async {
+    final auth = FakeAuthRepository(
+      const AuthIdentity(uid: 'test-user', email: 'test@example.com'),
+    );
+    final savedWords = FakeSavedWordRepository()
+      ..saved.addAll(['ocd-test', 'friend-test']);
+    final learning = FakeLearningRepository();
+    final now = DateTime.now();
+    learning.schedules['ocd-test'] = const ReviewScheduler().apply(
+      ReviewSchedule.initial('ocd-test', now),
+      ReviewRating.again,
+      now,
+    );
+    learning.results.add(
+      QuizResult(
+        id: 'recent',
+        score: 1,
+        totalQuestions: 2,
+        answeredQuestions: 1,
+        skippedQuestions: 1,
+        createdAt: now,
+        wordIds: const ['ocd-test', 'friend-test'],
+      ),
+    );
+    addTearDown(auth.dispose);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(auth),
+          userProfileRepositoryProvider.overrideWithValue(
+            FakeUserProfileRepository(),
+          ),
+          savedWordRepositoryProvider.overrideWithValue(savedWords),
+          learningRepositoryProvider.overrideWithValue(learning),
+        ],
+        child: const HanLearnApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Quiz gần đây'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+
+    expect(find.text('Từ đã lưu'), findsWidgets);
+    expect(find.text('Từ đã học'), findsOneWidget);
+    expect(find.text('Đến hạn hôm nay'), findsOneWidget);
+    expect(find.text('2'), findsWidgets);
+    expect(find.text('1/2 câu đúng'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Lịch sử học'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Lịch sử học'), findsOneWidget);
+    expect(
+      find.text('Lịch sử quét sẽ xuất hiện sau khi OCR thật được tích hợp.'),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('dictionary searches and opens source-aware detail', (
     tester,
   ) async {
