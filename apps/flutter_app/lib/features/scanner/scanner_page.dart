@@ -64,6 +64,14 @@ class _ScannerPageState extends ConsumerState<ScannerPage> {
                   icon: const Icon(Icons.upload_file_outlined),
                   label: Text(kIsWeb ? 'Chọn ảnh từ máy' : 'Chọn từ thư viện'),
                 ),
+                if (!kIsWeb)
+                  OutlinedButton.icon(
+                    onPressed: _busy
+                        ? null
+                        : () => _pick(ImageSelectionSource.camera),
+                    icon: const Icon(Icons.camera_alt_outlined),
+                    label: const Text('Chụp bằng camera'),
+                  ),
               ],
             ),
             const SizedBox(height: 12),

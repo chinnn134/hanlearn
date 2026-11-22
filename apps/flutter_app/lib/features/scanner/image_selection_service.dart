@@ -1,7 +1,7 @@
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 enum ImageSelectionSource { gallery, camera }
@@ -47,14 +47,31 @@ class ImagePickerSelectionService implements ImageSelectionService {
 
   @override
   Future<SelectedImage?> pick(ImageSelectionSource source) async {
-    final file = await _picker.pickImage(
-      source: source == ImageSelectionSource.camera
-          ? ImageSource.camera
-          : ImageSource.gallery,
-      maxWidth: 6000,
-      maxHeight: 6000,
-      requestFullMetadata: false,
-    );
+    XFile? file;
+    try {
+      file = await _picker.pickImage(
+        source: source == ImageSelectionSource.camera
+            ? ImageSource.camera
+            : ImageSource.gallery,
+        maxWidth: 6000,
+        maxHeight: 6000,
+        requestFullMetadata: false,
+      );
+    } on PlatformException catch (error) {
+      if (error.code == 'camera_access_denied') {
+        throw const ImageSelectionException(
+          'Quyền camera bị từ chối. Hãy cấp quyền trong Cài đặt rồi thử lại.',
+        );
+      }
+      if (error.code == 'photo_access_denied') {
+        throw const ImageSelectionException(
+          'Không có quyền chọn ảnh từ thư viện.',
+        );
+      }
+      throw const ImageSelectionException(
+        'Không thể mở camera hoặc thư viện ảnh.',
+      );
+    }
     if (file == null) return null;
     final bytes = await file.readAsBytes();
     if (bytes.isEmpty) {

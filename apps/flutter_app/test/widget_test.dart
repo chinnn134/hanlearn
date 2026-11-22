@@ -281,9 +281,11 @@ class FakeLearningRepository implements LearningRepository {
 
 class FakeImageSelectionService implements ImageSelectionService {
   bool fail = false;
+  ImageSelectionSource? lastSource;
 
   @override
   Future<SelectedImage?> pick(ImageSelectionSource source) async {
+    lastSource = source;
     if (fail) {
       throw const ImageSelectionException('Ảnh vượt quá giới hạn 8 MiB.');
     }
@@ -307,6 +309,7 @@ void main() {
       const AuthIdentity(uid: 'test-user', email: 'test@example.com'),
     );
     addTearDown(auth.dispose);
+    final images = FakeImageSelectionService();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -320,9 +323,7 @@ void main() {
           learningRepositoryProvider.overrideWithValue(
             FakeLearningRepository(),
           ),
-          imageSelectionServiceProvider.overrideWithValue(
-            FakeImageSelectionService(),
-          ),
+          imageSelectionServiceProvider.overrideWithValue(images),
         ],
         child: const HanLearnApp(),
       ),
@@ -340,6 +341,9 @@ void main() {
     );
     expect(recognize.onPressed, isNull);
     expect(find.textContaining('kết quả OCR'), findsNothing);
+    await tester.tap(find.text('Chụp bằng camera'));
+    await tester.pumpAndSettle();
+    expect(images.lastSource, ImageSelectionSource.camera);
   });
 
   testWidgets('dashboard summarizes saved, learned, due and recent quiz data', (
