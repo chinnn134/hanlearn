@@ -13,7 +13,7 @@
 - Ước lượng là **ngày công tham khảo cho solo developer**, có thể sửa theo thực tế. Nếu một hàng vượt 2 ngày, tách issue con trước khi bắt đầu, giữ liên kết với mã gốc.
 - Trợ lý tự tạo branch cục bộ `phase/xx` khi mở phase và tự tạo commit sau mỗi issue hoàn thành; người dùng không cần thao tác Git hộ. Mỗi hàng `HL-xx-yy` tương ứng **đúng một commit mới** trên branch cùng phase; subject chứa `[HL-xx-yy]`. Gộp code, test và tài liệu của issue vào commit đó. Chỉ sau khi cả phase đạt DoD mới fast-forward `main` cục bộ; không push.
 
-**Tiến độ cục bộ:** Phase 00–06 đã tích hợp `main` cục bộ. Trên `phase/07`, `HL-07-01` DONE (`ee332ac`), `HL-07-02` DONE (`ae55c76`), `HL-07-03` đã PASS E2E live và đang chờ commit; `HL-07-04`–`HL-07-05` chờ dependency. Chưa tạo GitHub Issues online, chưa push.
+**Tiến độ cục bộ:** Phase 00–06 đã tích hợp `main` cục bộ. Trên `phase/07`, `HL-07-01` DONE (`ee332ac`), `HL-07-02` DONE (`ae55c76`), `HL-07-03` DONE (`897469a`), `HL-07-04` đã PASS Android E2E và chờ commit; `HL-07-05` chờ dependency. Chưa tạo GitHub Issues online, chưa push.
 
 Quy trình Git mẫu: từ `main` đã có phase trước, tạo `git switch -c phase/00`; hoàn thành HL-00-01 rồi commit `docs(requirements): write PRD [HL-00-01]`. Sau khi tất cả issue Phase 00 và DoD đạt, chuyển về `main`, chạy `git merge --ff-only phase/00`, rồi mới tạo `phase/01`. Lặp lại đến Phase 11. Nếu fast-forward không thực hiện được, kiểm tra và xử lý lịch sử branch trước; không ép merge hoặc push.
 
@@ -143,8 +143,8 @@ Milestone `Phase-07`; label chung `phase-07`, `testing`. **DoD:** core E2E pass,
 |---|---|---|---:|---|
 | HL-07-01 · DONE | Tăng coverage unit/widget/API cho core | HL-06-06 | 2 | Auth, dictionary, saved words, scheduler, UI state và lỗi API có test có ý nghĩa. |
 | HL-07-02 · DONE | Chạy Rules/security tests hai tài khoản | HL-07-01 | 1.5 | Cross-user read/write bị từ chối; rà secrets/log/CORS/quyền dữ liệu, ghi kết quả. |
-| HL-07-03 · PASS, chờ commit | Chạy E2E core trên Flutter Web | HL-07-01 | 1.5 | Live Chromium release bundle PASS toàn luồng và giữ dữ liệu sau relogin; widget E2E PASS. Chrome test runner treo `loading`, ghi rõ không tính PASS. |
-| HL-07-04 | Chạy E2E core trên Flutter Android | HL-07-01 | 1.5 | Cùng luồng pass trên emulator/thiết bị; lỗi mạng/UI ảnh cơ bản được ghi. |
+| HL-07-03 · DONE | Chạy E2E core trên Flutter Web | HL-07-01 | 1.5 | Live Chromium release bundle PASS toàn luồng và giữ dữ liệu sau relogin; widget E2E PASS. Chrome test runner treo `loading`, ghi rõ không tính PASS. |
+| HL-07-04 · PASS, chờ commit | Chạy E2E core trên Flutter Android | HL-07-01 | 1.5 | Android API 35 PASS toàn luồng/relogin; Scanner đúng giới hạn; airplane-mode error/retry PASS, không lộ lỗi kỹ thuật. |
 | HL-07-05 | Viết test matrix/report core và xử lý P0 | HL-07-02, HL-07-03, HL-07-04 | 2 | `test-plan.md`, `test-report-core.md` có OS/phiên bản/lệnh/kết quả; P0 core xử lý; OCR/AI NOT VERIFIED. |
 
 ## Phase 08 — Build và bàn giao bản core

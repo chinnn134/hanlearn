@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
+    <!-- Firebase/Auth and the local FastAPI server are HTTP on 10.0.2.2. -->
+    <base-config cleartextTrafficPermitted="true" />
     <!-- Local development only: trust CA certificates installed by the emulator user. -->
     <debug-overrides>
         <trust-anchors>

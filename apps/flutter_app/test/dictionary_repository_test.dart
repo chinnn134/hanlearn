@@ -169,4 +169,28 @@ void main() {
       expect(auth.requests, isEmpty);
     },
   );
+
+  test('API repository hides low-level network details', () async {
+    final repository = ApiDictionaryRepository(
+      TokenAuthRepository(),
+      MockClient((request) async {
+        throw http.ClientException(
+          'SocketException: Network is unreachable, uri=${request.url}',
+          request.url,
+        );
+      }),
+      'http://10.0.2.2:8000',
+    );
+
+    await expectLater(
+      repository.search('xue'),
+      throwsA(
+        isA<DictionaryApiException>().having(
+          (error) => error.message,
+          'message',
+          'Không thể kết nối máy chủ. Kiểm tra mạng rồi thử lại.',
+        ),
+      ),
+    );
+  });
 }

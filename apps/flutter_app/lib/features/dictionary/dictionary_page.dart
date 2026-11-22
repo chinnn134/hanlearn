@@ -24,6 +24,11 @@ class _DictionaryPageState extends ConsumerState<DictionaryPage> {
   bool _saved = false;
   bool _saving = false;
 
+  String get _errorMessage => switch (_error) {
+    DictionaryApiException(:final message) => message,
+    _ => 'Đã xảy ra lỗi. Vui lòng thử lại.',
+  };
+
   @override
   void initState() {
     super.initState();
@@ -142,7 +147,7 @@ class _DictionaryPageState extends ConsumerState<DictionaryPage> {
             if (_loading) const LinearProgressIndicator(),
             if (_error != null) ...[
               Text(
-                'Không thể tra từ: $_error',
+                'Không thể tra từ: $_errorMessage',
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
               Align(
