@@ -103,7 +103,7 @@ Phase 09 và 10 là hai phase cuối của **phát triển tính năng**; Phase 
 - [ ] Web upload, Android camera/gallery, preview, quyền, giới hạn loại/byte/pixel/EXIF, crop nếu khả thi.
 - [x] Scanner/Result/Edit hiển thị “OCR chưa được cấu hình”; cho nhập/sửa text thủ công để tiếp tục tra; không tạo kết quả OCR giả.
 - [x] Chốt `POST /api/v1/ocr/recognize` multipart, text/detections/box/confidence/latency/lỗi chuẩn; adapter gọi service ngoài hoặc PaddleOCR nội bộ khi quyết định.
-- [ ] Chốt `POST /api/v1/ai/explain`, schema, auth/quota/fallback; contract tests với mock, chưa gọi AI thật.
+- [x] Chốt `POST /api/v1/ai/explain`, schema, auth/quota/fallback; contract tests với mock, chưa gọi AI thật.
 - [ ] Hướng dẫn config OCR endpoint/auth và AI API key qua backend environment, health/timeout/error; không chứa secret thật.
 - **DoD:** UI ảnh/nhập tay và contract test pass; trạng thái chưa có service đúng. Không được nhận OCR/AI hoàn thành.
 
@@ -229,5 +229,6 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 | 2026-11-22 | Phase 06 · HL-06-02 | Android Scanner có Photo Picker và camera riêng; khai báo CAMERA/feature optional, ánh xạ lỗi từ chối camera/thư viện thành thông báo có hướng xử lý. Camera chỉ hiện ngoài Web; cả hai nguồn dùng chung validation/preview cục bộ và không gọi OCR. Flutter analyze sạch và 27/27 tests qua; lần build APK đầu bị chặn khi Gradle tải dependency do chuỗi chứng chỉ SSL của máy, sẽ kiểm chứng lại tại gate Phase 06. | Tiếp tục `HL-06-03` Result/Edit nhập tay. |
 | 2026-11-22 | Phase 06 · HL-06-03 | Scanner ghi rõ văn bản do người dùng nhập, không phải kết quả nhận dạng; cho nhập/sửa rồi chuyển an toàn qua query parameter sang Dictionary. Dictionary điền sẵn và tự tra văn bản đã xác nhận. Widget test kiểm luồng Scanner → Dictionary; Flutter analyze sạch và 27/27 tests qua. Không lưu ảnh, không ghi lịch sử quét và không tạo OCR giả. | Tiếp tục `HL-06-04` contract và adapter OCR chưa cấu hình. |
 | 2026-11-22 | Phase 06 · HL-06-04 | FastAPI có `POST /api/v1/ocr/recognize`, xác thực Firebase, multipart JPEG/PNG, giới hạn byte/pixel, kiểm nội dung ảnh và schema text/detections/box/confidence/latency/version/request ID. `OcrProvider` là port thay thế được; adapter mặc định trả 503 chưa cấu hình. Contract tests dùng mock kiểm success/auth/oversize/unsupported/corrupt; backend Ruff sạch và 21/21 tests qua. Chưa gọi OCR thật. | Tiếp tục `HL-06-05` contract và adapter AI chưa cấu hình. |
+| 2026-11-22 | Phase 06 · HL-06-05 | FastAPI có `POST /api/v1/ai/explain`, xác thực Firebase, chỉ nhận `vocabId` đã có trong corpus và context tối đa 500 ký tự. `AiExplainProvider` nhận Hanzi/Pinyin/nghĩa đã xác minh; Pydantic khóa output, tối đa 3 ví dụ. Rate/quota theo UID có adapter in-memory một process; provider mặc định trả 503 chưa cấu hình. Mock tests kiểm success/auth/not-found/validation/rate-limit; Ruff sạch và 25/25 tests qua. Chưa gọi AI thật. | Tiếp tục `HL-06-06` hướng dẫn cấu hình và gate DoD Phase 06. |
 
-**Bước tiếp theo:** hoàn thành và commit `HL-06-04`, sau đó làm `HL-06-05` trên `phase/06`; không push.
+**Bước tiếp theo:** hoàn thành và commit `HL-06-05`, sau đó làm `HL-06-06` trên `phase/06`; không push.

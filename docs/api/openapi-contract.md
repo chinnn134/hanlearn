@@ -124,6 +124,8 @@ Các số/text trên chỉ minh họa schema, **không phải benchmark**. `conf
 
 ### `POST /api/v1/ai/explain`
 
+Contract Phase 06 đã được hiện thực bằng FastAPI/Pydantic với `AiExplainProvider` có thể thay thế. Adapter mặc định luôn trả `503 SERVICE_NOT_CONFIGURED`; contract test mới inject provider giả. Rate limiter theo UID hiện là in-memory cho một process để khóa hành vi contract; Phase 10 phải thay bằng store dùng chung trước khi chạy nhiều instance. Trạng thái này **không phải AI thật**.
+
 `application/json` request:
 
 ```json

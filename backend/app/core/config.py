@@ -27,6 +27,11 @@ class Settings(BaseSettings):
     ocr_timeout_seconds: int = Field(default=30, ge=1, le=120)
     max_image_bytes: int = Field(default=8 * 1024 * 1024, ge=1, le=32 * 1024 * 1024)
     max_image_pixels: int = Field(default=20_000_000, ge=1, le=100_000_000)
+    ai_api_base_url: str | None = None
+    ai_api_key: str | None = None
+    ai_model: str | None = None
+    ai_requests_per_minute: int = Field(default=2, ge=1, le=60)
+    ai_requests_per_day: int = Field(default=20, ge=1, le=10_000)
 
     @field_validator("allowed_origins")
     @classmethod

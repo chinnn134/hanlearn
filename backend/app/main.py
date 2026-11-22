@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 from backend.app.api.v1.router import api_router
 from backend.app.core.config import Settings
+from backend.app.services.ai import InMemoryAiRateLimiter, UnconfiguredAiProvider
 from backend.app.services.ocr import UnconfiguredOcrProvider
 
 
@@ -16,6 +17,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application = FastAPI(title="HanLearn API", version="0.1.0")
     application.state.settings = config
     application.state.ocr_provider = UnconfiguredOcrProvider()
+    application.state.ai_provider = UnconfiguredAiProvider()
+    application.state.ai_rate_limiter = InMemoryAiRateLimiter(
+        per_minute=config.ai_requests_per_minute,
+        per_day=config.ai_requests_per_day,
+    )
     application.add_middleware(
         CORSMiddleware,
         allow_origins=config.cors_origins,
