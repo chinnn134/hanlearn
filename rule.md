@@ -1,6 +1,6 @@
 # Quy tắc thực thi HanLearn AI
 
-> Phiên bản 0.5, theo CR-001/CR-002/CR-003/CR-004 ngày 2026-11-19; chờ người dùng duyệt. Đọc cùng `plan.md`, `kanban_management.md` và `HanLearn_AI_SOLO_PHASE_PLAN.md` trước mỗi lượt.
+> Phiên bản 0.7, theo CR-001 đến CR-006; người dùng xác nhận bắt đầu ngày 2026-11-20. Đọc cùng `plan.md`, `kanban_management.md` và `HanLearn_AI_SOLO_PHASE_PLAN.md` trước mỗi lượt.
 
 ## 1. Nguồn yêu cầu và cập nhật
 
@@ -30,4 +30,4 @@
 
 ## 4. Cổng hiện tại
 
-`plan.md` và `rule.md` phiên bản 0.2 là bản sửa để người dùng duyệt. Chưa bắt đầu Phase 00. Khi được xác nhận, triển khai roadmap mới và tiếp tục cập nhật cả hai file khi có yêu cầu mới.
+Người dùng đã xác nhận bắt đầu. Phase 00 đang triển khai trên branch `phase/00`; từng issue phải đạt tiêu chí và có đúng một commit cục bộ. Tiếp tục cập nhật plan, rule và backlog khi yêu cầu thay đổi; không push.
