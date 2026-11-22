@@ -90,9 +90,11 @@ class FakeAuthRepository implements AuthRepository {
 
 class FakeDictionaryRepository implements DictionaryRepository {
   bool fail = false;
+  String? lastQuery;
 
   @override
   Future<List<DictionaryItem>> search(String query) async {
+    lastQuery = query;
     if (fail) throw const DictionaryApiException('Mất kết nối thử nghiệm');
     if (query == 'none') return [];
     return const [
@@ -310,6 +312,7 @@ void main() {
     );
     addTearDown(auth.dispose);
     final images = FakeImageSelectionService();
+    final dictionary = FakeDictionaryRepository();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -324,6 +327,7 @@ void main() {
             FakeLearningRepository(),
           ),
           imageSelectionServiceProvider.overrideWithValue(images),
+          dictionaryRepositoryProvider.overrideWithValue(dictionary),
         ],
         child: const HanLearnApp(),
       ),
@@ -331,7 +335,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Scanner'));
     await tester.pumpAndSettle();
-    expect(find.textContaining('OCR chưa được cấu hình'), findsOneWidget);
+    expect(find.textContaining('OCR chưa được cấu hình'), findsWidgets);
     await tester.tap(find.text('Chọn từ thư viện'));
     await tester.pumpAndSettle();
 
@@ -340,10 +344,24 @@ void main() {
       find.widgetWithText(FilledButton, 'Nhận dạng — OCR chưa được cấu hình'),
     );
     expect(recognize.onPressed, isNull);
-    expect(find.textContaining('kết quả OCR'), findsNothing);
+    expect(find.textContaining('không phải kết quả nhận dạng'), findsOneWidget);
     await tester.tap(find.text('Chụp bằng camera'));
     await tester.pumpAndSettle();
     expect(images.lastSource, ImageSelectionSource.camera);
+    await tester.drag(find.byType(ListView), const Offset(0, -600));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), '学习');
+    tester.testTextInput.hide();
+    await tester.ensureVisible(find.text('Tra văn bản đã xác nhận'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Tra văn bản đã xác nhận'));
+    await tester.pumpAndSettle();
+    expect(dictionary.lastQuery, '学习');
+    expect(find.text('Tra từ'), findsWidgets);
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      '学习',
+    );
   });
 
   testWidgets('dashboard summarizes saved, learned, due and recent quiz data', (

@@ -7,20 +7,31 @@ import 'saved_word_repository.dart';
 import '../auth/auth_session.dart';
 
 class DictionaryPage extends ConsumerStatefulWidget {
-  const DictionaryPage({super.key});
+  const DictionaryPage({super.key, this.initialQuery});
+
+  final String? initialQuery;
 
   @override
   ConsumerState<DictionaryPage> createState() => _DictionaryPageState();
 }
 
 class _DictionaryPageState extends ConsumerState<DictionaryPage> {
-  final _query = TextEditingController();
+  late final TextEditingController _query;
   List<DictionaryItem>? _items;
   DictionaryDetail? _detail;
   Object? _error;
   bool _loading = false;
   bool _saved = false;
   bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _query = TextEditingController(text: widget.initialQuery ?? '');
+    if (_query.text.trim().isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _search());
+    }
+  }
 
   @override
   void dispose() {

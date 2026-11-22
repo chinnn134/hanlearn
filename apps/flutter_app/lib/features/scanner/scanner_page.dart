@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'image_selection_service.dart';
 
@@ -12,9 +13,24 @@ class ScannerPage extends ConsumerStatefulWidget {
 }
 
 class _ScannerPageState extends ConsumerState<ScannerPage> {
+  final _manualText = TextEditingController();
   SelectedImage? _image;
   String? _error;
   var _busy = false;
+
+  @override
+  void dispose() {
+    _manualText.dispose();
+    super.dispose();
+  }
+
+  void _openDictionary() {
+    final text = _manualText.text.trim();
+    if (text.isEmpty) return;
+    context.go(
+      Uri(path: '/dictionary', queryParameters: {'q': text}).toString(),
+    );
+  }
 
   Future<void> _pick(ImageSelectionSource source) async {
     setState(() {
@@ -120,6 +136,39 @@ class _ScannerPageState extends ConsumerState<ScannerPage> {
                 label: const Text('Nhận dạng — OCR chưa được cấu hình'),
               ),
             ],
+            const SizedBox(height: 24),
+            Text(
+              'Nhập và xác nhận văn bản',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'OCR chưa được cấu hình. Nội dung dưới đây do bạn nhập thủ công, không phải kết quả nhận dạng từ ảnh.',
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _manualText,
+              minLines: 2,
+              maxLines: 5,
+              textInputAction: TextInputAction.done,
+              onChanged: (_) => setState(() {}),
+              onSubmitted: (_) => _openDictionary(),
+              decoration: const InputDecoration(
+                labelText: 'Văn bản thủ công',
+                hintText: 'Nhập hoặc dán chữ Hán cần tra, ví dụ: 学习',
+              ),
+            ),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: FilledButton.icon(
+                onPressed: _manualText.text.trim().isEmpty
+                    ? null
+                    : _openDictionary,
+                icon: const Icon(Icons.manage_search_outlined),
+                label: const Text('Tra văn bản đã xác nhận'),
+              ),
+            ),
           ],
         ),
       ),

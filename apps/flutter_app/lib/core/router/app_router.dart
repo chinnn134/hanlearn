@@ -69,7 +69,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(path: '/', builder: (context, state) => const HomePage()),
           GoRoute(
             path: '/dictionary',
-            builder: (context, state) => const DictionaryPage(),
+            builder: (context, state) => DictionaryPage(
+              key: ValueKey(state.uri.queryParameters['q']),
+              initialQuery: state.uri.queryParameters['q'],
+            ),
           ),
           GoRoute(
             path: '/saved-words',

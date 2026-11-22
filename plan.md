@@ -101,7 +101,7 @@ Phase 09 và 10 là hai phase cuối của **phát triển tính năng**; Phase 
 ### Phase 06 — UI ảnh và hợp đồng tích hợp
 
 - [ ] Web upload, Android camera/gallery, preview, quyền, giới hạn loại/byte/pixel/EXIF, crop nếu khả thi.
-- [ ] Scanner/Result/Edit hiển thị “OCR chưa được cấu hình”; cho nhập/sửa text thủ công để tiếp tục tra; không tạo kết quả OCR giả.
+- [x] Scanner/Result/Edit hiển thị “OCR chưa được cấu hình”; cho nhập/sửa text thủ công để tiếp tục tra; không tạo kết quả OCR giả.
 - [ ] Chốt `POST /api/v1/ocr/recognize` multipart, text/detections/box/confidence/latency/lỗi chuẩn; adapter gọi service ngoài hoặc PaddleOCR nội bộ khi quyết định.
 - [ ] Chốt `POST /api/v1/ai/explain`, schema, auth/quota/fallback; contract tests với mock, chưa gọi AI thật.
 - [ ] Hướng dẫn config OCR endpoint/auth và AI API key qua backend environment, health/timeout/error; không chứa secret thật.
@@ -227,5 +227,6 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 | 2026-11-21 | Phase 05 · HL-05-05 | Web production hiển thị Dashboard empty và server-sync đúng cho tài khoản hiện hành. Android production giữ nguyên dữ liệu Phase 04: 2 saved/2 learned/0 due, hai Quiz 2/2 và hai schedule reviewCount=3; airplane mode chuyển sang cache label rồi phục hồi server label khi bật mạng. Phát hiện phiên Web cũ trả 401; thêm retry một lần bằng forced Firebase token refresh và test hồi quy. Flutter analyze + 26/26 tests, Web release/Android debug build, backend 17/17 pytest và Rules 7/7 qua. Bằng chứng ở `docs/testing/phase-05-evidence.md`. | Phase 05 đạt DoD; commit rồi fast-forward `main`. Phase tiếp theo `phase/06`; không push. |
 | 2026-11-22 | Phase 06 · HL-06-01 | Đã fast-forward Phase 05 vào `main` và mở `phase/06`. Scanner Web dùng file picker chọn JPEG/PNG/WebP, kiểm magic bytes, 8 MiB, 20 MP và codec; preview cục bộ có kích thước/tên/dung lượng, không upload hoặc lưu ảnh. Codec xử lý hướng EXIF khi render; OCR bị khóa và ghi rõ chưa cấu hình. Flutter analyze, 27/27 tests và Web release build qua. | Tiếp tục `HL-06-02` camera/gallery Android và quyền; không push. |
 | 2026-11-22 | Phase 06 · HL-06-02 | Android Scanner có Photo Picker và camera riêng; khai báo CAMERA/feature optional, ánh xạ lỗi từ chối camera/thư viện thành thông báo có hướng xử lý. Camera chỉ hiện ngoài Web; cả hai nguồn dùng chung validation/preview cục bộ và không gọi OCR. Flutter analyze sạch và 27/27 tests qua; lần build APK đầu bị chặn khi Gradle tải dependency do chuỗi chứng chỉ SSL của máy, sẽ kiểm chứng lại tại gate Phase 06. | Tiếp tục `HL-06-03` Result/Edit nhập tay. |
+| 2026-11-22 | Phase 06 · HL-06-03 | Scanner ghi rõ văn bản do người dùng nhập, không phải kết quả nhận dạng; cho nhập/sửa rồi chuyển an toàn qua query parameter sang Dictionary. Dictionary điền sẵn và tự tra văn bản đã xác nhận. Widget test kiểm luồng Scanner → Dictionary; Flutter analyze sạch và 27/27 tests qua. Không lưu ảnh, không ghi lịch sử quét và không tạo OCR giả. | Tiếp tục `HL-06-04` contract và adapter OCR chưa cấu hình. |
 
-**Bước tiếp theo:** hoàn thành và commit `HL-06-02`, sau đó làm `HL-06-03` trên `phase/06`; không push.
+**Bước tiếp theo:** hoàn thành và commit `HL-06-03`, sau đó làm `HL-06-04` trên `phase/06`; không push.
