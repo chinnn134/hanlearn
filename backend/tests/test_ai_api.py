@@ -4,7 +4,13 @@ from backend.app.api.v1.ai import provider
 from backend.app.core.auth import AuthenticatedUser, require_user
 from backend.app.core.config import Settings
 from backend.app.main import create_app
-from backend.app.services.ai import AiExample, AiExplainInput, AiExplainResult
+from backend.app.services.ai import (
+    AiExample,
+    AiExplainInput,
+    AiExplainResult,
+    AiServiceTimeout,
+    AiServiceUnavailable,
+)
 from backend.app.services.dictionary import DictionaryRepository
 from fastapi.testclient import TestClient
 
@@ -34,6 +40,17 @@ class FakeAiProvider:
             ),
             radical_note_vi=None,
         )
+
+
+class FailingAiProvider:
+    configured = True
+
+    def __init__(self, error: Exception) -> None:
+        self.error = error
+
+    async def explain(self, item: AiExplainInput) -> AiExplainResult:
+        del item
+        raise self.error
 
 
 def app_with_auth(**settings: object):
@@ -118,3 +135,24 @@ def test_ai_validates_vocab_context_and_rate_limit() -> None:
     assert first.status_code == 200
     assert limited.status_code == 429
     assert limited.json()["detail"]["code"] == "RATE_LIMITED"
+
+
+def test_ai_maps_provider_timeout_and_unavailable_errors() -> None:
+    app = app_with_auth()
+    app.dependency_overrides[provider] = lambda: FailingAiProvider(
+        AiServiceTimeout("timeout")
+    )
+    with TestClient(app) as client:
+        timeout = client.post("/api/v1/ai/explain", json={"vocabId": VOCAB_ID})
+
+    app = app_with_auth()
+    app.dependency_overrides[provider] = lambda: FailingAiProvider(
+        AiServiceUnavailable("offline")
+    )
+    with TestClient(app) as client:
+        unavailable = client.post("/api/v1/ai/explain", json={"vocabId": VOCAB_ID})
+
+    assert timeout.status_code == 504
+    assert timeout.json()["detail"]["code"] == "SERVICE_TIMEOUT"
+    assert unavailable.status_code == 503
+    assert unavailable.json()["detail"]["code"] == "SERVICE_UNAVAILABLE"

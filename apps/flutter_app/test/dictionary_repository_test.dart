@@ -108,4 +108,65 @@ void main() {
     expect(calls, 2);
     expect(auth.requests, [false, true]);
   });
+
+  test(
+    'API repository does not retry a second unauthorized response',
+    () async {
+      final auth = TokenAuthRepository();
+      var calls = 0;
+      final client = MockClient((request) async {
+        calls++;
+        return http.Response(
+          jsonEncode({
+            'detail': {'message': 'Phiên đăng nhập đã hết hạn.'},
+          }),
+          401,
+          headers: {'content-type': 'application/json'},
+        );
+      });
+      final repository = ApiDictionaryRepository(
+        auth,
+        client,
+        'https://api.example',
+      );
+
+      await expectLater(
+        repository.search('学习'),
+        throwsA(
+          isA<DictionaryApiException>().having(
+            (error) => error.message,
+            'message',
+            'Phiên đăng nhập đã hết hạn.',
+          ),
+        ),
+      );
+
+      expect(calls, 2);
+      expect(auth.requests, [false, true]);
+    },
+  );
+
+  test(
+    'API repository fails before token access when backend is missing',
+    () async {
+      final auth = TokenAuthRepository();
+      final repository = ApiDictionaryRepository(
+        auth,
+        MockClient((_) async => http.Response('{}', 200)),
+        '',
+      );
+
+      await expectLater(
+        repository.search('学习'),
+        throwsA(
+          isA<DictionaryApiException>().having(
+            (error) => error.message,
+            'message',
+            'Backend API chưa được cấu hình.',
+          ),
+        ),
+      );
+      expect(auth.requests, isEmpty);
+    },
+  );
 }
