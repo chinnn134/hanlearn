@@ -17,6 +17,7 @@ class Settings(BaseSettings):
 
     app_env: Literal["local", "staging", "production"] = "local"
     firebase_project_id: str | None = None
+    firebase_auth_emulator_host: str | None = None
     firebase_token_clock_skew_seconds: int = Field(default=0, ge=0, le=600)
     dictionary_db_path: Path = (
         REPO_ROOT / "backend/data/dictionary/hanlearn_dictionary.sqlite3"
@@ -62,6 +63,20 @@ class Settings(BaseSettings):
     @model_validator(mode="after")
     def validate_deployment(self) -> "Settings":
         self.dictionary_db_path = self.dictionary_db_path.resolve()
+        if self.firebase_auth_emulator_host:
+            if self.app_env != "local":
+                raise ValueError(
+                    "FIREBASE_AUTH_EMULATOR_HOST is allowed only in local mode"
+                )
+            host, separator, port = self.firebase_auth_emulator_host.partition(":")
+            if (
+                host not in {"127.0.0.1", "localhost"}
+                or separator != ":"
+                or not port.isdigit()
+            ):
+                raise ValueError(
+                    "FIREBASE_AUTH_EMULATOR_HOST must be a loopback host and port"
+                )
         if self.app_env != "local":
             if not self.firebase_project_id:
                 raise ValueError("FIREBASE_PROJECT_ID is required outside local")

@@ -46,6 +46,8 @@ firebase emulators:start --only 'auth,firestore' --project demo-hanlearn
 
 Trong terminal Flutter, thêm `--dart-define=USE_FIREBASE_EMULATOR=true` vào `flutter run` hoặc `flutter build`. Cùng codebase dùng `localhost` cho Web và `10.0.2.2` cho Android Emulator. `firebase/firestore.rules` cho owner đọc/tạo/sửa `users/{uid}`, owner đọc/tạo/xóa `saved_words` đúng schema và tài khoản đăng nhập đọc `vocabulary`; các collection chưa đến phase vẫn bị từ chối. Demo project không chứa dữ liệu Firebase production và không cần đăng nhập Firebase CLI.
 
+Để backend chấp nhận ID token **cục bộ** của Auth Emulator khi chạy E2E, đặt `APP_ENV=local`, `FIREBASE_PROJECT_ID=demo-hanlearn` và `FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099` cho tiến trình Uvicorn. Backend hỏi chính Auth Emulator loopback để xác minh token; host từ xa hoặc mọi môi trường staging/production bị Settings từ chối. Bỏ biến này để trở lại xác minh chữ ký Firebase production.
+
 Test Rules tự động khi Firestore Emulator đang chạy:
 
 ```powershell

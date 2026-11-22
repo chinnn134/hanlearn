@@ -1,6 +1,6 @@
 # Quy tắc thực thi HanLearn AI
 
-> Phiên bản 1.7, theo CR-001 đến CR-007; cập nhật cổng thực thi ngày 2026-11-22. Đọc cùng `plan.md`, `kanban_management.md` và `HanLearn_AI_SOLO_PHASE_PLAN.md` trước mỗi lượt.
+> Phiên bản 1.8, theo CR-001 đến CR-007; cập nhật cổng thực thi ngày 2026-11-22. Đọc cùng `plan.md`, `kanban_management.md` và `HanLearn_AI_SOLO_PHASE_PLAN.md` trước mỗi lượt.
 
 ## 1. Nguồn yêu cầu và cập nhật
 
@@ -32,4 +32,4 @@
 
 ## 4. Cổng hiện tại
 
-Người dùng đã xác nhận bắt đầu và yêu cầu tiếp tục không dừng xin xác nhận giữa các issue đã rõ. Phase 00–06 đã đạt DoD cục bộ; Phase 06 chỉ được fast-forward vào `main` sau commit `HL-06-06`, không push. Scanner chỉ preview ảnh cục bộ và cho nhập tay; không được gọi ảnh/text là kết quả OCR, ghi scan history hoặc gửi ảnh đi trước Phase 09 có service thật. OCR/AI provider mặc định phải giữ `503 SERVICE_NOT_CONFIGURED`; mock chỉ là contract test. Key/endpoint chỉ ở backend environment, không ở Flutter/Git/log. Rate limiter AI in-memory chỉ hợp lệ cho contract một process và phải đổi store dùng chung trước multi-instance. Dashboard chỉ nhận “đã đồng bộ” khi mọi query Firestore trả metadata server; nếu có cache phải gắn nhãn local/offline, cho refresh và không che dữ liệu cũ. API từ điển gặp 401 chỉ force-refresh Firebase ID token và retry đúng một lần; Phase 07/08 phải smoke lại trên bundle Web sạch. Quy tắc học tập, corpus có nguồn và xác minh Firebase token giữ nguyên. Phase kế tiếp chỉ triển khai trên `phase/07` tạo từ `main` đã fast-forward; mỗi issue đúng một commit và không push.
+Người dùng đã xác nhận bắt đầu và yêu cầu tiếp tục không dừng xin xác nhận giữa các issue đã rõ. Phase 00–06 đã đạt DoD cục bộ; Phase 06 đã fast-forward vào `main`, không push. Scanner chỉ preview ảnh cục bộ và cho nhập tay; không được gọi ảnh/text là kết quả OCR, ghi scan history hoặc gửi ảnh đi trước Phase 09 có service thật. OCR/AI provider mặc định phải giữ `503 SERVICE_NOT_CONFIGURED`; mock chỉ là contract test. Key/endpoint chỉ ở backend environment, không ở Flutter/Git/log. Rate limiter AI in-memory chỉ hợp lệ cho contract một process và phải đổi store dùng chung trước multi-instance. Dashboard chỉ nhận “đã đồng bộ” khi mọi query Firestore trả metadata server; nếu có cache phải gắn nhãn local/offline, cho refresh và không che dữ liệu cũ. API từ điển gặp 401 chỉ force-refresh Firebase ID token và retry đúng một lần; Phase 07/08 phải smoke lại trên bundle Web sạch. Auth Emulator chỉ được dùng với `APP_ENV=local`, host loopback và project test cô lập; tuyệt đối không nới xác minh Firebase production hoặc dùng production credential cho E2E local. Quy tắc học tập, corpus có nguồn và xác minh Firebase token giữ nguyên. Hiện chỉ triển khai `phase/07`; mỗi issue đúng một commit và không push.

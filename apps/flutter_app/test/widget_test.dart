@@ -1016,4 +1016,101 @@ void main() {
     expect(find.text('OCR'), findsOneWidget);
     expect(find.text('AI giải thích'), findsOneWidget);
   });
+
+  testWidgets('web core E2E persists learning data across logout and login', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1280, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final auth = FakeAuthRepository(null);
+    final savedWords = FakeSavedWordRepository()..saved.add('friend-test');
+    final learning = FakeLearningRepository();
+    addTearDown(auth.dispose);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(auth),
+          userProfileRepositoryProvider.overrideWithValue(
+            FakeUserProfileRepository(),
+          ),
+          dictionaryRepositoryProvider.overrideWithValue(
+            FakeDictionaryRepository(),
+          ),
+          savedWordRepositoryProvider.overrideWithValue(savedWords),
+          learningRepositoryProvider.overrideWithValue(learning),
+        ],
+        child: const HanLearnApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextFormField).at(0), 'e2e@example.com');
+    await tester.enterText(find.byType(TextFormField).at(1), 'secret123');
+    await tester.tap(find.widgetWithText(FilledButton, 'Đăng nhập'));
+    await tester.pumpAndSettle();
+    expect(find.text('Chào mừng đến HanLearn AI'), findsOneWidget);
+
+    await tester.tap(find.text('Tra từ').last);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), '学习');
+    await tester.tap(find.byTooltip('Tra từ'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('学习  xué xí'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Lưu từ'));
+    await tester.pumpAndSettle();
+    expect(savedWords.saved, containsAll(['friend-test', 'ocd-test']));
+
+    await tester.tap(find.byIcon(Icons.home_outlined));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ôn Flashcard'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('flashcard-surface')));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Đã biết'));
+    await tester.tap(find.text('Đã biết'));
+    await tester.pumpAndSettle();
+    expect(learning.schedules, isNotEmpty);
+
+    await tester.tap(find.byIcon(Icons.home_outlined));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Làm Quiz'));
+    await tester.tap(find.text('Làm Quiz'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Bỏ qua'));
+    await tester.tap(find.text('Bỏ qua'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Câu tiếp theo'));
+    await tester.tap(find.text('Câu tiếp theo'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Bỏ qua'));
+    await tester.tap(find.text('Bỏ qua'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Xem kết quả'));
+    await tester.tap(find.text('Xem kết quả'));
+    await tester.pumpAndSettle();
+    expect(find.text('Hoàn thành Quiz'), findsOneWidget);
+    expect(learning.results, hasLength(1));
+
+    await tester.tap(find.byIcon(Icons.home_outlined));
+    await tester.pumpAndSettle();
+    expect(find.text('0/2 câu đúng'), findsOneWidget);
+    await tester.tap(find.byTooltip('Hồ sơ'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Đăng xuất'));
+    await tester.pumpAndSettle();
+    expect(find.text('Chưa có tài khoản? Tạo mới'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextFormField).at(0), 'e2e@example.com');
+    await tester.enterText(find.byType(TextFormField).at(1), 'secret123');
+    await tester.tap(find.widgetWithText(FilledButton, 'Đăng nhập'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Chào mừng đến HanLearn AI'), findsOneWidget);
+    expect(savedWords.saved, hasLength(2));
+    expect(learning.results, hasLength(1));
+    expect(learning.schedules, hasLength(2));
+  });
 }
