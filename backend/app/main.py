@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 from backend.app.api.v1.router import api_router
 from backend.app.core.config import Settings
+from backend.app.services.ocr import UnconfiguredOcrProvider
 
 
 class HealthResponse(BaseModel):
@@ -14,6 +15,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     config = settings or Settings()
     application = FastAPI(title="HanLearn API", version="0.1.0")
     application.state.settings = config
+    application.state.ocr_provider = UnconfiguredOcrProvider()
     application.add_middleware(
         CORSMiddleware,
         allow_origins=config.cors_origins,

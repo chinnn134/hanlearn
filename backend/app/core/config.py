@@ -22,6 +22,11 @@ class Settings(BaseSettings):
         REPO_ROOT / "backend/data/dictionary/hanlearn_dictionary.sqlite3"
     )
     allowed_origins: str = Field(default="http://localhost:3000")
+    ocr_service_url: str | None = None
+    ocr_service_api_key: str | None = None
+    ocr_timeout_seconds: int = Field(default=30, ge=1, le=120)
+    max_image_bytes: int = Field(default=8 * 1024 * 1024, ge=1, le=32 * 1024 * 1024)
+    max_image_pixels: int = Field(default=20_000_000, ge=1, le=100_000_000)
 
     @field_validator("allowed_origins")
     @classmethod

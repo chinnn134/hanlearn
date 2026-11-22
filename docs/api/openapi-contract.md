@@ -96,6 +96,8 @@ Ví dụ là **hình dạng dữ liệu**, không phải bằng chứng từ đ�
 
 ### `POST /api/v1/ocr/recognize`
 
+Contract Phase 06 đã được hiện thực bằng FastAPI/Pydantic với `OcrProvider` có thể thay thế. Adapter mặc định luôn trả `503 SERVICE_NOT_CONFIGURED`; chỉ contract test inject provider giả, vì vậy trạng thái này **không phải OCR thật**. Provider HTTP/nội bộ chỉ được nối ở Phase 09.
+
 - Multipart field `image` bắt buộc, một file JPEG/PNG. Giới hạn thiết kế ban đầu: **8 MiB/file, 20 megapixel**; backend kiểm cả byte lẫn pixel sau decode, EXIF orientation, từ chối ảnh hỏng/không hỗ trợ. Giá trị có thể giảm theo service thực tế ở Phase 09 bằng ADR + cập nhật contract/client/test.
 - MIME và nội dung file phải phù hợp; không tin extension/MIME do client khai. Timeout backend ↔ service cấu hình được, có giới hạn; lúc timeout trả lỗi rõ để client cho quét lại/nhập tay.
 - Box nếu provider hỗ trợ: bốn điểm `[x, y]` theo pixel của ảnh gốc **sau khi áp EXIF orientation**; backend map tọa độ nếu service resize. Nếu provider không có box/confidence, `detections: []` hoặc `confidence: null`, không bịa số.
