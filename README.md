@@ -67,7 +67,7 @@ flutter build web
 flutter build apk --debug
 ```
 
-`.github/workflows/ci.yml` chạy các bước tương ứng trên GitHub Actions. Workflow mới chưa chạy trên GitHub vì dự án chỉ tạo branch/commit cục bộ và **không push** khi chưa có yêu cầu.
+`.github/workflows/ci.yml` chạy các bước tương ứng trên GitHub Actions. Xem kết quả kiểm tra theo nhánh và commit trong tab **Actions** trên GitHub.
 
 ## Cấu hình và dữ liệu nhạy cảm
 
