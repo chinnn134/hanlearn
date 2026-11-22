@@ -12,8 +12,8 @@ import '../../features/dictionary/saved_words_page.dart';
 import '../../features/learning/flashcard_page.dart';
 import '../../features/learning/quiz_page.dart';
 import '../../features/learning/today_review_page.dart';
+import '../../features/scanner/scanner_page.dart';
 import '../widgets/app_shell.dart';
-import '../widgets/feature_placeholder_page.dart';
 import '../widgets/state_panel.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -87,12 +87,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/scanner',
-            builder: (context, state) => const FeaturePlaceholderPage(
-              title: 'Scanner',
-              phase: 'Phase 06 và Phase 09',
-              description:
-                  'Chọn ảnh sẽ có ở Phase 06. OCR thật chưa được cấu hình.',
-            ),
+            builder: (context, state) => const ScannerPage(),
           ),
           GoRoute(
             path: '/profile',

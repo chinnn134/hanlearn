@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_app/features/dictionary/saved_word_repository.dart';
 import 'package:flutter_app/features/learning/learning_repository.dart';
 import 'package:flutter_app/features/learning/quiz_engine.dart';
 import 'package:flutter_app/features/learning/review_scheduler.dart';
+import 'package:flutter_app/features/scanner/image_selection_service.dart';
 
 class FakeUserProfileRepository implements UserProfileRepository {
   UserProfile? profile;
@@ -277,7 +279,69 @@ class FakeLearningRepository implements LearningRepository {
   }
 }
 
+class FakeImageSelectionService implements ImageSelectionService {
+  bool fail = false;
+
+  @override
+  Future<SelectedImage?> pick(ImageSelectionSource source) async {
+    if (fail) {
+      throw const ImageSelectionException('Ảnh vượt quá giới hạn 8 MiB.');
+    }
+    return SelectedImage(
+      bytes: base64Decode(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
+      ),
+      fileName: 'hanzi.png',
+      mimeType: 'image/png',
+      width: 1,
+      height: 1,
+    );
+  }
+}
+
 void main() {
+  testWidgets('scanner previews a local image without claiming OCR', (
+    tester,
+  ) async {
+    final auth = FakeAuthRepository(
+      const AuthIdentity(uid: 'test-user', email: 'test@example.com'),
+    );
+    addTearDown(auth.dispose);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(auth),
+          userProfileRepositoryProvider.overrideWithValue(
+            FakeUserProfileRepository(),
+          ),
+          savedWordRepositoryProvider.overrideWithValue(
+            FakeSavedWordRepository(),
+          ),
+          learningRepositoryProvider.overrideWithValue(
+            FakeLearningRepository(),
+          ),
+          imageSelectionServiceProvider.overrideWithValue(
+            FakeImageSelectionService(),
+          ),
+        ],
+        child: const HanLearnApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Scanner'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('OCR chưa được cấu hình'), findsOneWidget);
+    await tester.tap(find.text('Chọn từ thư viện'));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('hanzi.png · 1×1'), findsOneWidget);
+    final recognize = tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, 'Nhận dạng — OCR chưa được cấu hình'),
+    );
+    expect(recognize.onPressed, isNull);
+    expect(find.textContaining('kết quả OCR'), findsNothing);
+  });
+
   testWidgets('dashboard summarizes saved, learned, due and recent quiz data', (
     tester,
   ) async {

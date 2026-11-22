@@ -29,7 +29,7 @@ Sản phẩm cuối: đăng nhập → chụp/tải ảnh chữ Hán giản th�
 | 03 | Từ điển, nhập tay, lưu từ | 02 | Nhập/dán → tra → lưu/bỏ lưu | DONE |
 | 04 | Flashcard, Quiz, lịch ôn | 03 | Học → quiz → lịch ôn | DONE |
 | 05 | Dashboard, lịch sử học, UX | 02–04 | Luồng học core liền mạch | DONE |
-| 06 | UI ảnh và contract OCR/AI | 00–05 | Image picker/preview, adapter, chưa có OCR/AI thật | NOT STARTED |
+| 06 | UI ảnh và contract OCR/AI | 00–05 | Image picker/preview, adapter, chưa có OCR/AI thật | IN PROGRESS |
 | 07 | Kiểm thử core, bảo mật | 01–06 | E2E nhập tay, Rules, Web/Android | NOT STARTED |
 | 08 | Build và demo bản core | 07 | Web/APK core, hướng dẫn chạy và giới hạn | NOT STARTED |
 | 09 | **Tích hợp OCR thật** | 06, 08; service sẵn | Ảnh → OCR → sửa → tra/lưu; CER/latency | NOT STARTED |
@@ -225,5 +225,6 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 | 2026-11-21 | Phase 05 · HL-05-03 | Chuẩn hóa UX core: xác nhận trước khi bỏ lưu từ ở danh sách và detail, giữ lịch ôn/Quiz; nút toàn app có vùng chạm tối thiểu 48px; Profile/Settings giới hạn chiều rộng Web. Bổ sung kiểm thử màn 320px với text scale 1.5 và hồi quy hộp thoại xác nhận. Flutter analyze sạch và 24/24 tests qua. | Tiếp tục `HL-05-04` offline/sync/read audit. |
 | 2026-11-21 | Phase 05 · HL-05-04 | Repository truyền `isFromCache` thật từ Firestore; Dashboard chỉ nhận “đã đồng bộ” khi mọi query đến từ server, nếu không gắn nhãn cache/offline và cho kéo refresh. Audit khóa ba query hữu hạn, tối đa 205 reads mỗi lần Dashboard, không listener/poll nền; cảnh báo khi chạm cap 100. Chiến lược ở `docs/architecture/firestore-read-strategy.md`. Flutter analyze sạch và 25/25 tests qua, gồm cache metadata. | Tiếp tục `HL-05-05` production Web/Android, gồm cross-device/offline thực tế. |
 | 2026-11-21 | Phase 05 · HL-05-05 | Web production hiển thị Dashboard empty và server-sync đúng cho tài khoản hiện hành. Android production giữ nguyên dữ liệu Phase 04: 2 saved/2 learned/0 due, hai Quiz 2/2 và hai schedule reviewCount=3; airplane mode chuyển sang cache label rồi phục hồi server label khi bật mạng. Phát hiện phiên Web cũ trả 401; thêm retry một lần bằng forced Firebase token refresh và test hồi quy. Flutter analyze + 26/26 tests, Web release/Android debug build, backend 17/17 pytest và Rules 7/7 qua. Bằng chứng ở `docs/testing/phase-05-evidence.md`. | Phase 05 đạt DoD; commit rồi fast-forward `main`. Phase tiếp theo `phase/06`; không push. |
+| 2026-11-22 | Phase 06 · HL-06-01 | Đã fast-forward Phase 05 vào `main` và mở `phase/06`. Scanner Web dùng file picker chọn JPEG/PNG/WebP, kiểm magic bytes, 8 MiB, 20 MP và codec; preview cục bộ có kích thước/tên/dung lượng, không upload hoặc lưu ảnh. Codec xử lý hướng EXIF khi render; OCR bị khóa và ghi rõ chưa cấu hình. Flutter analyze, 27/27 tests và Web release build qua. | Tiếp tục `HL-06-02` camera/gallery Android và quyền; không push. |
 
-**Bước tiếp theo:** commit `HL-05-05`, fast-forward `phase/05` vào `main`. Chỉ mở `phase/06` khi tiếp tục; không push.
+**Bước tiếp theo:** hoàn thành và commit `HL-06-01`, sau đó làm `HL-06-02` trên `phase/06`; không push.
