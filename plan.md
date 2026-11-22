@@ -1,6 +1,6 @@
 # HanLearn AI — kế hoạch thực thi
 
-> Phiên bản 2.1, cập nhật 2026-11-21 theo CR-001 đến CR-007; người dùng đã xác nhận bắt đầu. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Phase 00–04 đã đạt DoD cục bộ và production; không push.
+> Phiên bản 2.2, cập nhật 2026-11-22 theo CR-001 đến CR-007; người dùng đã xác nhận bắt đầu. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Phase 00–06 đã đạt DoD cục bộ; không push.
 
 ## 1. Mục tiêu và thay đổi thứ tự
 
@@ -100,12 +100,12 @@ Phase 09 và 10 là hai phase cuối của **phát triển tính năng**; Phase 
 
 ### Phase 06 — UI ảnh và hợp đồng tích hợp
 
-- [ ] Web upload, Android camera/gallery, preview, quyền, giới hạn loại/byte/pixel/EXIF, crop nếu khả thi.
+- [x] Web upload, Android camera/gallery, preview, quyền, giới hạn loại/byte/pixel/EXIF; không crop vì không cần cho preview/nhập tay và OCR thật chưa tích hợp.
 - [x] Scanner/Result/Edit hiển thị “OCR chưa được cấu hình”; cho nhập/sửa text thủ công để tiếp tục tra; không tạo kết quả OCR giả.
 - [x] Chốt `POST /api/v1/ocr/recognize` multipart, text/detections/box/confidence/latency/lỗi chuẩn; adapter gọi service ngoài hoặc PaddleOCR nội bộ khi quyết định.
 - [x] Chốt `POST /api/v1/ai/explain`, schema, auth/quota/fallback; contract tests với mock, chưa gọi AI thật.
-- [ ] Hướng dẫn config OCR endpoint/auth và AI API key qua backend environment, health/timeout/error; không chứa secret thật.
-- **DoD:** UI ảnh/nhập tay và contract test pass; trạng thái chưa có service đúng. Không được nhận OCR/AI hoàn thành.
+- [x] Hướng dẫn config OCR endpoint/auth và AI API key qua backend environment, health/timeout/error; không chứa secret thật.
+- **DoD: ĐẠT.** UI ảnh/nhập tay và contract test pass trên Web build/Android AVD; backend mặc định trả 503 đúng khi chưa có provider. OCR/AI thật vẫn chưa tích hợp và không được nhận hoàn thành. Bằng chứng: `docs/testing/phase-06-evidence.md`.
 
 ### Phase 07 — Kiểm thử core
 
@@ -230,5 +230,6 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 | 2026-11-22 | Phase 06 · HL-06-03 | Scanner ghi rõ văn bản do người dùng nhập, không phải kết quả nhận dạng; cho nhập/sửa rồi chuyển an toàn qua query parameter sang Dictionary. Dictionary điền sẵn và tự tra văn bản đã xác nhận. Widget test kiểm luồng Scanner → Dictionary; Flutter analyze sạch và 27/27 tests qua. Không lưu ảnh, không ghi lịch sử quét và không tạo OCR giả. | Tiếp tục `HL-06-04` contract và adapter OCR chưa cấu hình. |
 | 2026-11-22 | Phase 06 · HL-06-04 | FastAPI có `POST /api/v1/ocr/recognize`, xác thực Firebase, multipart JPEG/PNG, giới hạn byte/pixel, kiểm nội dung ảnh và schema text/detections/box/confidence/latency/version/request ID. `OcrProvider` là port thay thế được; adapter mặc định trả 503 chưa cấu hình. Contract tests dùng mock kiểm success/auth/oversize/unsupported/corrupt; backend Ruff sạch và 21/21 tests qua. Chưa gọi OCR thật. | Tiếp tục `HL-06-05` contract và adapter AI chưa cấu hình. |
 | 2026-11-22 | Phase 06 · HL-06-05 | FastAPI có `POST /api/v1/ai/explain`, xác thực Firebase, chỉ nhận `vocabId` đã có trong corpus và context tối đa 500 ký tự. `AiExplainProvider` nhận Hanzi/Pinyin/nghĩa đã xác minh; Pydantic khóa output, tối đa 3 ví dụ. Rate/quota theo UID có adapter in-memory một process; provider mặc định trả 503 chưa cấu hình. Mock tests kiểm success/auth/not-found/validation/rate-limit; Ruff sạch và 25/25 tests qua. Chưa gọi AI thật. | Tiếp tục `HL-06-06` hướng dẫn cấu hình và gate DoD Phase 06. |
+| 2026-11-22 | Phase 06 · HL-06-06 | Đã viết hướng dẫn cấu hình backend-only cho OCR/AI, timeout/error/health/secret và nhấn mạnh biến môi trường chưa bật provider thật. Gate đạt: Flutter format/analyze, 27/27 tests, Web release build, Android debug APK build/cài/chạy; AVD API 35 mở đúng Camera và Photo Picker. Backend Ruff + 25/25 tests, Firestore Rules Emulator 7/7 đạt. Bằng chứng ở `docs/testing/phase-06-evidence.md`; OCR/AI thật vẫn `NOT INTEGRATED`. | Commit HL-06-06, fast-forward `phase/06` vào `main`, rồi mở Phase 07 khi tiếp tục; không push. |
 
-**Bước tiếp theo:** hoàn thành và commit `HL-06-05`, sau đó làm `HL-06-06` trên `phase/06`; không push.
+**Bước tiếp theo:** commit `HL-06-06`, fast-forward Phase 06 vào `main`; phase tiếp theo là `phase/07`, không push.

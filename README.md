@@ -1,6 +1,6 @@
 # HanLearn AI
 
-HanLearn dùng **một codebase Flutter** cho Web và Android, cùng backend **Python/FastAPI**. Phase 02 đã hoàn tất đăng ký, đăng nhập email/mật khẩu, duy trì phiên, đăng xuất và hồ sơ Firestore; luồng đã được kiểm chứng trên Emulator lẫn Firebase project thật cho cả hai nền tảng. Từ điển, học tập, OCR và AI được triển khai theo các phase tiếp theo.
+HanLearn dùng **một codebase Flutter** cho Web và Android, cùng backend **Python/FastAPI**. Bản core đến Phase 06 đã có Auth/Firestore, từ điển, học tập, Dashboard và Scanner chọn/chụp/preview ảnh kèm luồng nhập tay. OCR và AI hiện chỉ có API contract/provider port; adapter mặc định trả `503 SERVICE_NOT_CONFIGURED`, chưa gọi service thật.
 
 ## Yêu cầu môi trường
 
@@ -107,6 +107,7 @@ flutter build apk --debug
 - `.env.example` là mẫu, `.env` bị Git bỏ qua. `APP_ENV=local` dùng origin mặc định `http://localhost:3000`; `ALLOWED_ORIGINS` nhận danh sách origin cụ thể ngăn bằng dấu phẩy. `staging`/`production` buộc khai báo origin HTTPS.
 - `FIREBASE_PROJECT_ID` sẽ dùng từ Phase 02. OCR service/key dùng ở Phase 09; AI API base URL/key/model dùng ở Phase 10. Không đặt các key này trong Flutter, `--dart-define` hoặc Git.
 - Dependency Python runtime/dev đã khóa trong `backend/requirements.lock` và `backend/requirements-dev.lock`; Dart khóa trong `apps/flutter_app/pubspec.lock`. Khi đổi dependency, cập nhật lockfile cùng issue.
+- Hướng dẫn biến môi trường, timeout, lỗi và điều kiện bật provider nằm tại `docs/integrations/service-configuration.md`. Chỉ điền key vào `.env`/secret store của backend; việc điền biến chưa tự biến adapter mặc định thành service thật.
 
 ## Tài liệu dự án
 

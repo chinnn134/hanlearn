@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     ai_api_base_url: str | None = None
     ai_api_key: str | None = None
     ai_model: str | None = None
+    ai_timeout_seconds: int = Field(default=30, ge=1, le=120)
     ai_requests_per_minute: int = Field(default=2, ge=1, le=60)
     ai_requests_per_day: int = Field(default=20, ge=1, le=10_000)
 
