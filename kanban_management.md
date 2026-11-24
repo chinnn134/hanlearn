@@ -1,6 +1,6 @@
 # HanLearn AI — danh sách GitHub Issues cho Kanban
 
-> Phiên bản 1.4 · Nguồn: `plan.md` v0.9 · Phase 00 đạt DoD trên branch `phase/00`, chờ fast-forward cục bộ.
+> Phiên bản 1.5 · Nguồn: `plan.md` v1.0 · Phase 00 đã fast-forward vào `main` cục bộ; Phase 01 đang thực hiện trên `phase/01`.
 > Thứ tự: **core Phase 00–08 → OCR thật Phase 09 → AI API thật Phase 10 → nghiệm thu Phase 11**.
 > Kiến trúc cố định: **Flutter Web + Flutter Android từ một codebase, backend Python/FastAPI**. Không `git push` nếu người dùng chưa yêu cầu.
 
@@ -13,7 +13,7 @@
 - Ước lượng là **ngày công tham khảo cho solo developer**, có thể sửa theo thực tế. Nếu một hàng vượt 2 ngày, tách issue con trước khi bắt đầu, giữ liên kết với mã gốc.
 - Trợ lý tự tạo branch cục bộ `phase/xx` khi mở phase và tự tạo commit sau mỗi issue hoàn thành; người dùng không cần thao tác Git hộ. Mỗi hàng `HL-xx-yy` tương ứng **đúng một commit mới** trên branch cùng phase; subject chứa `[HL-xx-yy]`. Gộp code, test và tài liệu của issue vào commit đó. Chỉ sau khi cả phase đạt DoD mới fast-forward `main` cục bộ; không push.
 
-**Tiến độ cục bộ:** `HL-00-01`–`HL-00-07` DONE trên `phase/00` (mỗi issue một commit); `HL-00-08` acceptance criteria và rà DoD đã viết/kiểm tra, sẵn sàng commit. Chưa tạo GitHub Issues online, chưa push.
+**Tiến độ cục bộ:** `HL-00-01`–`HL-00-08` DONE trên `phase/00` (mỗi issue một commit); Phase 00 đã tích hợp `main` cục bộ. `HL-01-01` cấu trúc repo/Git hygiene đã chuẩn bị và kiểm tra, sẵn sàng commit trên `phase/01`. Chưa tạo GitHub Issues online, chưa push.
 
 Quy trình Git mẫu: từ `main` đã có phase trước, tạo `git switch -c phase/00`; hoàn thành HL-00-01 rồi commit `docs(requirements): write PRD [HL-00-01]`. Sau khi tất cả issue Phase 00 và DoD đạt, chuyển về `main`, chạy `git merge --ff-only phase/00`, rồi mới tạo `phase/01`. Lặp lại đến Phase 11. Nếu fast-forward không thực hiện được, kiểm tra và xử lý lịch sử branch trước; không ép merge hoặc push.
 
