@@ -1,6 +1,6 @@
 # HanLearn AI — Firestore data model
 
-> Issue `HL-00-05` · 2026-11-20 · Schema thiết kế cho MVP; chưa phải Firestore Rules đã chạy. API/error contract thuộc `HL-00-06`. Thay đổi schema về sau phải cập nhật client, Rules, index, test và `plan.md`.
+> Issue `HL-00-05` · 2026-11-20 · Schema thiết kế cho MVP. `HL-02-04` đã hiện thực Rules cho `users/{uid}` và `vocabulary` trong Emulator; các nhánh còn lại đóng mặc định đến phase tương ứng. API/error contract thuộc `HL-00-06`. Thay đổi schema về sau phải cập nhật client, Rules, index, test và `plan.md`.
 
 ## 1. Nguyên tắc dữ liệu
 
