@@ -132,7 +132,7 @@ Từ điển client **không được ghi** trong mọi trường hợp. Rules P
 
 | Quyết định | Thời điểm chốt | Tác động |
 |---|---|---|
-| Auth method và có bắt buộc email hay không | Phase 02 | `users.email` optional, màn Login |
+| Auth method và có bắt buộc email hay không | Đã chọn email/mật khẩu ở HL-02-02; giữ `users.email` optional cho khả năng mở rộng provider sau | Màn Login và hồ sơ hiện hành dùng email |
 | Giới hạn chính xác độ dài field/số examples | HL-00-06, Phase 02/03 | Rules, API validation, UI |
 | Thang `masteryLevel`, công thức ôn và nơi tính | Phase 04 | Rules, schedule, dashboard |
 | Xóa saved word có xóa review schedule không | Phase 04 | UX, dữ liệu cá nhân |
