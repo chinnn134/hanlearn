@@ -9,6 +9,7 @@ import '../../features/home/home_page.dart';
 import '../../features/dictionary/dictionary_page.dart';
 import '../../features/dictionary/saved_words_page.dart';
 import '../../features/learning/flashcard_page.dart';
+import '../../features/learning/quiz_page.dart';
 import '../widgets/app_shell.dart';
 import '../widgets/feature_placeholder_page.dart';
 import '../widgets/state_panel.dart';
@@ -76,14 +77,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: '/flashcards',
             builder: (context, state) => const FlashcardPage(),
           ),
-          GoRoute(
-            path: '/quiz',
-            builder: (context, state) => const FeaturePlaceholderPage(
-              title: 'Quiz',
-              phase: 'Phase 04',
-              description: 'Làm câu hỏi từ tập từ đã lưu.',
-            ),
-          ),
+          GoRoute(path: '/quiz', builder: (context, state) => const QuizPage()),
           GoRoute(
             path: '/progress',
             builder: (context, state) => const FeaturePlaceholderPage(

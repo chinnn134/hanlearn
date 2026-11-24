@@ -102,23 +102,42 @@ class FakeDictionaryRepository implements DictionaryRepository {
   }
 
   @override
-  Future<DictionaryDetail> detail(String vocabId) async =>
-      const DictionaryDetail(
+  Future<DictionaryDetail> detail(String vocabId) async {
+    if (vocabId == 'friend-test') {
+      return const DictionaryDetail(
         item: DictionaryItem(
-          vocabId: 'ocd-test',
-          hanzi: '学习',
-          pinyin: 'xué xí',
-          meaningVi: 'học tập',
+          vocabId: 'friend-test',
+          hanzi: '朋友',
+          pinyin: 'péng you',
+          meaningVi: 'bạn bè',
           levels: {'hsk3': 1},
           sourceId: 'opencidian-17873f1',
         ),
-        traditional: '學習',
-        pinyinNumeric: 'xue2 xi2',
-        meaningViSenses: ['học tập'],
+        traditional: '朋友',
+        pinyinNumeric: 'peng2 you5',
+        meaningViSenses: ['bạn bè'],
         examples: [],
         license: 'CC-BY-SA-4.0',
         attribution: 'OpenCidian by Perxel',
       );
+    }
+    return const DictionaryDetail(
+      item: DictionaryItem(
+        vocabId: 'ocd-test',
+        hanzi: '学习',
+        pinyin: 'xué xí',
+        meaningVi: 'học tập',
+        levels: {'hsk3': 1},
+        sourceId: 'opencidian-17873f1',
+      ),
+      traditional: '學習',
+      pinyinNumeric: 'xue2 xi2',
+      meaningViSenses: ['học tập'],
+      examples: [],
+      license: 'CC-BY-SA-4.0',
+      attribution: 'OpenCidian by Perxel',
+    );
+  }
 }
 
 class FakeSavedWordRepository implements SavedWordRepository {
@@ -384,6 +403,93 @@ void main() {
     await tester.tap(find.text('Ôn Flashcard'));
     await tester.pumpAndSettle();
     expect(find.text('Chưa có Flashcard'), findsOneWidget);
+  });
+
+  testWidgets('quiz answers, explains, skips and reports an honest score', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final auth = FakeAuthRepository(
+      const AuthIdentity(uid: 'test-user', email: 'test@example.com'),
+    );
+    final savedWords = FakeSavedWordRepository()
+      ..saved.addAll(['ocd-test', 'friend-test']);
+    addTearDown(auth.dispose);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(auth),
+          userProfileRepositoryProvider.overrideWithValue(
+            FakeUserProfileRepository(),
+          ),
+          dictionaryRepositoryProvider.overrideWithValue(
+            FakeDictionaryRepository(),
+          ),
+          savedWordRepositoryProvider.overrideWithValue(savedWords),
+        ],
+        child: const HanLearnApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.drag(find.byType(ListView).first, const Offset(0, -300));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Làm Quiz'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Câu 1/2'), findsOneWidget);
+    await tester.tap(find.text('học tập'));
+    await tester.pump();
+    await tester.ensureVisible(find.text('Kiểm tra'));
+    await tester.tap(find.text('Kiểm tra'));
+    await tester.pumpAndSettle();
+    expect(find.text('Chính xác!'), findsOneWidget);
+    expect(find.textContaining('Giải thích:'), findsOneWidget);
+    await tester.ensureVisible(find.text('Câu tiếp theo'));
+    await tester.tap(find.text('Câu tiếp theo'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Bỏ qua'));
+    await tester.tap(find.text('Bỏ qua'));
+    await tester.pumpAndSettle();
+    expect(find.text('Bạn đã bỏ qua câu này.'), findsOneWidget);
+    await tester.ensureVisible(find.text('Xem kết quả'));
+    await tester.tap(find.text('Xem kết quả'));
+    await tester.pumpAndSettle();
+    expect(find.text('Hoàn thành Quiz'), findsOneWidget);
+    expect(find.text('Đúng 1/2 · Đã trả lời 1 · Bỏ qua 1'), findsOneWidget);
+  });
+
+  testWidgets('quiz explains when saved words are insufficient', (
+    tester,
+  ) async {
+    final auth = FakeAuthRepository(
+      const AuthIdentity(uid: 'test-user', email: 'test@example.com'),
+    );
+    final savedWords = FakeSavedWordRepository()..saved.add('ocd-test');
+    addTearDown(auth.dispose);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(auth),
+          userProfileRepositoryProvider.overrideWithValue(
+            FakeUserProfileRepository(),
+          ),
+          dictionaryRepositoryProvider.overrideWithValue(
+            FakeDictionaryRepository(),
+          ),
+          savedWordRepositoryProvider.overrideWithValue(savedWords),
+        ],
+        child: const HanLearnApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.drag(find.byType(ListView).first, const Offset(0, -300));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Làm Quiz'));
+    await tester.pumpAndSettle();
+    expect(find.text('Chưa đủ từ để tạo Quiz'), findsOneWidget);
   });
 
   testWidgets('sign in and sign out update protected routes', (tester) async {
