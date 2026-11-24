@@ -45,7 +45,16 @@ firebase emulators:start --only 'auth,firestore' --project demo-hanlearn
 
 Trong terminal Flutter, thêm `--dart-define=USE_FIREBASE_EMULATOR=true` vào `flutter run` hoặc `flutter build`. Cùng codebase dùng `localhost` cho Web và `10.0.2.2` cho Android Emulator. `firebase/firestore.rules` cho owner đọc/tạo/sửa `users/{uid}`, tài khoản đăng nhập đọc `vocabulary`; các collection khác vẫn bị từ chối. Demo project không chứa dữ liệu Firebase production và không cần đăng nhập Firebase CLI.
 
-Web và Android app đã đăng ký trong Firebase project `hanlearn-7553f`; FlutterFire tạo `lib/firebase_options.dart` cho hai target. File này chỉ có cấu hình SDK công khai, không chứa service account. `.env` ở gốc dành cho backend và không được Flutter đóng gói. Android dùng package `com.hanlearn.app`. Để dùng Auth với project thật, bật **Email/Password** trong Firebase Console → Authentication → Sign-in method; luồng này chưa được kiểm chứng với tài khoản production. Repository hồ sơ `users/{uid}` đã có và Rules trong repo cho phép đúng owner truy cập, nhưng Rules chưa deploy và test hai UID chưa xong. Đồng bộ production chưa nghiệm thu. Không đưa OCR/AI key vào Flutter.
+Test Rules tự động khi Firestore Emulator đang chạy:
+
+```powershell
+npm ci --prefix firebase
+npm --prefix firebase run test:rules
+```
+
+Bộ test dùng project demo riêng, hai UID và guest, không tạo tài khoản thật. Widget test Flutter kiểm tra lỗi tải hồ sơ và thử lại. Job `firestore-rules` trong CI chạy bộ test này bằng Emulator; kết quả hosted chỉ có sau khi workflow chạy trên GitHub.
+
+Web và Android app đã đăng ký trong Firebase project `hanlearn-7553f`; FlutterFire tạo `lib/firebase_options.dart` cho hai target. File này chỉ có cấu hình SDK công khai, không chứa service account. `.env` ở gốc dành cho backend và không được Flutter đóng gói. Android dùng package `com.hanlearn.app`. Để dùng Auth với project thật, bật **Email/Password** trong Firebase Console → Authentication → Sign-in method; luồng này chưa được kiểm chứng với tài khoản production. Repository hồ sơ `users/{uid}` đã có và Rules trong repo cho phép đúng owner truy cập; Rules đã qua test Emulator hai UID nhưng chưa deploy. Đồng bộ production chưa nghiệm thu. Không đưa OCR/AI key vào Flutter.
 
 Nếu Android build trên Windows báo lỗi Kotlin incremental cache do repo và Pub cache ở hai ổ khác nhau, đặt `PUB_CACHE` cùng ổ với repo trước `flutter pub get` và build (ví dụ `$env:PUB_CACHE='D:\PubCache'`). Máy phát triển này cũng cần `$env:JAVA_TOOL_OPTIONS='-Djavax.net.ssl.trustStoreType=Windows-ROOT'` để Gradle tải Firebase từ Google Maven qua kho chứng chỉ Windows. Đây là cấu hình môi trường cục bộ, không phải yêu cầu của CI Linux.
 

@@ -9,16 +9,22 @@ import 'package:flutter_app/features/auth/user_profile_repository.dart';
 
 class FakeUserProfileRepository implements UserProfileRepository {
   UserProfile? profile;
+  bool failNextEnsure = false;
 
   @override
-  Future<UserProfile> ensureCurrentUser(String expectedUid) async =>
-      profile ??= UserProfile(
-        uid: expectedUid,
-        displayName: 'Người học',
-        email: 'test@example.com',
-        createdAt: DateTime.utc(2026),
-        updatedAt: DateTime.utc(2026),
-      );
+  Future<UserProfile> ensureCurrentUser(String expectedUid) async {
+    if (failNextEnsure) {
+      failNextEnsure = false;
+      throw StateError('Mất kết nối thử nghiệm');
+    }
+    return profile ??= UserProfile(
+      uid: expectedUid,
+      displayName: 'Người học',
+      email: 'test@example.com',
+      createdAt: DateTime.utc(2026),
+      updatedAt: DateTime.utc(2026),
+    );
+  }
 
   @override
   Future<UserProfile> readCurrentUser(String expectedUid) =>
@@ -174,5 +180,31 @@ void main() {
 
     expect(find.text('Chưa có tài khoản? Tạo mới'), findsOneWidget);
     expect(find.text('Chào mừng đến HanLearn AI'), findsNothing);
+  });
+
+  testWidgets('profile load error can be retried after connection returns', (
+    tester,
+  ) async {
+    final auth = FakeAuthRepository(
+      const AuthIdentity(uid: 'test-user', email: 'test@example.com'),
+    );
+    final profiles = FakeUserProfileRepository()..failNextEnsure = true;
+    addTearDown(auth.dispose);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(auth),
+          userProfileRepositoryProvider.overrideWithValue(profiles),
+        ],
+        child: const HanLearnApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Hồ sơ'));
+    await tester.pumpAndSettle();
+    expect(find.text('Không thể tải hồ sơ.'), findsOneWidget);
+    await tester.tap(find.text('Thử lại'));
+    await tester.pumpAndSettle();
+    expect(find.text('Tên hiển thị: Người học'), findsOneWidget);
   });
 }
