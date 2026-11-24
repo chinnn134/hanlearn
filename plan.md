@@ -1,6 +1,6 @@
 # HanLearn AI — kế hoạch thực thi
 
-> Phiên bản 1.0, cập nhật 2026-11-20 theo CR-001 đến CR-006; người dùng đã xác nhận bắt đầu. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Phase 00 đã fast-forward vào `main` cục bộ; Phase 01 đang thực hiện trên `phase/01`.
+> Phiên bản 1.0, cập nhật 2026-11-20 theo CR-001 đến CR-006; người dùng đã xác nhận bắt đầu. Nguồn nền: `HanLearn_AI_SOLO_PHASE_PLAN.md`. Quy tắc: `rule.md`. Backlog issue: `kanban_management.md`. Phase 00 đã fast-forward vào `main` cục bộ; Phase 01 đạt DoD cục bộ trên `phase/01`, chờ commit issue cuối rồi fast-forward.
 
 ## 1. Mục tiêu và thay đổi thứ tự
 
@@ -55,8 +55,8 @@ Phase 09 và 10 là hai phase cuối của **phát triển tính năng**; Phase 
 - [x] Tạo một codebase Flutter/Dart `apps/flutter_app` với target Web và Android, Riverpod, router, theme, localization cơ bản, feature-first và trạng thái loading/empty/error. Bằng chứng: `HL-01-02`, `HL-01-03`; các màn tính năng vẫn được gắn nhãn chưa triển khai.
 - [x] Tạo backend Python/FastAPI `backend/app`, `/health`, namespace `/api/v1`, Pydantic, CORS allowlist, config local/staging, dependency khóa phiên bản. Bằng chứng: `HL-01-04`; các route v1 có auth sẽ được thêm theo issue chức năng, không mở endpoint giả.
 - [x] `.gitignore`, `.env.example`, lint/format và CI nền đã có (`HL-01-01`, `HL-01-05`). Python runtime/dev có lockfile; Flutter có `pubspec.lock`. CI workflow mới chỉ kiểm tra cú pháp cục bộ, chưa chạy trên GitHub vì chưa push.
-- [ ] Viết README setup/run/test đã kiểm chứng cho Web, Android và backend (`HL-01-06`).
-- **DoD:** cùng codebase Flutter chạy trên trình duyệt Web và Android emulator/thiết bị; backend Python chạy riêng, `/health` trả 200; lint/test pass, setup tái lập cho đủ ba thành phần.
+- [x] Viết README setup/run/test đã kiểm chứng cho Web, Android và backend (`HL-01-06`); nêu rõ UI/API chưa tích hợp và CI chưa chạy trên GitHub.
+- **DoD: ĐẠT cục bộ.** Cùng codebase Flutter đã chạy Chrome headless và Android 15 emulator; backend Python chạy riêng, `/health` trả 200; lint/test pass, README setup/run/test đủ ba thành phần. CI YAML đã parse, GitHub Actions chưa chạy vì chưa push. Flutter chưa gọi backend ở Phase 01.
 
 ### Phase 02 — Auth và dữ liệu
 
@@ -183,4 +183,6 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 
 | 2026-11-20 | Phase 01 · HL-01-05 | Thêm pytest cho health/CORS/config (6 pass), Ruff format/lint pass, Flutter format/analyze/2 widget tests pass. Thêm Python dev lock và `.github/workflows/ci.yml` cho backend, Flutter Web/Android debug build; YAML parse pass. Workflow chưa chạy trên GitHub vì không push. | Tiếp tục HL-01-06 README setup/run/test và kiểm DoD Phase 01. |
 
-**Bước tiếp theo:** trên `phase/01`, làm `HL-01-06` README setup/run/test sau commit `HL-01-05`. Chọn service/key cụ thể ở Phase 09–10 khi sẵn sàng.
+| 2026-11-20 | Phase 01 · HL-01-06 | Viết lại README lệnh setup/run/test cho Python, Flutter Web và Android, CORS/env, lockfile, CI; kiểm tra nội dung với lệnh và kết quả Phase 01. DoD Phase 01 đạt cục bộ; hosted CI chưa chạy vì không push. | Sau commit, fast-forward `main` cục bộ rồi mở `phase/02`. Firebase cần cấu hình để nghiệm thu Auth/sync thật. |
+
+**Bước tiếp theo:** commit `HL-01-06`, fast-forward `main` cục bộ và mở `phase/02`. Chọn service/key OCR/AI cụ thể ở Phase 09–10 khi sẵn sàng.
