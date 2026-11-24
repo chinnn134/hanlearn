@@ -1,6 +1,6 @@
 # Quy tắc thực thi HanLearn AI
 
-> Phiên bản 0.9, theo CR-001 đến CR-007; người dùng xác nhận bắt đầu ngày 2026-11-20. Đọc cùng `plan.md`, `kanban_management.md` và `HanLearn_AI_SOLO_PHASE_PLAN.md` trước mỗi lượt.
+> Phiên bản 1.0, theo CR-001 đến CR-007; cập nhật cổng thực thi ngày 2026-11-21. Đọc cùng `plan.md`, `kanban_management.md` và `HanLearn_AI_SOLO_PHASE_PLAN.md` trước mỗi lượt.
 
 ## 1. Nguồn yêu cầu và cập nhật
 
@@ -32,4 +32,4 @@
 
 ## 4. Cổng hiện tại
 
-Người dùng đã xác nhận bắt đầu. Phase 00–01 đã đạt DoD cục bộ và được fast-forward vào `main`; Phase 02 đang triển khai trên `phase/02`. `HL-02-00` đến `HL-02-06` đã hoàn tất cục bộ: Emulator, Firebase app thật, Auth, hồ sơ, Rules, test hai UID/retry và đồng bộ hồ sơ Web ↔ Android trên Emulator. `HL-02-07` đã deploy Rules trên project thật và kiểm tra release/guest. Collection chưa triển khai vẫn deny-all. `HL-02-08` là issue mở cho Auth và đồng bộ production; người dùng sẽ bật Email/Password trong Firebase Console vì API khởi tạo Auth đòi billing. Bằng chứng Emulator hoặc build production không thay cho việc thử Auth/Firestore thật trên cả hai target. **Giữ Phase 02 mở, không fast-forward `main` hay mở Phase 03 cho tới khi cổng production được chứng minh hoặc có quyết định thay đổi DoD rõ từ người dùng.** Từng issue phải đạt tiêu chí và có đúng một commit cục bộ. Tiếp tục cập nhật plan, rule và backlog khi yêu cầu thay đổi; không push.
+Người dùng đã xác nhận bắt đầu. Phase 00–01 đã đạt DoD cục bộ và được fast-forward vào `main`. Phase 02 đã đạt cổng production trên `phase/02`: Email/Password hoạt động, Rules đã deploy/đọc lại, cùng UID đồng bộ Web ↔ Android hai chiều, UID khác và guest bị từ chối. Collection chưa triển khai vẫn deny-all. Cấu hình tin CA do user cài chỉ được phép nằm trong Android `src/debug`; không commit CA và không nới trust/cleartext cho release. Sau commit duy nhất của `HL-02-08`, fast-forward `phase/02` vào `main` rồi mới tạo `phase/03`; issue đầu tiên là `HL-03-01`. Từng issue phải đạt tiêu chí và có đúng một commit cục bộ. Tiếp tục cập nhật plan, rule và backlog khi yêu cầu thay đổi; không push.

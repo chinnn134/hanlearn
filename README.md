@@ -1,6 +1,6 @@
 # HanLearn AI
 
-HanLearn dùng **một codebase Flutter** cho Web và Android, cùng backend **Python/FastAPI**. Phase 02 đã có đăng ký, đăng nhập email/mật khẩu, duy trì phiên và đăng xuất bằng Firebase Auth; đã kiểm chứng trên Auth Emulator cho cả hai nền tảng. Firestore, từ điển, học tập, OCR và AI đang được triển khai theo từng phase.
+HanLearn dùng **một codebase Flutter** cho Web và Android, cùng backend **Python/FastAPI**. Phase 02 đã hoàn tất đăng ký, đăng nhập email/mật khẩu, duy trì phiên, đăng xuất và hồ sơ Firestore; luồng đã được kiểm chứng trên Emulator lẫn Firebase project thật cho cả hai nền tảng. Từ điển, học tập, OCR và AI được triển khai theo các phase tiếp theo.
 
 ## Yêu cầu môi trường
 
@@ -54,7 +54,9 @@ npm --prefix firebase run test:rules
 
 Bộ test dùng project demo riêng, hai UID và guest, không tạo tài khoản thật. Widget test Flutter kiểm tra lỗi tải hồ sơ và thử lại. Job `firestore-rules` trong CI chạy bộ test này bằng Emulator; kết quả hosted chỉ có sau khi workflow chạy trên GitHub.
 
-Web và Android app đã đăng ký trong Firebase project `hanlearn-7553f`; FlutterFire tạo `lib/firebase_options.dart` cho hai target. File này chỉ có cấu hình SDK công khai, không chứa service account. `.env` ở gốc dành cho backend và không được Flutter đóng gói. Android dùng package `com.hanlearn.app`. Để dùng Auth với project thật, bật **Email/Password** trong Firebase Console → Authentication → Sign-in method; Auth chưa được khởi tạo ở lần kiểm tra gần nhất. Repository hồ sơ `users/{uid}` đã có; Rules cho owner và từ điển chỉ đọc đã qua test Emulator hai UID, được deploy lên project thật và đọc lại release trùng file repo (`docs/testing/phase-02-production-evidence.md`). Đồng bộ hồ sơ Web ↔ Android hai chiều đã được kiểm chứng trên Emulator (`docs/testing/phase-02-evidence.md`); đồng bộ production chưa nghiệm thu. Không đưa OCR/AI key vào Flutter.
+Web và Android app đã đăng ký trong Firebase project `hanlearn-7553f`; FlutterFire tạo `lib/firebase_options.dart` cho hai target. File này chỉ có cấu hình SDK công khai, không chứa service account. `.env` ở gốc dành cho backend và không được Flutter đóng gói. Android dùng package `com.hanlearn.app`. **Email/Password đã bật**. Repository hồ sơ `users/{uid}` đã có; Rules cho owner và từ điển chỉ đọc đã qua test Emulator hai UID, được deploy và đọc lại khớp file repo. Đồng bộ hồ sơ Web ↔ Android hai chiều và cách ly UID đã được nghiệm thu trên production (`docs/testing/phase-02-production-evidence.md`); bằng chứng Emulator ở `docs/testing/phase-02-evidence.md`. Không đưa OCR/AI key vào Flutter.
+
+Máy phát triển có HTTPS inspection có thể cần cài CA tương ứng vào Android emulator. Cấu hình `src/debug` cho phép debug build tin CA do user cài để kiểm thử cục bộ; APK release không mang cấu hình này và vẫn dùng trust store mặc định. Không commit CA vào repository.
 
 Nếu Android build trên Windows báo lỗi Kotlin incremental cache do repo và Pub cache ở hai ổ khác nhau, đặt `PUB_CACHE` cùng ổ với repo trước `flutter pub get` và build (ví dụ `$env:PUB_CACHE='D:\PubCache'`). Máy phát triển này cũng cần `$env:JAVA_TOOL_OPTIONS='-Djavax.net.ssl.trustStoreType=Windows-ROOT'` để Gradle tải Firebase từ Google Maven qua kho chứng chỉ Windows. Đây là cấu hình môi trường cục bộ, không phải yêu cầu của CI Linux.
 
