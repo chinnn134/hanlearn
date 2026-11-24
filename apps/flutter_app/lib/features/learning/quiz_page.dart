@@ -6,6 +6,7 @@ import '../auth/auth_session.dart';
 import '../dictionary/dictionary_repository.dart';
 import '../dictionary/saved_word_repository.dart';
 import 'quiz_engine.dart';
+import 'learning_repository.dart';
 
 class QuizPage extends ConsumerStatefulWidget {
   const QuizPage({super.key});
@@ -24,6 +25,8 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   var _index = 0;
   var _submitted = false;
   var _finished = false;
+  var _saving = false;
+  Object? _saveError;
 
   @override
   void initState() {
@@ -40,6 +43,8 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       _index = 0;
       _submitted = false;
       _finished = false;
+      _saving = false;
+      _saveError = null;
     });
     try {
       final uid = ref.read(authSessionProvider).identity!.uid;
@@ -66,17 +71,31 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     });
   }
 
-  void _next() {
+  Future<void> _next() async {
     final questions = _questions!;
-    setState(() {
-      if (_index == questions.length - 1) {
-        _finished = true;
-      } else {
+    if (_index < questions.length - 1) {
+      setState(() {
         _index++;
         _selected = null;
         _submitted = false;
-      }
+      });
+      return;
+    }
+    setState(() {
+      _saving = true;
+      _saveError = null;
     });
+    try {
+      final uid = ref.read(authSessionProvider).identity!.uid;
+      await ref
+          .read(learningRepositoryProvider)
+          .recordQuizResult(uid, questions, _answers, DateTime.now());
+      if (mounted) setState(() => _finished = true);
+    } catch (error) {
+      if (mounted) setState(() => _saveError = error);
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   @override
@@ -190,13 +209,27 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                   ),
                 ),
               ],
+              if (_saveError != null) ...[
+                const SizedBox(height: 12),
+                Text(
+                  'Không thể lưu kết quả và lịch ôn. Vui lòng thử lại.',
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+              ],
               const SizedBox(height: 16),
               if (_submitted)
                 FilledButton.icon(
-                  onPressed: _next,
-                  icon: const Icon(Icons.arrow_forward),
+                  onPressed: _saving ? null : _next,
+                  icon: _saving
+                      ? const SizedBox.square(
+                          dimension: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.arrow_forward),
                   label: Text(
-                    _index == questions.length - 1
+                    _saving
+                        ? 'Đang lưu'
+                        : _index == questions.length - 1
                         ? 'Xem kết quả'
                         : 'Câu tiếp theo',
                   ),

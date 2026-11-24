@@ -142,3 +142,83 @@ test('saved words are idempotent references owned by one UID', async () => {
   await assertFails(deleteDoc(doc(bob, 'users/alice/saved_words/ocd_test')));
   await assertSucceeds(deleteDoc(reference));
 });
+
+test('review schedules are private, typed, and advance one review at a time', async () => {
+  const reviewedAt = new Timestamp(1_795_200_000, 0);
+  const dueAt = new Timestamp(1_795_286_400, 0);
+  const nextDueAt = new Timestamp(1_795_372_800, 0);
+  const valid = {
+    vocabId: 'ocd_test',
+    dueAt,
+    intervalDays: 1,
+    lastReviewedAt: reviewedAt,
+    reviewCount: 1,
+    updatedAt: serverTimestamp(),
+  };
+  const alice = client('alice', 'alice@example.invalid');
+  const bob = client('bob', 'bob@example.invalid');
+  const guest = environment.unauthenticatedContext().firestore();
+  const reference = doc(alice, 'users/alice/review_schedule/ocd_test');
+
+  await assertSucceeds(setDoc(reference, valid));
+  await assertSucceeds(getDoc(reference));
+  await assertSucceeds(getDocs(collection(alice, 'users/alice/review_schedule')));
+  await assertFails(getDoc(doc(bob, 'users/alice/review_schedule/ocd_test')));
+  await assertFails(getDoc(doc(guest, 'users/alice/review_schedule/ocd_test')));
+  await assertFails(setDoc(doc(alice, 'users/alice/review_schedule/wrong'), valid));
+  await assertFails(setDoc(doc(bob, 'users/alice/review_schedule/ocd_test'), valid));
+  await assertFails(setDoc(doc(alice, 'users/alice/review_schedule/bad'), {
+    ...valid, vocabId: 'bad', intervalDays: 366,
+  }));
+  await assertFails(setDoc(doc(alice, 'users/alice/review_schedule/count'), {
+    ...valid, vocabId: 'count', reviewCount: 2,
+  }));
+  await assertFails(updateDoc(reference, {
+    dueAt: nextDueAt,
+    intervalDays: 2,
+    lastReviewedAt: reviewedAt,
+    reviewCount: 3,
+    updatedAt: serverTimestamp(),
+  }));
+  await assertSucceeds(updateDoc(reference, {
+    dueAt: nextDueAt,
+    intervalDays: 2,
+    lastReviewedAt: reviewedAt,
+    reviewCount: 2,
+    updatedAt: serverTimestamp(),
+  }));
+  await assertFails(deleteDoc(reference));
+});
+
+test('quiz results are append-only, private, and internally consistent', async () => {
+  const valid = {
+    score: 1,
+    totalQuestions: 2,
+    answeredQuestions: 1,
+    skippedQuestions: 1,
+    createdAt: serverTimestamp(),
+    wordIds: ['ocd_test', 'friend_test'],
+  };
+  const alice = client('alice', 'alice@example.invalid');
+  const bob = client('bob', 'bob@example.invalid');
+  const guest = environment.unauthenticatedContext().firestore();
+  const reference = doc(alice, 'users/alice/quiz_results/result_1');
+
+  await assertSucceeds(setDoc(reference, valid));
+  await assertSucceeds(getDoc(reference));
+  await assertSucceeds(getDocs(collection(alice, 'users/alice/quiz_results')));
+  await assertFails(getDoc(doc(bob, 'users/alice/quiz_results/result_1')));
+  await assertFails(getDoc(doc(guest, 'users/alice/quiz_results/result_1')));
+  await assertFails(setDoc(doc(bob, 'users/alice/quiz_results/result_2'), valid));
+  await assertFails(setDoc(doc(alice, 'users/alice/quiz_results/bad_score'), {
+    ...valid, score: 2,
+  }));
+  await assertFails(setDoc(doc(alice, 'users/alice/quiz_results/bad_skip'), {
+    ...valid, skippedQuestions: 0,
+  }));
+  await assertFails(setDoc(doc(alice, 'users/alice/quiz_results/bad_words'), {
+    ...valid, wordIds: ['ocd_test'],
+  }));
+  await assertFails(updateDoc(reference, { score: 0 }));
+  await assertFails(deleteDoc(reference));
+});
