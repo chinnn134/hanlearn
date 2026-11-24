@@ -53,7 +53,7 @@ Phase 09 và 10 là hai phase cuối của **phát triển tính năng**; Phase 
 
 - [x] Chuẩn bị Git repo cục bộ đã có remote GitHub, cấu trúc thư mục, `.gitignore`, `.env.example` và README đầu vào (`HL-01-01`). Backlog 73 issue có trong `kanban_management.md`; người dùng sẽ đưa issue lên Kanban GitHub khi sẵn sàng. Mỗi phase một branch `phase/xx`, mỗi issue một commit `[HL-xx-yy]`; không push.
 - [x] Tạo một codebase Flutter/Dart `apps/flutter_app` với target Web và Android, Riverpod, router, theme, localization cơ bản, feature-first và trạng thái loading/empty/error. Bằng chứng: `HL-01-02`, `HL-01-03`; các màn tính năng vẫn được gắn nhãn chưa triển khai.
-- [ ] Tạo backend Python/FastAPI `backend/app`, `/health`, `/api/v1`, Pydantic, CORS allowlist, config local/staging, dependency khóa phiên bản.
+- [x] Tạo backend Python/FastAPI `backend/app`, `/health`, namespace `/api/v1`, Pydantic, CORS allowlist, config local/staging, dependency khóa phiên bản. Bằng chứng: `HL-01-04`; các route v1 có auth sẽ được thêm theo issue chức năng, không mở endpoint giả.
 - [ ] Viết `.gitignore`, `.env.example`, README setup/run/test, lint/format và CI nền.
 - **DoD:** cùng codebase Flutter chạy trên trình duyệt Web và Android emulator/thiết bị; backend Python chạy riêng, `/health` trả 200; lint/test pass, setup tái lập cho đủ ba thành phần.
 
@@ -178,4 +178,6 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 - [ ] AI API thật qua key backend, nội dung gắn nhãn, validation/quota/fallback/rubric.
 - [ ] Test Web/Android, README, report, slide, video, release/changelog, không chứa secret.
 
-**Bước tiếp theo:** trên `phase/01`, làm `HL-01-04` backend Python/FastAPI sau commit `HL-01-03`. Chọn service/key cụ thể ở Phase 09–10 khi sẵn sàng.
+| 2026-11-20 | Phase 01 · HL-01-04 | Tạo FastAPI/Pydantic Settings, router namespace `/api/v1`, `/health`, CORS allowlist; staging/production buộc origin HTTPS khai báo rõ. Khóa dependency Python trong `backend/requirements.lock`. Chạy Uvicorn riêng: `/health` 200 `{"status":"ok"}`, preflight 200 với localhost:3000, origin ngoài danh sách không có header CORS; `pip check` pass. | Tiếp tục HL-01-05 lint/format/test/CI. Firebase/OCR/AI chưa cấu hình. |
+
+**Bước tiếp theo:** trên `phase/01`, làm `HL-01-05` lint/format/test/CI sau commit `HL-01-04`. Chọn service/key cụ thể ở Phase 09–10 khi sẵn sàng.
