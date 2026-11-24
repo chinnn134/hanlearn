@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/login_page.dart';
 import '../../features/auth/auth_session.dart';
 import '../../features/auth/profile_page.dart';
+import '../../features/auth/settings_page.dart';
 import '../../features/home/home_page.dart';
 import '../../features/dictionary/dictionary_page.dart';
 import '../../features/dictionary/saved_words_page.dart';
@@ -96,6 +97,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/profile',
             builder: (context, state) => const ProfilePage(),
+          ),
+          GoRoute(
+            path: '/settings',
+            builder: (context, state) => const SettingsPage(),
           ),
         ],
       ),

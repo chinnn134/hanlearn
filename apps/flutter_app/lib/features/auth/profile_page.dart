@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'auth_session.dart';
 
@@ -100,6 +101,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             ),
           ],
           const SizedBox(height: 24),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton.icon(
+              onPressed: _busy ? null : () => context.go('/settings'),
+              icon: const Icon(Icons.settings_outlined),
+              label: const Text('Mở cài đặt'),
+            ),
+          ),
+          const SizedBox(height: 12),
           if (_error != null) ...[
             Text(
               _error!,
