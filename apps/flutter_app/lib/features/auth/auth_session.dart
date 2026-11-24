@@ -20,7 +20,7 @@ abstract class AuthRepository {
   Future<void> signIn({required String email, required String password});
   Future<void> register({required String email, required String password});
   Future<void> signOut();
-  Future<String> getIdToken();
+  Future<String> getIdToken({bool forceRefresh = false});
 }
 
 class FirebaseAuthRepository implements AuthRepository {
@@ -54,10 +54,10 @@ class FirebaseAuthRepository implements AuthRepository {
   Future<void> signOut() => _auth.signOut();
 
   @override
-  Future<String> getIdToken() async {
+  Future<String> getIdToken({bool forceRefresh = false}) async {
     final user = _auth.currentUser;
     if (user == null) throw StateError('Chưa đăng nhập.');
-    final token = await user.getIdToken();
+    final token = await user.getIdToken(forceRefresh);
     if (token == null || token.isEmpty) {
       throw StateError('Không lấy được Firebase ID token.');
     }
