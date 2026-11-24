@@ -16,5 +16,17 @@ abstract final class AppTheme {
     inputDecorationTheme: InputDecorationTheme(
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
     ),
+    iconButtonTheme: const IconButtonThemeData(
+      style: ButtonStyle(minimumSize: WidgetStatePropertyAll(Size(48, 48))),
+    ),
+    filledButtonTheme: const FilledButtonThemeData(
+      style: ButtonStyle(minimumSize: WidgetStatePropertyAll(Size(48, 48))),
+    ),
+    outlinedButtonTheme: const OutlinedButtonThemeData(
+      style: ButtonStyle(minimumSize: WidgetStatePropertyAll(Size(48, 48))),
+    ),
+    textButtonTheme: const TextButtonThemeData(
+      style: ButtonStyle(minimumSize: WidgetStatePropertyAll(Size(48, 48))),
+    ),
   );
 }

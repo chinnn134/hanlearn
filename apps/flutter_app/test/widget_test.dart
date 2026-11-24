@@ -462,8 +462,50 @@ void main() {
     expect(find.textContaining('学习  xué xí'), findsOneWidget);
     await tester.tap(find.byTooltip('Bỏ lưu 学习'));
     await tester.pumpAndSettle();
+    expect(find.text('Bỏ lưu 学习?'), findsOneWidget);
+    expect(savedWords.saved, contains('ocd-test'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Bỏ lưu'));
+    await tester.pumpAndSettle();
     expect(find.text('Bạn chưa lưu từ nào.'), findsOneWidget);
     expect(savedWords.saved, isEmpty);
+  });
+
+  testWidgets('core navigation stays usable on a narrow large-text display', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 720);
+    tester.view.devicePixelRatio = 1;
+    tester.platformDispatcher.textScaleFactorTestValue = 1.5;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    final auth = FakeAuthRepository(
+      const AuthIdentity(uid: 'test-user', email: 'test@example.com'),
+    );
+    addTearDown(auth.dispose);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(auth),
+          userProfileRepositoryProvider.overrideWithValue(
+            FakeUserProfileRepository(),
+          ),
+          savedWordRepositoryProvider.overrideWithValue(
+            FakeSavedWordRepository(),
+          ),
+          learningRepositoryProvider.overrideWithValue(
+            FakeLearningRepository(),
+          ),
+        ],
+        child: const HanLearnApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    await tester.tap(find.byTooltip('Hồ sơ'));
+    await tester.pumpAndSettle();
+    expect(find.text('Tài khoản'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('flashcards load saved words, flip and record a rating', (

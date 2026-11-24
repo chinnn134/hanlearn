@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/widgets/confirm_action.dart';
 import 'dictionary_repository.dart';
 import 'saved_word_repository.dart';
 import '../auth/auth_session.dart';
@@ -74,6 +75,15 @@ class _DictionaryPageState extends ConsumerState<DictionaryPage> {
   Future<void> _toggleSaved() async {
     final detail = _detail;
     if (detail == null || _saving) return;
+    if (_saved) {
+      final confirmed = await confirmAction(
+        context,
+        title: 'Bỏ lưu ${detail.item.hanzi}?',
+        message: 'Từ sẽ bị xóa khỏi danh sách đã lưu. Lịch ôn và kết quả Quiz đã ghi vẫn được giữ.',
+        confirmLabel: 'Bỏ lưu',
+      );
+      if (!confirmed || !mounted) return;
+    }
     setState(() {
       _saving = true;
       _error = null;

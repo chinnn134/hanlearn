@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/widgets/confirm_action.dart';
 import '../auth/auth_session.dart';
 import 'dictionary_repository.dart';
 import 'saved_word_repository.dart';
@@ -42,6 +43,13 @@ class _SavedWordsPageState extends ConsumerState<SavedWordsPage> {
   }
 
   Future<void> _remove(DictionaryDetail detail) async {
+    final confirmed = await confirmAction(
+      context,
+      title: 'Bỏ lưu ${detail.item.hanzi}?',
+      message: 'Từ sẽ bị xóa khỏi danh sách đã lưu. Lịch ôn và kết quả Quiz đã ghi vẫn được giữ.',
+      confirmLabel: 'Bỏ lưu',
+    );
+    if (!confirmed || !mounted) return;
     try {
       final uid = ref.read(authSessionProvider).identity!.uid;
       await ref

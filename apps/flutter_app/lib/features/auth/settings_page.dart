@@ -12,71 +12,76 @@ class SettingsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final session = ref.watch(authSessionProvider);
     final identity = session.identity;
-    return ListView(
-      padding: const EdgeInsets.all(24),
-      children: [
-        Text('Cài đặt', style: Theme.of(context).textTheme.headlineSmall),
-        const SizedBox(height: 20),
-        _SettingsSection(
-          title: 'Tài khoản và dữ liệu',
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 900),
+        child: ListView(
+          padding: const EdgeInsets.all(24),
           children: [
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.email_outlined),
-              title: const Text('Email đăng nhập'),
-              subtitle: Text(identity?.email ?? 'Không có email'),
+            Text('Cài đặt', style: Theme.of(context).textTheme.headlineSmall),
+            const SizedBox(height: 20),
+            _SettingsSection(
+              title: 'Tài khoản và dữ liệu',
+              children: [
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.email_outlined),
+                  title: const Text('Email đăng nhập'),
+                  subtitle: Text(identity?.email ?? 'Không có email'),
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.fingerprint),
+                  title: const Text('UID dữ liệu'),
+                  subtitle: Text(identity?.uid ?? 'Không có phiên đăng nhập'),
+                ),
+                const Text(
+                  'Saved Words, lịch ôn và kết quả Quiz được tách riêng theo UID này.',
+                ),
+              ],
             ),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.fingerprint),
-              title: const Text('UID dữ liệu'),
-              subtitle: Text(identity?.uid ?? 'Không có phiên đăng nhập'),
+            const SizedBox(height: 24),
+            _SettingsSection(
+              title: 'Cấu hình bản core',
+              children: [
+                _StatusTile(
+                  icon: Icons.dns_outlined,
+                  title: 'Backend từ điển',
+                  status: _apiBaseUrl.isEmpty ? 'Chưa cấu hình' : 'Đã cấu hình',
+                  detail: _apiBaseUrl.isEmpty
+                      ? 'Truyền API_BASE_URL khi build hoặc run.'
+                      : _apiBaseUrl,
+                  ready: _apiBaseUrl.isNotEmpty,
+                ),
+                const _StatusTile(
+                  icon: Icons.document_scanner_outlined,
+                  title: 'OCR',
+                  status: 'Chưa tích hợp',
+                  detail: 'Sẽ dùng service thật qua backend ở Phase 09.',
+                  ready: false,
+                ),
+                const _StatusTile(
+                  icon: Icons.auto_awesome_outlined,
+                  title: 'AI giải thích',
+                  status: 'Chưa tích hợp',
+                  detail: 'API key chỉ được cấu hình ở backend trong Phase 10.',
+                  ready: false,
+                ),
+              ],
             ),
-            const Text(
-              'Saved Words, lịch ôn và kết quả Quiz được tách riêng theo UID này.',
+            const SizedBox(height: 24),
+            const _SettingsSection(
+              title: 'Quyền riêng tư',
+              children: [
+                Text(
+                  'Ứng dụng bản core không tải ảnh lên vì OCR chưa được tích hợp. '
+                  'Không lưu API key trong ứng dụng hoặc repository.',
+                ),
+              ],
             ),
           ],
         ),
-        const SizedBox(height: 24),
-        _SettingsSection(
-          title: 'Cấu hình bản core',
-          children: [
-            _StatusTile(
-              icon: Icons.dns_outlined,
-              title: 'Backend từ điển',
-              status: _apiBaseUrl.isEmpty ? 'Chưa cấu hình' : 'Đã cấu hình',
-              detail: _apiBaseUrl.isEmpty
-                  ? 'Truyền API_BASE_URL khi build hoặc run.'
-                  : _apiBaseUrl,
-              ready: _apiBaseUrl.isNotEmpty,
-            ),
-            const _StatusTile(
-              icon: Icons.document_scanner_outlined,
-              title: 'OCR',
-              status: 'Chưa tích hợp',
-              detail: 'Sẽ dùng service thật qua backend ở Phase 09.',
-              ready: false,
-            ),
-            const _StatusTile(
-              icon: Icons.auto_awesome_outlined,
-              title: 'AI giải thích',
-              status: 'Chưa tích hợp',
-              detail: 'API key chỉ được cấu hình ở backend trong Phase 10.',
-              ready: false,
-            ),
-          ],
-        ),
-        const SizedBox(height: 24),
-        const _SettingsSection(
-          title: 'Quyền riêng tư',
-          children: [
-            Text(
-              'Ứng dụng bản core không tải ảnh lên vì OCR chưa được tích hợp. '
-              'Không lưu API key trong ứng dụng hoặc repository.',
-            ),
-          ],
-        ),
-      ],
+      ),
     );
   }
 }
