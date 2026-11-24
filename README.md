@@ -30,10 +30,10 @@ Kết quả: `{"status":"ok"}` với HTTP 200. Tài liệu OpenAPI sinh bởi Fa
 ```powershell
 Set-Location apps\flutter_app
 flutter pub get --enforce-lockfile
-flutter run -d chrome --web-port=3000 --dart-define=USE_FIREBASE_EMULATOR=true
+flutter run -d chrome --web-port=3000
 ```
 
-Mở `http://localhost:3000`. `.env.example` cho phép origin này qua CORS. Khởi động Firebase Emulator theo mục dưới trước khi chạy lệnh trên. Backend Python có thể chạy riêng vì UI chưa gọi API. Khi API client được thêm, URL backend công khai sẽ truyền qua `--dart-define=API_BASE_URL=http://127.0.0.1:8000`; biến này hiện chưa được ứng dụng đọc.
+Mở `http://localhost:3000`. `.env.example` cho phép origin này qua CORS. Lệnh mặc định dùng Firebase project `hanlearn-7553f` qua `lib/firebase_options.dart`. Backend Python có thể chạy riêng vì UI chưa gọi API. Khi API client được thêm, URL backend công khai sẽ truyền qua `--dart-define=API_BASE_URL=http://127.0.0.1:8000`; biến này hiện chưa được ứng dụng đọc.
 
 ### Firebase Emulator trong Phase 02
 
@@ -45,7 +45,7 @@ firebase emulators:start --only 'auth,firestore' --project demo-hanlearn
 
 Trong terminal Flutter, thêm `--dart-define=USE_FIREBASE_EMULATOR=true` vào `flutter run` hoặc `flutter build`. Cùng codebase dùng `localhost` cho Web và `10.0.2.2` cho Android Emulator. `firebase/firestore.rules` hiện khóa toàn bộ truy cập; Rules riêng theo UID sẽ được thêm ở `HL-02-04`. Demo project không chứa dữ liệu Firebase production và không cần đăng nhập Firebase CLI.
 
-Để kết nối project thật, Flutter cần cấu hình app riêng cho Web và Android (Project ID, App ID, API key công khai, Messaging Sender ID; Web cần Auth Domain). Chỉ `FIREBASE_PROJECT_ID` trong `.env` backend chưa đủ để khởi tạo Flutter. `HL-02-01` sẽ kiểm chứng cấu hình project thật cho hai target; không đưa OCR/AI key vào Flutter.
+Web và Android app đã đăng ký trong Firebase project `hanlearn-7553f`; FlutterFire tạo `lib/firebase_options.dart` cho hai target. File này chỉ có cấu hình SDK công khai, không chứa service account. `.env` ở gốc dành cho backend và không được Flutter đóng gói. Android dùng package `com.hanlearn.app`. Phương thức đăng nhập, đọc/ghi Firestore và đồng bộ sẽ triển khai ở các issue Phase 02 tiếp theo; khởi chạy app chưa chứng minh các luồng đó. Không đưa OCR/AI key vào Flutter.
 
 Nếu Android build trên Windows báo lỗi Kotlin incremental cache do repo và Pub cache ở hai ổ khác nhau, đặt `PUB_CACHE` cùng ổ với repo trước `flutter pub get` và build (ví dụ `$env:PUB_CACHE='D:\PubCache'`). Máy phát triển này cũng cần `$env:JAVA_TOOL_OPTIONS='-Djavax.net.ssl.trustStoreType=Windows-ROOT'` để Gradle tải Firebase từ Google Maven qua kho chứng chỉ Windows. Đây là cấu hình môi trường cục bộ, không phải yêu cầu của CI Linux.
 
@@ -55,7 +55,7 @@ Khởi động emulator hoặc kết nối thiết bị, rồi kiểm tra `flutt
 
 ```powershell
 flutter pub get --enforce-lockfile
-flutter run -d emulator-5554 --dart-define=USE_FIREBASE_EMULATOR=true
+flutter run -d emulator-5554
 ```
 
 Thay `emulator-5554` bằng ID thật do `flutter devices` báo. Nếu cần build APK debug: `flutter build apk --debug`; file nằm ở `apps/flutter_app/build/app/outputs/flutter-apk/app-debug.apk`. Android emulator sẽ dùng `http://10.0.2.2:8000` để gọi backend trên máy host khi API client được thêm. Phase 01 chưa có kết nối API thực trong Flutter.
