@@ -571,6 +571,88 @@ void main() {
     expect(find.text('Chưa đủ từ để tạo Quiz'), findsOneWidget);
   });
 
+  testWidgets('today review counts unscheduled words and completes due cards', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final auth = FakeAuthRepository(
+      const AuthIdentity(uid: 'test-user', email: 'test@example.com'),
+    );
+    final savedWords = FakeSavedWordRepository()
+      ..saved.addAll(['ocd-test', 'friend-test']);
+    final learning = FakeLearningRepository();
+    final now = DateTime.now();
+    learning.schedules['friend-test'] = const ReviewScheduler().apply(
+      ReviewSchedule.initial('friend-test', now),
+      ReviewRating.good,
+      now,
+    );
+    addTearDown(auth.dispose);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(auth),
+          userProfileRepositoryProvider.overrideWithValue(
+            FakeUserProfileRepository(),
+          ),
+          dictionaryRepositoryProvider.overrideWithValue(
+            FakeDictionaryRepository(),
+          ),
+          savedWordRepositoryProvider.overrideWithValue(savedWords),
+          learningRepositoryProvider.overrideWithValue(learning),
+        ],
+        child: const HanLearnApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ôn tập'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('1 từ đến hạn'), findsOneWidget);
+    expect(find.textContaining('学习  xué xí'), findsOneWidget);
+    expect(find.textContaining('朋友  péng you'), findsNothing);
+    await tester.tap(find.text('Ôn từ đến hạn'));
+    await tester.pumpAndSettle();
+    expect(find.text('Thẻ 1/1'), findsOneWidget);
+    await tester.tap(find.text('Đã biết'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ôn tập'));
+    await tester.pumpAndSettle();
+    expect(find.text('Đã hoàn thành ôn hôm nay'), findsOneWidget);
+    expect(find.textContaining('0 từ đến hạn'), findsOneWidget);
+  });
+
+  testWidgets('today review explains the no-saved-words state', (tester) async {
+    final auth = FakeAuthRepository(
+      const AuthIdentity(uid: 'test-user', email: 'test@example.com'),
+    );
+    addTearDown(auth.dispose);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(auth),
+          userProfileRepositoryProvider.overrideWithValue(
+            FakeUserProfileRepository(),
+          ),
+          savedWordRepositoryProvider.overrideWithValue(
+            FakeSavedWordRepository(),
+          ),
+          learningRepositoryProvider.overrideWithValue(
+            FakeLearningRepository(),
+          ),
+        ],
+        child: const HanLearnApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ôn tập'));
+    await tester.pumpAndSettle();
+    expect(find.text('Chưa có lịch ôn'), findsOneWidget);
+  });
+
   testWidgets('sign in and sign out update protected routes', (tester) async {
     final repository = FakeAuthRepository(null);
     final profiles = FakeUserProfileRepository();

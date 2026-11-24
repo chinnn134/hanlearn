@@ -1,6 +1,6 @@
 # HanLearn AI — danh sách GitHub Issues cho Kanban
 
-> Phiên bản 2.8 · Nguồn: `plan.md` v2.0 · Phase 00–03 đã đạt DoD cục bộ; Phase 04 đang triển khai; không push.
+> Phiên bản 2.9 · Nguồn: `plan.md` v2.1 · Phase 00–04 đã đạt DoD cục bộ và production; không push.
 > Thứ tự: **core Phase 00–08 → OCR thật Phase 09 → AI API thật Phase 10 → nghiệm thu Phase 11**.
 > Kiến trúc cố định: **Flutter Web + Flutter Android từ một codebase, backend Python/FastAPI**. Không `git push` nếu người dùng chưa yêu cầu.
 
@@ -13,7 +13,7 @@
 - Ước lượng là **ngày công tham khảo cho solo developer**, có thể sửa theo thực tế. Nếu một hàng vượt 2 ngày, tách issue con trước khi bắt đầu, giữ liên kết với mã gốc.
 - Trợ lý tự tạo branch cục bộ `phase/xx` khi mở phase và tự tạo commit sau mỗi issue hoàn thành; người dùng không cần thao tác Git hộ. Mỗi hàng `HL-xx-yy` tương ứng **đúng một commit mới** trên branch cùng phase; subject chứa `[HL-xx-yy]`. Gộp code, test và tài liệu của issue vào commit đó. Chỉ sau khi cả phase đạt DoD mới fast-forward `main` cục bộ; không push.
 
-**Tiến độ cục bộ:** Phase 00–03 đã tích hợp `main` cục bộ. Trên `phase/04`: `HL-04-01` DONE (`7b05fad`), `HL-04-02` DONE (`919945c`), `HL-04-03` DONE (`3a0a558`), `HL-04-04` DONE (`124828c`); `HL-04-05` đạt code/test/Rules deploy/persistence production và sẵn sàng commit; `HL-04-06` còn lại. Chưa tạo GitHub Issues online, chưa push.
+**Tiến độ cục bộ:** Phase 00–03 đã tích hợp `main` cục bộ. Trên `phase/04`: `HL-04-01` DONE (`7b05fad`), `HL-04-02` DONE (`919945c`), `HL-04-03` DONE (`3a0a558`), `HL-04-04` DONE (`124828c`), `HL-04-05` DONE (`c200de5`); `HL-04-06` đã đạt code/test/E2E Web và Android, sẵn sàng commit rồi fast-forward Phase 04. Chưa tạo GitHub Issues online, chưa push.
 
 Quy trình Git mẫu: từ `main` đã có phase trước, tạo `git switch -c phase/00`; hoàn thành HL-00-01 rồi commit `docs(requirements): write PRD [HL-00-01]`. Sau khi tất cả issue Phase 00 và DoD đạt, chuyển về `main`, chạy `git merge --ff-only phase/00`, rồi mới tạo `phase/01`. Lặp lại đến Phase 11. Nếu fast-forward không thực hiện được, kiểm tra và xử lý lịch sử branch trước; không ép merge hoặc push.
 
