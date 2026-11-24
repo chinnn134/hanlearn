@@ -41,6 +41,11 @@ htmlcov/
 .DS_Store
 Thumbs.db
 
+# Firebase Emulator local logs and state
+firebase-debug.log
+*-debug.log
+.firebase/
+
 # Local OCR datasets, predictions and model weights
 ai/datasets/private/
 ai/evaluation/raw/

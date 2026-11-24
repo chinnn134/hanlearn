@@ -1,6 +1,6 @@
 # Quy tắc thực thi HanLearn AI
 
-> Phiên bản 0.8, theo CR-001 đến CR-006; người dùng xác nhận bắt đầu ngày 2026-11-20. Đọc cùng `plan.md`, `kanban_management.md` và `HanLearn_AI_SOLO_PHASE_PLAN.md` trước mỗi lượt.
+> Phiên bản 0.9, theo CR-001 đến CR-007; người dùng xác nhận bắt đầu ngày 2026-11-20. Đọc cùng `plan.md`, `kanban_management.md` và `HanLearn_AI_SOLO_PHASE_PLAN.md` trước mỗi lượt.
 
 ## 1. Nguồn yêu cầu và cập nhật
 
@@ -32,4 +32,4 @@
 
 ## 4. Cổng hiện tại
 
-Người dùng đã xác nhận bắt đầu. Phase 00 đã đạt DoD và được fast-forward vào `main` cục bộ; Phase 01 đang triển khai trên `phase/01`. Từng issue phải đạt tiêu chí và có đúng một commit cục bộ. Tiếp tục cập nhật plan, rule và backlog khi yêu cầu thay đổi; không push.
+Người dùng đã xác nhận bắt đầu. Phase 00–01 đã đạt DoD cục bộ và được fast-forward vào `main`; Phase 02 đang triển khai trên `phase/02`. `HL-02-00` chỉ chuẩn bị Emulator, không được dùng làm bằng chứng kết nối Firebase project thật cho `HL-02-01` hoặc DoD Auth/đồng bộ. Từng issue phải đạt tiêu chí và có đúng một commit cục bộ. Tiếp tục cập nhật plan, rule và backlog khi yêu cầu thay đổi; không push.
