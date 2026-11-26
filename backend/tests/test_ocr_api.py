@@ -4,7 +4,13 @@ from backend.app.api.v1.ocr import provider
 from backend.app.core.auth import AuthenticatedUser, require_user
 from backend.app.core.config import Settings
 from backend.app.main import create_app
-from backend.app.services.ocr import OcrDetection, OcrImage, OcrResult
+from backend.app.services.ocr import (
+    OcrDetection,
+    OcrImage,
+    OcrResult,
+    OcrServiceTimeout,
+    OcrServiceUnavailable,
+)
 from fastapi.testclient import TestClient
 
 PNG = base64.b64decode(
@@ -28,6 +34,15 @@ class FakeOcrProvider:
             ),
             provider_version="fake-contract-v1",
         )
+
+
+class FailingOcrProvider:
+    def __init__(self, error: Exception) -> None:
+        self.error = error
+
+    async def recognize(self, image: OcrImage) -> OcrResult:
+        del image
+        raise self.error
 
 
 def app_with_auth(**settings: object):
@@ -106,3 +121,28 @@ def test_ocr_rejects_oversize_unsupported_and_corrupt_images() -> None:
     assert unsupported.json()["detail"]["code"] == "UNSUPPORTED_IMAGE"
     assert corrupt.status_code == 422
     assert corrupt.json()["detail"]["code"] == "INVALID_IMAGE"
+
+
+def test_ocr_maps_provider_timeout_and_unavailable_errors() -> None:
+    app = app_with_auth()
+    app.dependency_overrides[provider] = lambda: FailingOcrProvider(
+        OcrServiceTimeout("timeout")
+    )
+    with TestClient(app) as client:
+        timeout = client.post(
+            "/api/v1/ocr/recognize",
+            files={"image": ("hanzi.png", PNG, "image/png")},
+        )
+    app.dependency_overrides[provider] = lambda: FailingOcrProvider(
+        OcrServiceUnavailable("offline")
+    )
+    with TestClient(app) as client:
+        unavailable = client.post(
+            "/api/v1/ocr/recognize",
+            files={"image": ("hanzi.png", PNG, "image/png")},
+        )
+
+    assert timeout.status_code == 504
+    assert timeout.json()["detail"]["code"] == "SERVICE_TIMEOUT"
+    assert unavailable.status_code == 503
+    assert unavailable.json()["detail"]["code"] == "SERVICE_UNAVAILABLE"
