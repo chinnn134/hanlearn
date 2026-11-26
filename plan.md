@@ -110,7 +110,7 @@ Phase 09 và 10 là hai phase cuối của **phát triển tính năng**; Phase 
 ### Phase 07 — Kiểm thử core
 
 - [x] Unit/widget/API/Rules cho Auth, dictionary, saved words, học tập, lỗi mạng, hai tài khoản.
-- [ ] E2E Web/Android: Web release bundle đã PASS live trên Chromium + Firebase Emulator và có widget E2E xác định; Android còn chờ HL-07-04.
+- [x] E2E Web/Android: Web release bundle PASS live trên Chromium + Firebase Emulator; Android API 35 PASS cùng luồng, Scanner UI, airplane-mode error/retry và relogin.
 - [ ] Kiểm tra secrets/log/CORS/quyền dữ liệu đã PASS; còn tổng hợp matrix/report và xử lý P0 nếu phát hiện ở HL-07-05.
 - **DoD:** core E2E pass, không còn P0 core; OCR/AI ghi `NOT VERIFIED — chưa tích hợp`.
 
@@ -234,5 +234,6 @@ Ghi mỗi cập nhật bằng ID, ngày, nguồn, tác động, quyết định/
 | 2026-11-22 | Phase 07 · HL-07-01 | Đã fast-forward Phase 06 vào `main` và mở `phase/07`. Bổ sung test Auth bỏ qua profile trả muộn sau đổi UID/logout và update tên chỉ theo UID hiện hành; Dictionary client không retry 401 quá một lần và không lấy token khi thiếu backend; OCR/AI map timeout/unavailable đúng. Flutter analyze sạch, 31/31 tests; backend Ruff sạch, 27/27 tests. | Tiếp tục `HL-07-02` Rules/security hai tài khoản và audit secrets/log/CORS/quyền dữ liệu. |
 | 2026-11-22 | Phase 07 · HL-07-02 | Firestore Emulator khởi động sạch và 7/7 nhóm Rules đạt với guest, owner UID A và UID B; cross-user/profile/saved/review/quiz bị từ chối, vocabulary chỉ đọc và collection khác deny mặc định. Audit tracked files không thấy private key/service account/key OCR/AI; `.env` bị ignore, Firebase SDK config chỉ là public client config. Backend không log token/key/payload; CORS chỉ origin cấu hình và 27/27 API tests đạt. Báo cáo: `docs/testing/security-audit-phase-07.md`. Không có P0 security. | Tiếp tục `HL-07-03` E2E core trên Flutter Web. |
 | 2026-11-22 | Phase 07 · HL-07-03 | Web release bundle chạy live với FastAPI và Firebase Auth/Firestore Emulator: login → tra/lưu 2 từ → Flashcard → Quiz 1/2 → Dashboard → logout/login giữ đúng 2 saved, 2 learned và kết quả Quiz. Bổ sung widget E2E xác định và backend verifier hỏi Auth Emulator loopback, chỉ cho phép `APP_ENV=local`; production verifier không đổi. Dart format/Flutter analyze sạch, 32/32 Flutter tests; Ruff sạch, 30/30 backend tests. `flutter test --platform chrome` bị runner treo ở `loading` nên không tính PASS; bằng chứng live dùng Chromium và được ghi rõ tại `docs/testing/phase-07-web-e2e.md`. | Commit HL-07-03; tiếp tục `HL-07-04` E2E core trên Android Emulator. |
+| 2026-11-22 | Phase 07 · HL-07-04 | Android 15/API 35 APK debug chạy cùng dữ liệu emulator: login → tra/mở từ đã lưu → Flashcard 2/2 → Quiz 1/2 → Dashboard 2 saved/2 learned → logout/login giữ dữ liệu; Scanner ghi đúng OCR chưa cấu hình. Phát hiện và sửa cleartext chỉ cho debug emulator; release/main không nới. Airplane mode hiện lỗi mạng thân thiện, không lộ exception/URL, tắt airplane rồi retry phục hồi. Flutter analyze sạch, 33/33 tests, APK build/cài PASS. Báo cáo: `docs/testing/phase-07-android-e2e.md`. | Commit HL-07-04; tiếp tục `HL-07-05` tổng hợp matrix/report và gate Phase 07. |
 
-**Bước tiếp theo:** hoàn thành và commit `HL-07-03`, sau đó làm `HL-07-04` trên `phase/07`; không push.
+**Bước tiếp theo:** hoàn thành và commit `HL-07-04`, sau đó làm `HL-07-05` trên `phase/07`; không push.

@@ -91,24 +91,31 @@ class ApiDictionaryRepository implements DictionaryRepository {
   final http.Client _client;
   final String _baseUrl;
 
-  Future<Map<String, dynamic>> _get(Uri uri) async {
-    if (_baseUrl.isEmpty) {
-      throw const DictionaryApiException('Backend API chưa được cấu hình.');
-    }
-    var token = await _auth.getIdToken();
-    var response = await _client.get(
-      uri,
-      headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
-    );
-    if (response.statusCode == 401) {
-      token = await _auth.getIdToken(forceRefresh: true);
-      response = await _client.get(
+  Future<http.Response> _send(Uri uri, String token) async {
+    try {
+      return await _client.get(
         uri,
         headers: {
           'Authorization': 'Bearer $token',
           'Accept': 'application/json',
         },
       );
+    } on http.ClientException {
+      throw const DictionaryApiException(
+        'Không thể kết nối máy chủ. Kiểm tra mạng rồi thử lại.',
+      );
+    }
+  }
+
+  Future<Map<String, dynamic>> _get(Uri uri) async {
+    if (_baseUrl.isEmpty) {
+      throw const DictionaryApiException('Backend API chưa được cấu hình.');
+    }
+    var token = await _auth.getIdToken();
+    var response = await _send(uri, token);
+    if (response.statusCode == 401) {
+      token = await _auth.getIdToken(forceRefresh: true);
+      response = await _send(uri, token);
     }
     final payload = jsonDecode(response.body) as Map<String, dynamic>;
     if (response.statusCode < 200 || response.statusCode >= 300) {
