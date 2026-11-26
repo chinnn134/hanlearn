@@ -44,6 +44,13 @@ def test_cors_allows_only_configured_web_origin() -> None:
         {"app_env": "staging"},
         {"app_env": "staging", "allowed_origins": "http://staging.example"},
         {"firebase_token_clock_skew_seconds": 601},
+        {
+            "app_env": "staging",
+            "firebase_project_id": "staging-project",
+            "allowed_origins": "https://staging.example",
+            "firebase_auth_emulator_host": "127.0.0.1:9099",
+        },
+        {"firebase_auth_emulator_host": "remote.example:9099"},
     ],
 )
 def test_unsafe_configuration_is_rejected(overrides: dict[str, object]) -> None:
